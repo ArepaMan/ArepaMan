@@ -378,11 +378,32 @@ function renderExercise(ex, ctx) {
     const go = () => {
       st.finished = true;
       const cls = classify(); const meta = { hints: st.hints, attempts: st.attempts, ms: NOW() - st.t0, mode: ctx.mode };
-      const btn = h('button.btn.primary.big', { type: 'button', text: ctx.last ? 'Finish' : 'Continue', onclick: () => ctx.onDone && ctx.onDone(cls, meta) });
+      if ((cls === 'miss' || (cls === 'hint' && (st.hints >= 2 || st.attempts >= 3))) && !ctx.noJournal) after.appendChild(journalPrompt(ex, cls, st));
+      const btn = h('button.btn.primary.big', { type: 'button', text: ctx.last ? 'Finish' : 'Continue', onclick: () => { if (st.saveJournal) st.saveJournal(); ctx.onDone && ctx.onDone(cls, meta); } });
       const bar = h('div.actions.cont', btn); after.appendChild(bar); btn.focus && btn.focus(); bar.scrollIntoView && bar.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     };
     if (wait) { const iv = setInterval(() => { if (!root.querySelector('.explain')) { clearInterval(iv); go(); } }, 150); } else go();
   }
   setTimeout(() => { T.refresh && T.refresh(); }, 50);
   return root;
+}
+
+/* "Why did this one go wrong?" prompt shown after a miss or a struggle */
+function journalPrompt(ex, cls, st) {
+  let entry = null; const chosen = new Set();
+  const note = h('textarea.answer', { rows: 2, placeholder: 'Optional: what will you do differently next time?', 'aria-label': 'What will you do differently', hidden: true });
+  const tip = h('div.jtip', { 'aria-live': 'polite' });
+  const save = () => { if (!chosen.size && !note.value.trim()) return; if (!entry) entry = journalAdd(ex.id, cls, { attempts: st.attempts, hints: st.hints }); journalSet(entry, Array.from(chosen), note.value); };
+  st.saveJournal = save;
+  const chips = CAUSES.map((c) => {
+    const b = h('button.chip.cause', { type: 'button', 'aria-pressed': 'false', text: c.label, onclick: () => {
+      if (chosen.has(c.id)) chosen.delete(c.id); else chosen.add(c.id);
+      b.classList.toggle('on', chosen.has(c.id)); b.setAttribute('aria-pressed', chosen.has(c.id));
+      note.hidden = false; const last = CAUSES.find((x) => chosen.has(x.id) && x.id === c.id) || CAUSES.find((x) => chosen.has(x.id));
+      tip.textContent = last ? last.tip : ''; save();
+    } });
+    return b;
+  });
+  note.addEventListener('blur', save);
+  return h('div.journal-prompt', h('h4', { text: cls === 'miss' ? 'Why did this one go wrong?' : 'This one took a lot of help. Why?' }), h('p.muted.small', { text: 'Tap what fits. Your answers build the Journal tab, which shows your patterns.' }), h('div.chips', chips), tip, note);
 }

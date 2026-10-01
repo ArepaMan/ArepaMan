@@ -26,9 +26,9 @@ import harness  # noqa: E402
 import tracegen as tracelib  # noqa: E402
 
 MODULES = [
-    "py_l1", "py_l2", "py_l3", "py_l4", "py_l5",
-    "sql_l1", "sql_l2", "sql_l3", "sql_l4", "sql_l5",
-    "bash_a", "bash_b", "devops_a", "devops_b", "light_a",
+    "py_l1", "py_l2", "py_l3", "py_l4", "py_l4b", "py_l5", "py_l5b",
+    "sql_l1", "sql_l2", "sql_l3", "sql_l4", "sql_l4b", "sql_l5", "sql_l5b",
+    "bash_a", "bash_b", "bash_c", "devops_a", "devops_b", "devops_c", "light_a",
 ]
 errors = []
 

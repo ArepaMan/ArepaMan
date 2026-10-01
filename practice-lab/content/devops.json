@@ -1218,6 +1218,180 @@
    ]
   },
   {
+   "id": "k8s.scale",
+   "level": 4,
+   "title": "Kubernetes: scaling, rollouts and debugging",
+   "lede": "Production Kubernetes is mostly three questions: how many Pods, how do updates roll out, and why is this Pod unhappy?",
+   "minutes": 6,
+   "phases": [
+    "cloud",
+    "serving"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "yaml",
+      "x": "apiVersion: autoscaling/v2\nkind: HorizontalPodAutoscaler\nmetadata:\n  name: reviewradar-api\nspec:\n  scaleTargetRef: {apiVersion: apps/v1, kind: Deployment, name: reviewradar-api}\n  minReplicas: 2\n  maxReplicas: 10\n  metrics:\n    - type: Resource\n      resource:\n        name: cpu\n        target: {type: Utilization, averageUtilization: 70}   # scale out above 70% of the CPU request\n\n# in the Deployment:\nstrategy:\n  type: RollingUpdate\n  rollingUpdate:\n    maxSurge: 1            # one extra Pod during the update\n    maxUnavailable: 0      # never drop below the desired count"
+     },
+     {
+      "t": "table",
+      "cols": [
+       "Status you see",
+       "Usual cause",
+       "First command"
+      ],
+      "rows": [
+       [
+        "`CrashLoopBackOff`",
+        "the container starts and exits",
+        "`kubectl logs POD --previous`"
+       ],
+       [
+        "`ImagePullBackOff`",
+        "wrong image name or tag, or no registry credentials",
+        "`kubectl describe pod POD` (Events)"
+       ],
+       [
+        "`Pending`",
+        "no node has enough CPU or memory",
+        "`kubectl describe pod POD`"
+       ],
+       [
+        "`OOMKilled`",
+        "memory limit too low",
+        "check `resources.limits.memory`"
+       ]
+      ]
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`kubectl rollout status deploy/NAME` follows an update. `kubectl rollout undo deploy/NAME` goes back one version.",
+       "The autoscaler needs CPU/memory **requests** set (it measures use as a percentage of the request) and a metrics server in the cluster.",
+       "A **readiness probe** is what makes rolling updates safe: new Pods only receive traffic once they pass it."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "A Pod is in `CrashLoopBackOff`. What do you check first?",
+      "choices": [
+       "The Service selector",
+       "The previous container's logs: `kubectl logs POD --previous`",
+       "The node's disk",
+       "The Ingress"
+      ],
+      "a": 1,
+      "why": "The container keeps dying. Its last words are in the previous logs."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "fill",
+     "prompt": "Scale between 2 and 10 Pods, targeting 70% CPU utilisation.",
+     "hints": [
+      "The ceiling for the number of Pods.",
+      "The target is a percentage of the CPU request.",
+      "`10` and `70`."
+     ],
+     "diff": 2,
+     "template": "spec:\n  minReplicas: 2\n  maxReplicas: ____\n  metrics:\n    - type: Resource\n      resource:\n        name: cpu\n        target:\n          type: Utilization\n          averageUtilization: ____",
+     "blanks": [
+      [
+       "10"
+      ],
+      [
+       "70"
+      ]
+     ],
+     "lang": "yaml",
+     "ci": false,
+     "id": "k8s.scale.1"
+    },
+    {
+     "type": "spot",
+     "prompt": "During every release the API has a short outage. Which line is the problem?",
+     "hints": [
+      "How many old Pods may be taken down at once?",
+      "100% means all of them.",
+      "New Pods are not ready yet."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "lines": [
+      "strategy:",
+      "  type: RollingUpdate",
+      "  rollingUpdate:",
+      "    maxSurge: 1",
+      "    maxUnavailable: 100%"
+     ],
+     "bad": [
+      5
+     ],
+     "lang": "yaml",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "Set `maxUnavailable: 0` (or a small number) so ready Pods always remain",
+       "Set `maxSurge: 0`",
+       "Change `type` to `Recreate`",
+       "Add more replicas and keep 100%"
+      ],
+      "answer": 0,
+      "why": [
+       null,
+       "With `maxSurge: 0` and some unavailable allowed the update still dips, and with 0 and 0 it cannot progress.",
+       "`Recreate` kills everything first, which is the outage.",
+       "More replicas do not help if all are taken down at once."
+      ]
+     },
+     "id": "k8s.scale.2"
+    },
+    {
+     "type": "mcq",
+     "prompt": "The autoscaler shows `<unknown>/70%` for CPU and never scales. What is the most likely cause?",
+     "hints": [
+      "Utilisation is measured against the request.",
+      "No request means no percentage.",
+      "The metrics server provides the numbers."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "The Service has no selector",
+      "The Pods have no CPU request (or the metrics server is missing)",
+      "The image is too large",
+      "The replicas are set to 1"
+     ],
+     "answer": 1,
+     "id": "k8s.scale.3"
+    },
+    {
+     "type": "mcq",
+     "prompt": "A new version is broken, and users are seeing errors. What is the fastest safe way back?",
+     "hints": [
+      "The Deployment remembers its earlier revisions.",
+      "One command returns to the previous one.",
+      "Investigate the cause afterwards."
+     ],
+     "diff": 2,
+     "choices": [
+      "Edit the Pod by hand",
+      "`kubectl rollout undo deployment/reviewradar-api`",
+      "Delete the namespace",
+      "Scale to zero and wait"
+     ],
+     "answer": 1,
+     "id": "k8s.scale.4"
+    }
+   ]
+  },
+  {
    "id": "tf.basic",
    "level": 5,
    "title": "Terraform: HCL basics",
@@ -1562,6 +1736,289 @@
      ],
      "answer": 1,
      "id": "tf.modules.3"
+    }
+   ]
+  },
+  {
+   "id": "gha.deploy",
+   "level": 5,
+   "title": "CI/CD: build, push and deploy to AWS",
+   "lede": "A good pipeline builds one image per commit, pushes it to a registry and deploys it, without any long-lived password sitting in GitHub.",
+   "minutes": 7,
+   "phases": [
+    "cloud",
+    "serving"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "yaml",
+      "x": "name: deploy\non:\n  push:\n    branches: [main]\npermissions:\n  id-token: write            # lets the job ask GitHub for a short-lived identity token (OIDC)\n  contents: read\nconcurrency:\n  group: deploy-prod\n  cancel-in-progress: false  # never kill a deploy that is already running\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    environment: production  # can require a human approval\n    steps:\n      - uses: actions/checkout@v4\n      - uses: aws-actions/configure-aws-credentials@v4\n        with:\n          role-to-assume: arn:aws:iam::123456789012:role/github-deploy\n          aws-region: eu-west-1\n      - uses: aws-actions/amazon-ecr-login@v2\n      - run: docker build -t $REGISTRY/reviewradar:${{ github.sha }} .\n      - run: docker push $REGISTRY/reviewradar:${{ github.sha }}\n      - run: kubectl set image deployment/reviewradar-api api=$REGISTRY/reviewradar:${{ github.sha }}"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "**OIDC**: AWS trusts GitHub's short-lived token for one role. There is no `AWS_SECRET_ACCESS_KEY` to leak or rotate.",
+       "Tag images with the **commit SHA** (`github.sha`), not `latest`. Every deploy is traceable, and rollback means redeploying an old SHA.",
+       "`environment: production` can demand a reviewer's approval. `concurrency` stops two deploys racing.",
+       "Run tests in an earlier job and use `needs: test` so a red build never deploys."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "Long-lived cloud keys stored as repository secrets are a top cause of breaches. Prefer a role the workflow assumes through OIDC, limited to exactly what it needs."
+     },
+     {
+      "t": "quick",
+      "q": "Why tag images with the commit SHA instead of `latest`?",
+      "choices": [
+       "It is shorter",
+       "You know exactly what is running and can roll back to an exact earlier build",
+       "Docker requires it",
+       "It makes builds faster"
+      ],
+      "a": 1,
+      "why": "`latest` moves, so it tells you nothing about what is deployed."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "spot",
+     "prompt": "A security review rejects this step. Which line is the problem?",
+     "hints": [
+      "What kind of credentials are these?",
+      "They never expire unless someone rotates them.",
+      "A role assumed through OIDC has no stored secret at all."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "lines": [
+      "- uses: aws-actions/configure-aws-credentials@v4",
+      "  with:",
+      "    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}",
+      "    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+     ],
+     "bad": [
+      3
+     ],
+     "lang": "yaml",
+     "fix": {
+      "q": "What is the better approach?",
+      "choices": [
+       "Use `role-to-assume` with OIDC and `permissions: id-token: write`",
+       "Rename the secrets",
+       "Store the keys in the repository README",
+       "Share one key across all projects"
+      ],
+      "answer": 0
+     },
+     "id": "gha.deploy.1"
+    },
+    {
+     "type": "fill",
+     "prompt": "Tag the image with the commit and allow OIDC.",
+     "hints": [
+      "The job needs permission to write an identity token.",
+      "GitHub exposes the commit hash in the `github` context.",
+      "`write` and `sha`."
+     ],
+     "diff": 2,
+     "template": "permissions:\n  id-token: ____\n...\n- run: docker build -t $REGISTRY/reviewradar:${{ github.____ }} .",
+     "blanks": [
+      [
+       "write"
+      ],
+      [
+       "sha"
+      ]
+     ],
+     "lang": "yaml",
+     "ci": false,
+     "id": "gha.deploy.2"
+    },
+    {
+     "type": "order",
+     "prompt": "Put the steps of the deploy job in order.",
+     "hints": [
+      "Code first, then credentials.",
+      "You must log in to the registry before pushing.",
+      "Build before push."
+     ],
+     "diff": 2,
+     "lines": [
+      "- uses: actions/checkout@v4",
+      "- uses: aws-actions/configure-aws-credentials@v4",
+      "- uses: aws-actions/amazon-ecr-login@v2",
+      "- run: docker build -t app:${{ github.sha }} .",
+      "- run: docker push app:${{ github.sha }}"
+     ],
+     "lang": "yaml",
+     "id": "gha.deploy.3"
+    },
+    {
+     "type": "mcq",
+     "prompt": "What does `concurrency: {group: deploy-prod, cancel-in-progress: false}` do?",
+     "hints": [
+      "Same group means same queue.",
+      "`cancel-in-progress: false` protects the running deploy.",
+      "Two simultaneous deploys could leave the cluster half updated."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "Runs deploys in parallel",
+      "Queues deploys so only one runs at a time, and never cancels a running one",
+      "Cancels the older run when a new commit arrives",
+      "Limits CPU usage"
+     ],
+     "answer": 1,
+     "id": "gha.deploy.4"
+    }
+   ]
+  },
+  {
+   "id": "tf.state",
+   "level": 5,
+   "title": "Terraform state, drift and import",
+   "lede": "The state file is Terraform's memory. Most real-world Terraform trouble is about state: drift, shared access and adopting resources that already exist.",
+   "minutes": 6,
+   "phases": [
+    "cloud"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "bash",
+      "x": "terraform plan                              # compares code, state and the real cloud\nterraform plan -refresh-only                # only report drift (changes made outside Terraform)\nterraform import aws_s3_bucket.models my-existing-bucket    # adopt an existing resource into state\nterraform state list                        # what does Terraform manage?\nterraform state rm aws_s3_bucket.old        # stop managing it (does not delete it)"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "**Drift**: someone changed a resource in the console. The next `plan` will try to revert it to match the code.",
+       "**Import** attaches an existing resource to a block in your code so Terraform manages it. Write the block first, then import.",
+       "Use one remote state per environment (dev, prod) so a mistake in dev cannot touch prod. Folders or separate backends are safer than workspaces for strongly separated environments.",
+       "Never edit the state file by hand. Use `terraform state` commands."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "`terraform state rm` and `import` do not change the real infrastructure, only what Terraform believes. A wrong move can later lead Terraform to create a duplicate or destroy something."
+     },
+     {
+      "t": "quick",
+      "q": "A teammate changed a security group in the AWS console. What will the next `terraform plan` show?",
+      "choices": [
+       "Nothing",
+       "A change that puts the security group back as your code defines it",
+       "An error",
+       "The new console settings added to your code"
+      ],
+      "a": 1,
+      "why": "Terraform treats your code as the truth and plans to undo the drift."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "mcq",
+     "prompt": "Someone edited a bucket's tags in the AWS console. You want to know what changed outside Terraform, without proposing to change anything. Which command fits?",
+     "hints": [
+      "You only want to see drift.",
+      "A flag restricts the plan to refreshing state.",
+      "`-refresh-only`."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "`terraform apply`",
+      "`terraform plan -refresh-only`",
+      "`terraform destroy`",
+      "`terraform fmt`"
+     ],
+     "answer": 1,
+     "id": "tf.state.1"
+    },
+    {
+     "type": "fill",
+     "prompt": "Bring an existing bucket under Terraform's management.",
+     "hints": [
+      "The resource already exists in AWS.",
+      "You need to attach it to a block in your state.",
+      "`import`"
+     ],
+     "diff": 2,
+     "template": "terraform ____ aws_s3_bucket.models my-existing-bucket",
+     "blanks": [
+      [
+       "import"
+      ]
+     ],
+     "lang": "bash",
+     "ci": false,
+     "id": "tf.state.2"
+    },
+    {
+     "type": "spot",
+     "prompt": "This sequence is risky. Which line is the problem?",
+     "hints": [
+      "What does the state file contain?",
+      "It can hold passwords and keys in plain text.",
+      "It should live in remote, locked storage, never in git."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "lines": [
+      "git add main.tf",
+      "git add terraform.tfstate",
+      "git commit -m \"infra\""
+     ],
+     "bad": [
+      2
+     ],
+     "lang": "bash",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "Keep state in a remote backend (S3 with locking) and add `*.tfstate*` to `.gitignore`",
+       "Commit it, but in a private repository",
+       "Encrypt the file with a simple zip password",
+       "Rename it to `state.txt`"
+      ],
+      "answer": 0
+     },
+     "id": "tf.state.3"
+    },
+    {
+     "type": "mcq",
+     "prompt": "You have `dev` and `prod`. Which layout best prevents a mistake in dev from touching prod?",
+     "hints": [
+      "Isolation limits the blast radius.",
+      "Different state means different resources.",
+      "Different credentials mean dev code cannot even reach prod."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "One state, one folder, and a variable for the environment",
+      "Separate state files (own backend key or folder) per environment, ideally with different credentials",
+      "Terraform workspaces with the same credentials for everything",
+      "Run everything from a laptop"
+     ],
+     "answer": 1,
+     "id": "tf.state.4"
     }
    ]
   }

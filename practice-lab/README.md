@@ -51,6 +51,7 @@ Progress is saved as three private documents in the artifact's database (owner-o
 | `practice/state` | streak and rest tokens, per-concept mastery and review schedule, level unlocks and checkpoint results, today's plan, per-day counts, theme |
 | `practice/log` | the last 450 answers (exercise, result, hints, time) |
 | `practice/notes` | your "explain in your own words" answers |
+| `practice/journal` | the "why did I miss this" entries: exercise, reasons you tapped, optional note (last 300) |
 
 Stats tab: **Save backup file** / **Copy backup** / **Restore** gives a JSON backup. Claude can read these documents to see your weak spots
 and write new exercises where you struggle.
@@ -61,3 +62,4 @@ and write new exercises where you struggle.
 * Reviews come back after 1, 3, 7, 14, 30, 60, 90, 180 days; a miss resets to tomorrow. Unreviewed concepts fade (Fresh, Fading, Rusty).
 * A level unlocks at 80% average mastery, enough solved exercises (including 2 with no hints) and a 5-question no-hint checkpoint (4 right).
 * Timelines on the Today tab use your own recent pace and accuracy.
+* After a miss (or an answer that needed 2+ hints) you are asked why. Tapping a reason saves a journal entry; choosing "Did not understand the idea" queues a lesson re-read in your next plan. The Journal tab charts your reasons, lists repeat-offender concepts and lets you log reasons for older misses.

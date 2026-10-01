@@ -1713,6 +1713,288 @@
    ]
   },
   {
+   "id": "sql.window3",
+   "level": 4,
+   "title": "Windows: moving averages, frames and buckets",
+   "lede": "A window can be a sliding frame, a bucket or a running total. Frames give you moving averages, which smooth noisy daily metrics.",
+   "minutes": 7,
+   "phases": [
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "-- 3-day moving average: the current row and the two before it\nSELECT day,\n       AVG(acc) OVER (ORDER BY day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS moving\nFROM daily;\n\n-- compare each row with its own group's average\nSELECT id, confidence,\n       AVG(confidence) OVER (PARTITION BY day) AS day_avg\nFROM predictions;\n\n-- buckets\nSELECT id, NTILE(4) OVER (ORDER BY confidence, id) AS quartile FROM predictions;\n\n-- value from the first row of the group\nSELECT id, FIRST_VALUE(confidence) OVER (PARTITION BY day ORDER BY id) AS first_of_day FROM predictions;"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`ROWS BETWEEN 2 PRECEDING AND CURRENT ROW` is a frame of exactly three rows. It decides which rows the function sees.",
+       "`OVER (PARTITION BY g)` with no `ORDER BY` computes over the whole group, like a group average attached to every row.",
+       "`NTILE(n)` splits rows into `n` equal buckets, `FIRST_VALUE` / `LAST_VALUE` read the edges of the frame."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "With `ORDER BY` and no frame, the default is `RANGE ... CURRENT ROW`, which treats rows with the same sort value as one group. Two rows on the same day get the **same** running total. Write `ROWS` when you want row-by-row behaviour."
+     },
+     {
+      "t": "quick",
+      "q": "`AVG(x) OVER (ORDER BY day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)` averages how many rows (once enough rows exist)?",
+      "choices": [
+       "2",
+       "3",
+       "5",
+       "All of them"
+      ],
+      "a": 1,
+      "why": "The current row plus the two before it."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "sql",
+     "prompt": "Daily accuracy and its 3-day moving average: show `day`, `accuracy` (daily, rounded to 2 decimals) and `moving` (the average of the daily accuracy over the current and two previous days, rounded to 2 decimals). Order by day.",
+     "hints": [
+      "Compute one accuracy number per day first, in a CTE.",
+      "Then average it over a frame of three rows.",
+      "`AVG(acc) OVER (ORDER BY day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)`"
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "dataset": "ml",
+     "starter": "-- CTE for daily accuracy, then a frame\n",
+     "solution": "WITH daily AS (SELECT day, AVG(CASE WHEN pred_label = true_label THEN 1.0 ELSE 0.0 END) AS acc FROM predictions GROUP BY day) SELECT day, ROUND(acc, 2) AS accuracy, ROUND(AVG(acc) OVER (ORDER BY day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 2) AS moving FROM daily ORDER BY day",
+     "ordered": true,
+     "names": true,
+     "id": "sql.window3.1"
+    },
+    {
+     "type": "sql",
+     "prompt": "For each prediction show `id`, `confidence` and `below_day_avg`: 1 if its confidence is below the average confidence of its own `day`, otherwise 0.",
+     "hints": [
+      "You need each day's average attached to every row.",
+      "A window with only `PARTITION BY` does that.",
+      "Compare with `confidence < AVG(confidence) OVER (PARTITION BY day)` inside a `CASE`."
+     ],
+     "diff": 3,
+     "dataset": "ml",
+     "starter": "-- AVG(...) OVER (PARTITION BY day)\n",
+     "solution": "SELECT id, confidence, CASE WHEN confidence < AVG(confidence) OVER (PARTITION BY day) THEN 1 ELSE 0 END AS below_day_avg FROM predictions",
+     "ordered": false,
+     "names": true,
+     "id": "sql.window3.2"
+    },
+    {
+     "type": "sql",
+     "prompt": "Split all predictions into 4 confidence quartiles. Show `id`, `confidence` and `quartile` (1 is the lowest confidence). Order the rows by confidence and then `id` inside the window.",
+     "hints": [
+      "`NTILE(n)` creates `n` equal buckets.",
+      "The window must be ordered by confidence, with `id` as the tie-breaker.",
+      "`NTILE(4) OVER (ORDER BY confidence, id) AS quartile`"
+     ],
+     "diff": 2,
+     "dataset": "ml",
+     "starter": "-- NTILE(4)\n",
+     "solution": "SELECT id, confidence, NTILE(4) OVER (ORDER BY confidence, id) AS quartile FROM predictions",
+     "ordered": false,
+     "names": true,
+     "id": "sql.window3.3"
+    },
+    {
+     "type": "sql",
+     "prompt": "For every prediction show `id` and `first_of_day`: the confidence of the first prediction (lowest `id`) on the same `day`.",
+     "hints": [
+      "Partition by day, order by id inside each day.",
+      "`FIRST_VALUE(col)` returns the value from the first row of the frame.",
+      "`FIRST_VALUE(confidence) OVER (PARTITION BY day ORDER BY id)`"
+     ],
+     "diff": 3,
+     "dataset": "ml",
+     "starter": "-- FIRST_VALUE\n",
+     "solution": "SELECT id, FIRST_VALUE(confidence) OVER (PARTITION BY day ORDER BY id) AS first_of_day FROM predictions",
+     "ordered": false,
+     "names": true,
+     "id": "sql.window3.4"
+    },
+    {
+     "type": "mcq",
+     "prompt": "Two rows share the same `day`. What does `SUM(x) OVER (ORDER BY day)` return for them?",
+     "hints": [
+      "Think about what \"up to the current row\" means when two rows tie.",
+      "The default frame groups equal sort values together.",
+      "Use `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` for strict row-by-row totals."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "explain": {
+      "ask": "In your own words: why do tied rows get the same running total?",
+      "points": [
+       "The default frame is RANGE, which includes all rows with the same ORDER BY value",
+       "ROWS makes the frame count physical rows instead"
+      ],
+      "model": "With `ORDER BY` and no frame clause, SQL uses `RANGE UNBOUNDED PRECEDING`. A range frame includes every peer, meaning every row with the same sort value, so both tied rows see the same set of rows and get the same total."
+     },
+     "choices": [
+      "The running total up to each row separately",
+      "The same running total for both (rows with an equal sort value are treated together)",
+      "NULL for the second row",
+      "An error"
+     ],
+     "answer": 1,
+     "id": "sql.window3.5"
+    }
+   ]
+  },
+  {
+   "id": "sql.monitor1",
+   "level": 4,
+   "title": "Monitoring a model in SQL: calibration, drift and per-class metrics",
+   "lede": "Accuracy alone hides problems. Check whether confidence means anything, whether the label mix is shifting, and which classes fail.",
+   "minutes": 7,
+   "phases": [
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "p",
+      "x": "Three questions every deployed classifier needs answered, each one query on the `predictions` table:"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "**Calibration**: when the model says 90% confident, is it right about 90% of the time? Bucket by confidence and compare to accuracy.",
+       "**Drift**: did the mix of predicted labels change between model versions or over time?",
+       "**Per-class recall**: which categories does the model miss? A good overall number can hide a class that fails."
+      ]
+     },
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "-- calibration buckets\nSELECT CASE WHEN confidence >= 0.9 THEN 'high'\n            WHEN confidence >= 0.6 THEN 'mid' ELSE 'low' END AS bucket,\n       COUNT(*) AS n,\n       ROUND(AVG(CASE WHEN pred_label = true_label THEN 1.0 ELSE 0.0 END), 2) AS accuracy\nFROM predictions GROUP BY bucket;\n\n-- share of each predicted label within its model\nSELECT model, pred_label,\n       ROUND(1.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY model), 2) AS share\nFROM predictions GROUP BY model, pred_label;"
+     },
+     {
+      "t": "tip",
+      "x": "`SUM(COUNT(*)) OVER (PARTITION BY model)` is a window over an aggregate: first `GROUP BY` counts, then the window adds those counts up per model."
+     },
+     {
+      "t": "quick",
+      "q": "A model's confidence is 0.95 on predictions that are right only 60% of the time. It is:",
+      "choices": [
+       "well calibrated",
+       "overconfident",
+       "underconfident",
+       "perfect"
+      ],
+      "a": 1,
+      "why": "High confidence with lower accuracy means overconfident."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "sql",
+     "prompt": "Check calibration. Put each prediction in a `bucket`: `high` (confidence at least 0.9), `mid` (at least 0.6) or `low`. Show `bucket`, `n` (how many) and `accuracy` (share correct, rounded to 2 decimals).",
+     "hints": [
+      "Build the bucket with `CASE`, then group by it.",
+      "Accuracy is the average of a 1/0 correctness flag.",
+      "`GROUP BY bucket`"
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "dataset": "ml",
+     "starter": "-- CASE bucket, then GROUP BY\n",
+     "solution": "SELECT CASE WHEN confidence >= 0.9 THEN 'high' WHEN confidence >= 0.6 THEN 'mid' ELSE 'low' END AS bucket, COUNT(*) AS n, ROUND(AVG(CASE WHEN pred_label = true_label THEN 1.0 ELSE 0.0 END), 2) AS accuracy FROM predictions GROUP BY bucket",
+     "ordered": false,
+     "names": true,
+     "id": "sql.monitor1.1"
+    },
+    {
+     "type": "sql",
+     "prompt": "Check label drift. For each model and predicted label show `model`, `pred_label` and `share`: the fraction of that model's predictions with that label, rounded to 2 decimals.",
+     "hints": [
+      "Count rows per model and label first.",
+      "Divide each count by the model's total.",
+      "`SUM(COUNT(*)) OVER (PARTITION BY model)` is that total."
+     ],
+     "diff": 3,
+     "dataset": "ml",
+     "starter": "-- window over an aggregate\n",
+     "solution": "SELECT model, pred_label, ROUND(1.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY model), 2) AS share FROM predictions GROUP BY model, pred_label",
+     "ordered": false,
+     "names": true,
+     "id": "sql.monitor1.2"
+    },
+    {
+     "type": "sql",
+     "prompt": "Per-class recall. For each `true_label` show `label`, `total`, `correct` (how many were predicted correctly) and `recall` (correct divided by total, rounded to 2 decimals).",
+     "hints": [
+      "Group by the true label.",
+      "Count rows, and count the correct ones with `SUM(CASE ...)`.",
+      "Recall = correct / total."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "dataset": "ml",
+     "starter": "-- group by true_label\n",
+     "solution": "SELECT true_label AS label, COUNT(*) AS total, SUM(CASE WHEN pred_label = true_label THEN 1 ELSE 0 END) AS correct, ROUND(1.0 * SUM(CASE WHEN pred_label = true_label THEN 1 ELSE 0 END) / COUNT(*), 2) AS recall FROM predictions GROUP BY true_label",
+     "ordered": false,
+     "names": true,
+     "id": "sql.monitor1.3"
+    },
+    {
+     "type": "sql",
+     "prompt": "Which mistakes happen most? Among the wrong predictions only, show `true_label`, `pred_label` and `n`, most frequent first (break ties by `true_label`, then `pred_label`).",
+     "hints": [
+      "Keep only rows where the prediction is wrong.",
+      "Group by the pair of labels.",
+      "`ORDER BY n DESC, true_label, pred_label`"
+     ],
+     "diff": 3,
+     "dataset": "ml",
+     "starter": "-- confusion pairs\n",
+     "solution": "SELECT true_label, pred_label, COUNT(*) AS n FROM predictions WHERE pred_label <> true_label GROUP BY true_label, pred_label ORDER BY n DESC, true_label, pred_label",
+     "ordered": true,
+     "names": true,
+     "id": "sql.monitor1.4"
+    },
+    {
+     "type": "mcq",
+     "prompt": "True labels for ReviewRadar's predictions arrive days later, once agents close tickets. Which signal can you watch **immediately** to catch a problem early?",
+     "hints": [
+      "Which numbers need ground truth, and which do not?",
+      "Predicted labels and confidences exist the moment the model answers.",
+      "A sudden shift in either is an early warning."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "why": "Accuracy and recall need true labels. The label mix and confidence distribution are available instantly, so a sudden change is the earliest hint that inputs or the model have shifted.",
+     "choices": [
+      "Accuracy",
+      "The distribution of predicted labels and the confidence scores",
+      "Recall per class",
+      "Nothing until labels arrive"
+     ],
+     "answer": 1,
+     "id": "sql.monitor1.5"
+    }
+   ]
+  },
+  {
    "id": "sql.index",
    "level": 5,
    "title": "Indexes and reading query plans",
@@ -2069,6 +2351,447 @@
      "solution": "def cosine_distance(a, b):\n    dot = sum(x * y for x, y in zip(a, b))\n    na = sum(x * x for x in a) ** 0.5\n    nb = sum(y * y for y in b) ** 0.5\n    return 1 - dot / (na * nb)\n\ndef nearest(query, items, k):\n    return sorted(items, key=lambda i: cosine_distance(query, items[i]))[:k]\n",
      "tests": "docs = {\"refund\": [1.0, 0.1], \"login\": [0.0, 1.0], \"billing\": [0.9, 0.3], \"crash\": [0.1, 0.9]}\nt(\"nearest([1, 0], docs, 2)\", [\"refund\", \"billing\"])\nt(\"nearest([0, 1], docs, 1)\", [\"login\"])\nt(\"nearest([0.5, 0.5], docs, 4)[0] in ('billing', 'crash')\", True)",
      "id": "sql.pgvector.3"
+    }
+   ]
+  },
+  {
+   "id": "sql.txn",
+   "level": 5,
+   "title": "Transactions, upserts and locking",
+   "lede": "A transaction makes several changes succeed or fail together. Knowing isolation levels and locks separates \"it works on my laptop\" from \"it works under load\".",
+   "minutes": 7,
+   "phases": [
+    "serving",
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "BEGIN;\nUPDATE tickets SET status = 'closed' WHERE id = 4;\nUPDATE tickets SET status = 'closed' WHERE id = 5;\nCOMMIT;                     -- both changes become permanent together (ROLLBACK undoes both)\n\n-- upsert: insert, or update if the key already exists\nINSERT INTO customers (id, name, plan, country)\nVALUES (3, 'Chika Obi', 'pro', 'NG')\nON CONFLICT (id) DO UPDATE SET plan = excluded.plan;\n\n-- PostgreSQL: lock the rows you are about to change\nSELECT * FROM tickets WHERE id = 4 FOR UPDATE;"
+     },
+     {
+      "t": "table",
+      "cols": [
+       "ACID",
+       "Means"
+      ],
+      "rows": [
+       [
+        "Atomic",
+        "all changes in a transaction happen, or none"
+       ],
+       [
+        "Consistent",
+        "constraints always hold"
+       ],
+       [
+        "Isolated",
+        "concurrent transactions do not see each other's half-done work"
+       ],
+       [
+        "Durable",
+        "committed data survives a crash"
+       ]
+      ]
+     },
+     {
+      "t": "table",
+      "cols": [
+       "Anomaly",
+       "What happens"
+      ],
+      "rows": [
+       [
+        "dirty read",
+        "you read another transaction's uncommitted change"
+       ],
+       [
+        "non-repeatable read",
+        "you read a row twice and get different values because someone committed in between"
+       ],
+       [
+        "phantom read",
+        "a repeated query returns new rows that someone committed in between"
+       ]
+      ]
+     },
+     {
+      "t": "ul",
+      "x": [
+       "Higher isolation levels prevent more anomalies but allow less concurrency. PostgreSQL's default is **read committed**.",
+       "A **deadlock** happens when two transactions each hold a lock the other needs. Always update rows in the same order.",
+       "Make writes **idempotent** with upserts so a retried request does not create duplicates. That matters for any API that may be called twice."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "What does `ROLLBACK` do?",
+      "choices": [
+       "Commits the transaction",
+       "Undoes every change since `BEGIN`",
+       "Deletes the table",
+       "Restarts the database"
+      ],
+      "a": 1,
+      "why": "All changes in the open transaction are discarded."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "sql",
+     "prompt": "Customer 3 already exists on the `enterprise` plan. Write **one statement** that inserts `(3, 'Chika Obi', 'pro', 'NG')` and, because id 3 already exists, updates the `plan` instead (an upsert).",
+     "hints": [
+      "A normal `INSERT` would fail on the duplicate key.",
+      "Add `ON CONFLICT (id) DO UPDATE SET ...`.",
+      "`excluded.plan` is the value you tried to insert."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "dataset": "support",
+     "starter": "-- INSERT ... ON CONFLICT ... DO UPDATE\n",
+     "solution": "INSERT INTO customers (id, name, plan, country) VALUES (3, 'Chika Obi', 'pro', 'NG') ON CONFLICT (id) DO UPDATE SET plan = excluded.plan",
+     "ordered": false,
+     "names": false,
+     "after": "SELECT id, name, plan FROM customers WHERE id = 3",
+     "id": "sql.txn.1"
+    },
+    {
+     "type": "sql",
+     "prompt": "Close tickets 4 and 5 together in one transaction: `BEGIN`, two updates setting `status` to `closed`, then `COMMIT`.",
+     "hints": [
+      "Start with `BEGIN;`.",
+      "Two `UPDATE` statements, one per ticket.",
+      "Finish with `COMMIT;`."
+     ],
+     "diff": 2,
+     "dataset": "support",
+     "starter": "-- BEGIN; ...; COMMIT;\n",
+     "solution": "BEGIN; UPDATE tickets SET status = 'closed' WHERE id = 4; UPDATE tickets SET status = 'closed' WHERE id = 5; COMMIT",
+     "ordered": false,
+     "names": false,
+     "after": "SELECT id, status FROM tickets WHERE id IN (4, 5) ORDER BY id",
+     "id": "sql.txn.2"
+    },
+    {
+     "type": "fill",
+     "prompt": "Lock the row you are about to update so no other transaction changes it first (PostgreSQL).",
+     "hints": [
+      "It is a two-word clause ending in `UPDATE`.",
+      "The first word is a preposition.",
+      "`FOR`"
+     ],
+     "diff": 3,
+     "template": "SELECT * FROM tickets WHERE id = 4 ____ UPDATE;",
+     "blanks": [
+      [
+       "FOR"
+      ]
+     ],
+     "lang": "sql",
+     "ci": true,
+     "id": "sql.txn.3"
+    },
+    {
+     "type": "mcq",
+     "prompt": "Transaction A reads ticket 4's status twice and gets `open` then `closed`, because transaction B committed in between. Which anomaly is this?",
+     "hints": [
+      "B's change was committed, so it is not a dirty read.",
+      "The **same row** returned a different value.",
+      "A phantom is about new rows appearing, not changed values."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "Dirty read",
+      "Non-repeatable read",
+      "Phantom read",
+      "Deadlock"
+     ],
+     "answer": 1,
+     "id": "sql.txn.4"
+    },
+    {
+     "type": "mcq",
+     "prompt": "Two transactions each update tickets 4 and 5, but one goes 4 then 5 and the other 5 then 4. They sometimes freeze each other. What is the standard fix?",
+     "hints": [
+      "Each holds one lock and waits for the other.",
+      "A consistent order breaks the cycle.",
+      "Databases also abort one transaction when they detect a deadlock, so code should retry."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "Add more indexes",
+      "Always update rows in the same order in every transaction",
+      "Use `SELECT *`",
+      "Turn off transactions"
+     ],
+     "answer": 1,
+     "id": "sql.txn.5"
+    }
+   ]
+  },
+  {
+   "id": "sql.analytics",
+   "level": 5,
+   "title": "Analytics patterns: shares, cohorts, latest-per-group and gaps",
+   "lede": "A handful of query shapes answer most analytics questions. Learn them as patterns and you can adapt them to any table.",
+   "minutes": 7,
+   "phases": [
+    "monitor",
+    "data"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "-- share of total\nSELECT category, ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 1) AS pct\nFROM tickets GROUP BY category;\n\n-- latest row per group\nWITH ranked AS (\n  SELECT *, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY created_at DESC, id DESC) AS rn\n  FROM tickets WHERE customer_id IS NOT NULL)\nSELECT customer_id, id FROM ranked WHERE rn = 1;\n\n-- gap to the previous event\nSELECT id, julianday(created_at) - julianday(LAG(created_at) OVER (PARTITION BY customer_id ORDER BY created_at, id)) AS gap_days\nFROM tickets WHERE customer_id IS NOT NULL;"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "**Share of total**: `SUM(...) OVER ()` with an empty window is the grand total.",
+       "**Latest per group**: rank with `ROW_NUMBER` descending and keep `rn = 1`.",
+       "**Cohort**: find each entity's first event with `MIN(date)`, then group by that date.",
+       "**Gaps**: `LAG` the previous event, subtract."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "Which pattern keeps only the newest row for each customer?",
+      "choices": [
+       "`GROUP BY customer_id`",
+       "`ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY created_at DESC)` and keep `rn = 1`",
+       "`SELECT DISTINCT customer_id`",
+       "`LIMIT 1`"
+      ],
+      "a": 1,
+      "why": "Rank rows inside each group, newest first, then keep the first."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "sql",
+     "prompt": "For each ticket `category` show `pct`: its share of all tickets as a percentage with one decimal place.",
+     "hints": [
+      "Count tickets per category.",
+      "Divide by the grand total, which a window with an empty `OVER ()` gives you.",
+      "`ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 1)`"
+     ],
+     "diff": 3,
+     "dataset": "support",
+     "starter": "-- SUM(COUNT(*)) OVER ()\n",
+     "solution": "SELECT category, ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 1) AS pct FROM tickets GROUP BY category",
+     "ordered": false,
+     "names": true,
+     "id": "sql.analytics.1"
+    },
+    {
+     "type": "sql",
+     "prompt": "A customer's cohort is the date of their first ticket. Show `first_day` and `new_customers`: how many customers had their first ticket on that date. Ignore tickets with no customer.",
+     "hints": [
+      "Find each customer's first date in a CTE.",
+      "Then group those dates and count.",
+      "`GROUP BY first_day`"
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "dataset": "support",
+     "starter": "-- MIN(created_at) per customer, then count\n",
+     "solution": "WITH firsts AS (SELECT customer_id, MIN(created_at) AS first_day FROM tickets WHERE customer_id IS NOT NULL GROUP BY customer_id) SELECT first_day, COUNT(*) AS new_customers FROM firsts GROUP BY first_day",
+     "ordered": false,
+     "names": true,
+     "id": "sql.analytics.2"
+    },
+    {
+     "type": "sql",
+     "prompt": "Show each customer's most recent ticket: `customer_id` and `id` (latest `created_at`, ties broken by the larger `id`). Ignore tickets with no customer.",
+     "hints": [
+      "Rank each customer's tickets, newest first.",
+      "Then keep only rank 1.",
+      "You need the CTE because you cannot filter on a window function directly."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "dataset": "support",
+     "starter": "-- ROW_NUMBER ... rn = 1\n",
+     "solution": "WITH ranked AS (SELECT customer_id, id, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY created_at DESC, id DESC) AS rn FROM tickets WHERE customer_id IS NOT NULL) SELECT customer_id, id FROM ranked WHERE rn = 1",
+     "ordered": false,
+     "names": false,
+     "id": "sql.analytics.3"
+    },
+    {
+     "type": "sql",
+     "prompt": "For each ticket with a customer, show `id` and `gap_days`: the whole number of days since that **same customer's** previous ticket (NULL for their first). Order the window by `created_at`, then `id`.",
+     "hints": [
+      "`LAG(created_at)` with a partition by customer gives their previous date.",
+      "Subtract the day numbers with `julianday`.",
+      "Wrap it in `CAST(... AS INTEGER)`."
+     ],
+     "diff": 3,
+     "dataset": "support",
+     "starter": "-- LAG within PARTITION BY customer_id\n",
+     "solution": "SELECT id, CAST(julianday(created_at) - julianday(LAG(created_at) OVER (PARTITION BY customer_id ORDER BY created_at, id)) AS INTEGER) AS gap_days FROM tickets WHERE customer_id IS NOT NULL",
+     "ordered": false,
+     "names": true,
+     "id": "sql.analytics.4"
+    },
+    {
+     "type": "mcq",
+     "prompt": "What is the difference between `COUNT(*)` and `COUNT(DISTINCT customer_id)` on `tickets`?",
+     "hints": [
+      "Think of a customer with three tickets.",
+      "One counts rows, the other counts unique values.",
+      "NULL values are not counted by `COUNT(column)`."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "No difference",
+      "`COUNT(*)` counts rows, the other counts different customers (ignoring NULL)",
+      "`COUNT(*)` ignores NULL",
+      "`DISTINCT` makes the query faster"
+     ],
+     "answer": 1,
+     "id": "sql.analytics.5"
+    }
+   ]
+  },
+  {
+   "id": "sql.alerts",
+   "level": 5,
+   "title": "Alerting queries for model monitoring",
+   "lede": "A monitoring dashboard is a set of queries plus thresholds. The art is flagging real problems without waking people for noise.",
+   "minutes": 7,
+   "phases": [
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "-- accuracy drops of more than 0.3 versus the previous day\nWITH daily AS (\n  SELECT day, AVG(CASE WHEN pred_label = true_label THEN 1.0 ELSE 0.0 END) AS acc\n  FROM predictions GROUP BY day)\nSELECT day, ROUND(LAG(acc) OVER (ORDER BY day) - acc, 2) AS decline\nFROM daily\nWHERE LAG(acc) OVER (ORDER BY day) - acc > 0.3;     -- not allowed: window in WHERE!"
+     },
+     {
+      "t": "p",
+      "x": "That last query is wrong: window functions are not allowed in `WHERE`. Put the window in a CTE first, then filter in the outer query. This is the shape of every alerting query:"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "1. A CTE computes the metric per time bucket.",
+       "2. A second step compares with the previous bucket or a baseline (`LAG`, rolling average).",
+       "3. The outer query filters by the threshold."
+      ]
+     },
+     {
+      "t": "tip",
+      "x": "Compare against a **rolling baseline** rather than a fixed number when traffic is seasonal, and require the condition on two days in a row to avoid noisy alerts."
+     },
+     {
+      "t": "quick",
+      "q": "Why can't you write `WHERE LAG(x) OVER (...) > 5`?",
+      "choices": [
+       "`LAG` is slow",
+       "Window functions run after `WHERE`, so they do not exist yet at that point",
+       "`LAG` needs `GROUP BY`",
+       "It is allowed"
+      ],
+      "a": 1,
+      "why": "Compute the window in a subquery or CTE, then filter on the result."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "sql",
+     "prompt": "Find accuracy drops. Show `day` and `decline` (the previous day's accuracy minus this day's, rounded to 2 decimals) for days where the accuracy fell by **more than 0.3** compared with the previous day.",
+     "hints": [
+      "Build daily accuracy, then use `LAG` in a second CTE.",
+      "Window functions cannot be filtered directly.",
+      "Filter `WHERE decline > 0.3` in the final query."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "dataset": "ml",
+     "starter": "-- daily CTE, LAG in a second CTE, filter outside\n",
+     "solution": "WITH daily AS (SELECT day, AVG(CASE WHEN pred_label = true_label THEN 1.0 ELSE 0.0 END) AS acc FROM predictions GROUP BY day), d AS (SELECT day, LAG(acc) OVER (ORDER BY day) - acc AS decline FROM daily) SELECT day, ROUND(decline, 2) AS decline FROM d WHERE decline > 0.3",
+     "ordered": false,
+     "names": true,
+     "id": "sql.alerts.1"
+    },
+    {
+     "type": "sql",
+     "prompt": "Low-confidence share. For each `day` show `low_share`: the fraction of that day's predictions with confidence below 0.6 (2 decimals). Keep only days where it is at least 0.5.",
+     "hints": [
+      "The average of a 1/0 flag is the share.",
+      "Filter groups with `HAVING`.",
+      "Repeat the expression in `HAVING`, or use a CTE."
+     ],
+     "diff": 3,
+     "dataset": "ml",
+     "starter": "-- AVG of a flag, then HAVING\n",
+     "solution": "SELECT day, ROUND(AVG(CASE WHEN confidence < 0.6 THEN 1.0 ELSE 0.0 END), 2) AS low_share FROM predictions GROUP BY day HAVING AVG(CASE WHEN confidence < 0.6 THEN 1.0 ELSE 0.0 END) >= 0.5",
+     "ordered": false,
+     "names": true,
+     "id": "sql.alerts.2"
+    },
+    {
+     "type": "sql",
+     "prompt": "Rolling confidence per model. For each prediction show `id`, `model` and `rolling_conf`: the average confidence of the current and previous prediction **within the same model** (ordered by `id`), rounded to 2 decimals.",
+     "hints": [
+      "Partition by model so versions do not mix.",
+      "A frame of the previous row and the current row.",
+      "`ROWS BETWEEN 1 PRECEDING AND CURRENT ROW`"
+     ],
+     "diff": 3,
+     "dataset": "ml",
+     "starter": "-- frame of 2 rows, partitioned by model\n",
+     "solution": "SELECT id, model, ROUND(AVG(confidence) OVER (PARTITION BY model ORDER BY id ROWS BETWEEN 1 PRECEDING AND CURRENT ROW), 2) AS rolling_conf FROM predictions",
+     "ordered": false,
+     "names": true,
+     "id": "sql.alerts.3"
+    },
+    {
+     "type": "mcq",
+     "prompt": "An alert fires every time daily accuracy drops below a fixed 0.8, but ticket volume is tiny on weekends and accuracy swings a lot. What improves it most?",
+     "hints": [
+      "Fixed thresholds ignore normal variation.",
+      "Small samples are noisy.",
+      "Persistence and a baseline reduce false alarms."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "Lower the threshold to 0.1",
+      "Use a rolling baseline and require the drop to persist (for example two days), possibly with a minimum sample size",
+      "Alert on every prediction",
+      "Switch off monitoring"
+     ],
+     "answer": 1,
+     "id": "sql.alerts.4"
     }
    ]
   }

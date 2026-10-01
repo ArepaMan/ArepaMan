@@ -1065,6 +1065,148 @@
    ]
   },
   {
+   "id": "sh.logs",
+   "level": 4,
+   "title": "Log forensics with one-liners",
+   "lede": "When a service misbehaves at 3 a.m., the answer is in the logs. A few pipelines answer almost every question: how many, which, how slow, from whom.",
+   "minutes": 6,
+   "phases": [
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "p",
+      "x": "A web log with the fields `ip method path status milliseconds`. Tap through a typical investigation: how often does each status code appear?"
+     },
+     {
+      "t": "viz",
+      "kind": "pipe",
+      "data": {
+       "title": "Count requests by status",
+       "input": "10.0.0.1 GET /predict 200 120\n10.0.0.2 POST /predict 500 340\n10.0.0.1 GET /health 200 3\n10.0.0.3 POST /predict 200 150\n10.0.0.2 POST /predict 500 360\n10.0.0.1 GET /predict 404 8",
+       "stages": [
+        {
+         "cmd": "cat access.log",
+         "out": "10.0.0.1 GET /predict 200 120\n10.0.0.2 POST /predict 500 340\n10.0.0.1 GET /health 200 3\n10.0.0.3 POST /predict 200 150\n10.0.0.2 POST /predict 500 360\n10.0.0.1 GET /predict 404 8"
+        },
+        {
+         "cmd": "awk '{print $4}'",
+         "out": "200\n500\n200\n200\n500\n404"
+        },
+        {
+         "cmd": "sort",
+         "out": "200\n200\n200\n404\n500\n500"
+        },
+        {
+         "cmd": "uniq -c",
+         "out": "      3 200\n      1 404\n      2 500"
+        },
+        {
+         "cmd": "sort -rn",
+         "out": "      3 200\n      2 500\n      1 404"
+        }
+       ]
+      }
+     },
+     {
+      "t": "code",
+      "lang": "bash",
+      "x": "awk '$4 == 500 {s += $5; n++} END {print s / n}' access.log     # average ms of the 500s\nawk '$3 == \"/predict\" && $4 >= 500 {print $1}' access.log | sort -u   # who hit errors\nsort -k5 -nr access.log | head -3                                # 3 slowest requests\ngrep -c \" 500 \" access.log                                       # how many errors\ntail -f app.log | grep --line-buffered ERROR                     # watch live"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "Think in three steps: **select** the lines (`grep`, `awk` condition), **extract** the field (`awk '{print $n}'`, `cut`), **summarise** (`sort | uniq -c`, `awk` sums, `wc -l`).",
+       "`sort -k5 -n` sorts by the 5th field numerically. `-r` reverses.",
+       "`sort -u` is `sort | uniq`."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "Which pipeline lists each distinct IP once?",
+      "choices": [
+       "`awk '{print $1}' log | uniq`",
+       "`awk '{print $1}' log | sort -u`",
+       "`cut -d' ' -f4 log | sort`",
+       "`grep ip log`"
+      ],
+      "a": 1,
+      "why": "`uniq` only removes adjacent duplicates, so sort first. `sort -u` does both."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "Column 4 is the status code.",
+      "`uniq -c` counts each distinct code after sorting.",
+      "`sort -rn` puts the most common first."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "code": "awk '{print $4}' access.log | sort | uniq -c | sort -rn",
+     "answer": "3 200\n2 500\n1 404",
+     "lang": "bash",
+     "id": "sh.logs.1"
+    },
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "Only lines whose status is 500 are summed.",
+      "Their times are 340 and 360.",
+      "Divide the total by the count."
+     ],
+     "diff": 3,
+     "code": "awk '$4 == 500 {s += $5; n++} END {print s / n}' access.log",
+     "answer": "350",
+     "lang": "bash",
+     "id": "sh.logs.2"
+    },
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "Two conditions must both hold on a line.",
+      "Which lines are `/predict` with status 500 or more?",
+      "Both come from the same IP, and `sort -u` keeps one."
+     ],
+     "diff": 3,
+     "code": "awk '$3 == \"/predict\" && $4 >= 500 {print $1}' access.log | sort -u",
+     "answer": "10.0.0.2",
+     "lang": "bash",
+     "id": "sh.logs.3"
+    },
+    {
+     "type": "fill",
+     "prompt": "Show the two slowest requests (the fifth column is the time in ms).",
+     "hints": [
+      "Sort by the fifth field.",
+      "It must be numeric, and largest first.",
+      "`-nr`"
+     ],
+     "diff": 2,
+     "template": "sort -k5 ____ access.log | head -2",
+     "blanks": [
+      [
+       "-nr",
+       "-rn",
+       "-n -r",
+       "-r -n"
+      ]
+     ],
+     "lang": "bash",
+     "ci": false,
+     "id": "sh.logs.4"
+    }
+   ]
+  },
+  {
    "id": "sh.make",
    "level": 5,
    "title": "Makefile basics",
@@ -1269,6 +1411,147 @@
      "lang": "bash",
      "ci": false,
      "id": "sh.ci.3"
+    }
+   ]
+  },
+  {
+   "id": "sh.cron",
+   "level": 5,
+   "title": "Scheduling and background jobs",
+   "lede": "Batch scoring, backups and drift reports run on a schedule. Cron is simple and unforgiving: know its syntax and its quirks.",
+   "minutes": 6,
+   "phases": [
+    "monitor",
+    "cloud"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "bash",
+      "x": "# minute hour day-of-month month day-of-week   command\n*/15 * * * *   /srv/reviewradar/score.sh        # every 15 minutes\n30 2 * * *     /srv/reviewradar/backup.sh       # every day at 02:30\n0 3 * * 1      /srv/reviewradar/drift.sh        # Mondays at 03:00 (0 or 7 = Sunday)\n0 */6 * * *    /srv/reviewradar/report.sh       # every 6 hours, on the hour\n\ncrontab -e          # edit your schedule\ncrontab -l          # list it"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "Cron runs jobs with a **minimal environment**: a short `PATH`, no virtualenv, and your home as the working directory. Use absolute paths and `cd` in the command.",
+       "Capture output, or it vanishes: `>> /var/log/job.log 2>&1`.",
+       "A long job can overlap with its next run. Guard with `flock -n /tmp/job.lock command`.",
+       "In the shell: `cmd &` runs in the background, `jobs` lists, `wait` pauses until they finish, `nohup cmd &` survives closing the terminal, `kill PID` stops one."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "\"It works in my terminal but not in cron\" is almost always the environment: the PATH, the working directory or a missing activated virtualenv."
+     },
+     {
+      "t": "quick",
+      "q": "Which schedule runs a job every day at 02:30?",
+      "choices": [
+       "`2 30 * * *`",
+       "`30 2 * * *`",
+       "`* 2:30 * * *`",
+       "`30 2 1 * *`"
+      ],
+      "a": 1,
+      "why": "Minute comes first (30), then hour (2)."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "fill",
+     "prompt": "Complete the cron expression for \"every day at 02:30\".",
+     "hints": [
+      "The first field is the minute, the second is the hour.",
+      "02:30 means minute 30, hour 2.",
+      "`30` and `2`."
+     ],
+     "diff": 1,
+     "template": "____ ____ * * *   /srv/reviewradar/backup.sh",
+     "blanks": [
+      [
+       "30"
+      ],
+      [
+       "2"
+      ]
+     ],
+     "lang": "bash",
+     "ci": false,
+     "id": "sh.cron.1"
+    },
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "`&` starts `sleep` in the background and the script moves on.",
+      "`wait` blocks until background jobs end.",
+      "So the order of the two echo lines is fixed."
+     ],
+     "diff": 2,
+     "code": "sleep 0.1 &\necho \"started\"\nwait\necho \"finished\"",
+     "answer": "started\nfinished",
+     "lang": "bash",
+     "id": "sh.cron.2"
+    },
+    {
+     "type": "spot",
+     "prompt": "This cron job works when typed in a terminal but never produces output when scheduled. Which line is the problem?",
+     "hints": [
+      "What is the working directory and `PATH` under cron?",
+      "The script path and interpreter are relative.",
+      "Cron also throws away output unless you redirect it."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "lines": [
+      "*/5 * * * * python score.py"
+     ],
+     "bad": [
+      1
+     ],
+     "lang": "bash",
+     "fix": {
+      "q": "What is the best fix?",
+      "choices": [
+       "`*/5 * * * * cd /srv/reviewradar && /usr/bin/python3 score.py >> /var/log/score.log 2>&1`",
+       "`*/5 * * * * python score.py &`",
+       "`*/5 * * * * sudo python score.py`",
+       "`5 * * * * python score.py`"
+      ],
+      "answer": 0,
+      "why": [
+       null,
+       "`&` does nothing about the environment.",
+       "`sudo` does not fix paths and adds risk.",
+       "That changes the schedule, not the problem."
+      ]
+     },
+     "id": "sh.cron.3"
+    },
+    {
+     "type": "mcq",
+     "prompt": "Your hourly cron job sometimes takes 70 minutes, so two copies overlap and corrupt a file. What is the standard fix?",
+     "hints": [
+      "The second copy should not start while the first still runs.",
+      "A file lock enforces that.",
+      "`flock -n` exits immediately when the lock is taken."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "Run it every two minutes",
+      "Wrap it in a lock, for example `flock -n /tmp/job.lock ./job.sh`",
+      "Add `sleep 60` at the start",
+      "Run it as root"
+     ],
+     "answer": 1,
+     "id": "sh.cron.4"
     }
    ]
   }

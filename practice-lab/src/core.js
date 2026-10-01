@@ -98,7 +98,7 @@ const freshState = () => ({
   days: {}, c: {}, lv: {}, plan: null, cfg: { theme: '' }, iv: { n: 0, last: '' }, hints: {},
 });
 const Store = {
-  s: freshState(), log: [], notes: [],
+  s: freshState(), log: [], notes: [], journal: [],
   mode: 'local', status: 'loading', // mode: cloud | local ; status: ok | saving | error | loading
   note: '', _t: null, _busy: false, _dirty: {}, db: null, listeners: [],
   onChange(fn) { this.listeners.push(fn); },
@@ -106,16 +106,16 @@ const Store = {
   loadLocal() {
     try {
       const raw = localStorage.getItem(LS_KEY);
-      if (raw) { const o = JSON.parse(raw); if (o && o.s) { this.s = Object.assign(freshState(), o.s); this.log = o.log || []; this.notes = o.notes || []; } }
+      if (raw) { const o = JSON.parse(raw); if (o && o.s) { this.s = Object.assign(freshState(), o.s); this.log = o.log || []; this.notes = o.notes || []; this.journal = o.journal || []; } }
     } catch (e) { /* storage unavailable */ }
   },
   writeLocal() {
-    try { localStorage.setItem(LS_KEY, JSON.stringify({ s: this.s, log: this.log, notes: this.notes })); } catch (e) { /* ignore */ }
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ s: this.s, log: this.log, notes: this.notes, journal: this.journal })); } catch (e) { /* ignore */ }
   },
   touch(kind) {
     this.s.updated = NOW();
     this._dirty[kind || 'state'] = true;
-    if (kind === 'log' || kind === 'notes') this._dirty.state = true;
+    if (kind === 'log' || kind === 'notes' || kind === 'journal') this._dirty.state = true;
     this.writeLocal();
     clearTimeout(this._t);
     this._t = setTimeout(() => this.flush(), 1800);
@@ -132,16 +132,17 @@ const Store = {
         this.emit(); return;
       }
       this.db = db;
-      const [a, b, c] = await Promise.all([db.doc('practice/state').get(), db.doc('practice/log').get(), db.doc('practice/notes').get()]);
+      const [a, b, c, j] = await Promise.all([db.doc('practice/state').get(), db.doc('practice/log').get(), db.doc('practice/notes').get(), db.doc('practice/journal').get()]);
       const cloud = a.exists ? a.data() : null;
       if (cloud && (cloud.updated || 0) > (this.s.updated || 0)) {
         this.s = Object.assign(freshState(), JSON.parse(JSON.stringify(cloud)));
         this.log = b.exists ? (b.data().items || []).slice() : [];
         this.notes = c.exists ? (c.data().items || []).slice() : [];
+        this.journal = j.exists ? (j.data().items || []).slice() : [];
         this.writeLocal();
       } else if (this.s.updated) {
-        this._dirty = { state: true, log: true, notes: true };
-      }
+        this._dirty = { state: true, log: true, notes: true, journal: true };
+      } else if (!j.exists && this.journal.length) { this._dirty.journal = true; }
       this.mode = 'cloud'; this.status = 'ok'; this.note = 'Saved to your account.';
       this.emit();
       if (Object.keys(this._dirty).length) this.flush();
@@ -159,6 +160,7 @@ const Store = {
       if (d.state) await this.db.doc('practice/state').set(JSON.parse(JSON.stringify(this.s)));
       if (d.log) await this.db.doc('practice/log').set({ items: this.log.slice(-450) });
       if (d.notes) await this.db.doc('practice/notes').set({ items: this.notes.slice(-80) });
+      if (d.journal) await this.db.doc('practice/journal').set({ items: this.journal.slice(-300) });
       this.status = 'ok'; this.note = 'Saved to your account.';
     } catch (e) {
       console.warn('save failed', e);
@@ -168,12 +170,12 @@ const Store = {
     }
     this._busy = false; this.emit();
   },
-  exportJSON() { return JSON.stringify({ app: 'skill-radar', exportedAt: new Date(NOW()).toISOString(), state: this.s, log: this.log, notes: this.notes }, null, 1); },
+  exportJSON() { return JSON.stringify({ app: 'skill-radar', exportedAt: new Date(NOW()).toISOString(), state: this.s, log: this.log, notes: this.notes, journal: this.journal }, null, 1); },
   importJSON(txt) {
     const o = JSON.parse(txt);
     if (!o || !o.state || o.app !== 'skill-radar') throw new Error('This is not a Skill Radar backup.');
-    this.s = Object.assign(freshState(), o.state); this.log = o.log || []; this.notes = o.notes || [];
-    this._dirty = { state: true, log: true, notes: true }; this.touch('state'); this.emit();
+    this.s = Object.assign(freshState(), o.state); this.log = o.log || []; this.notes = o.notes || []; this.journal = o.journal || [];
+    this._dirty = { state: true, log: true, notes: true, journal: true }; this.touch('state'); this.emit();
   },
-  reset() { this.s = Object.assign(freshState(), { cfg: this.s.cfg }); this.log = []; this.notes = []; this._dirty = { state: true, log: true, notes: true }; this.touch('state'); this.emit(); },
+  reset() { this.s = Object.assign(freshState(), { cfg: this.s.cfg }); this.log = []; this.notes = []; this.journal = []; this._dirty = { state: true, log: true, notes: true, journal: true }; this.touch('state'); this.emit(); },
 };

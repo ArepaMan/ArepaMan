@@ -205,6 +205,11 @@ function buildPlan(extra) {
   const normal = due.filter((d) => d.b < 5);
   normal.slice(0, 3).forEach((d) => addEx('rev', d.id, pickEx(d.id, { exclude: [] })));
   if (maint.length) addEx('rev', maint[0].id, pickEx(maint[0].id), { maint: true });
+  // concepts the learner said they did not understand: re-read the lesson first
+  Object.keys(s.c).filter((cid) => s.c[cid].relearn && Cx.concepts[cid]).slice(0, 2).forEach((cid) => {
+    steps.push({ k: 'les', c: cid, done: false, relearn: true });
+    addEx('rev', cid, pickEx(cid, { exclude: [...used] }));
+  });
   // new material: python first when available, then one concept from the rotation
   const skip = []; const intro = [];
   const py = nextNew('python'); if (py) { intro.push(py); skip.push(py); }
@@ -357,5 +362,51 @@ function dueForecast(days) {
     const raw = S().c[c.id]; if (!raw || !raw.n || !raw.d) return;
     let i = diffDays(raw.d, day); if (i < 0) i = 0; if (i < days) out[i].n++;
   }));
+  return out;
+}
+
+/* ---------- "why did I miss this" journal ---------- */
+const CAUSES = [
+  { id: 'misread', label: 'Misread the question', tip: 'Before you answer, say aloud what is being asked and what type the answer is (a number? a list? a query?). Underline the key words.' },
+  { id: 'concept', label: 'Did not understand the idea', tip: 'This concept gets a lesson re-read in your next plan. Try explaining it to yourself in two sentences before more practice.' },
+  { id: 'syntax', label: 'Forgot syntax or a name', tip: 'Syntax comes back with retyping, not rereading. Retype the solution from memory once, today and again in two days.' },
+  { id: 'slip', label: 'Careless slip', tip: 'Slow down on the last check: re-read your answer against the question, and test the smallest and the empty case.' },
+  { id: 'edge', label: 'Missed an edge case', tip: 'Before submitting, list three odd inputs: empty, one item, and a repeat or tie. Walk each through your code.' },
+  { id: 'guess', label: 'Guessed', tip: 'Guessing means the idea is not there yet. Use a hint earlier, and prefer an honest "I do not know" over a lucky miss.' },
+  { id: 'rushed', label: 'Rushed', tip: 'A rushed answer is a fixable habit. Take 20 seconds to trace the code on one example before you press Check.' },
+];
+function journalAdd(eid, res, meta) {
+  const ex = Cx.exercises[eid];
+  const entry = { id: NOW() + '-' + Math.random().toString(36).slice(2, 6), t: NOW(), e: eid, c: ex.concept, r: res, a: (meta && meta.attempts) || 0, h: (meta && meta.hints) || 0, why: [], x: '' };
+  Store.journal.push(entry);
+  if (Store.journal.length > 300) Store.journal.shift();
+  Store.touch('journal');
+  return entry;
+}
+function journalSet(entry, why, text) {
+  entry.why = why.slice(); entry.x = (text || '').slice(0, 400);
+  if (why.includes('concept')) cget(entry.c).relearn = true;
+  Store.touch('journal');
+}
+function journalFixed(entry) {
+  const raw = S().c[entry.c]; const e = raw && raw.ex[entry.e];
+  return !!(e && e.r === 'ok' && e.t > entry.t);
+}
+function journalStats(days) {
+  const cut = NOW() - (days || 60) * 864e5; const items = Store.journal.filter((j) => j.t >= cut);
+  const counts = {}; CAUSES.forEach((c) => { counts[c.id] = 0; });
+  let tagged = 0; items.forEach((j) => { if (j.why.length) tagged++; j.why.forEach((w) => { if (counts[w] !== undefined) counts[w]++; }); });
+  const byConcept = {}; items.forEach((j) => { byConcept[j.c] = (byConcept[j.c] || []).concat([j]); });
+  const repeat = Object.keys(byConcept).filter((c) => byConcept[c].length >= 2).map((c) => ({ id: c, n: byConcept[c].length, fixed: byConcept[c].every(journalFixed) })).sort((a, b) => b.n - a.n);
+  const top = CAUSES.slice().sort((a, b) => counts[b.id] - counts[a.id])[0];
+  return { items, counts, tagged, repeat, top: counts[top.id] ? top : null, fixed: items.filter(journalFixed).length };
+}
+function missesWithoutReason(limit) {
+  const cut = NOW() - 14 * 864e5; const out = []; const seen = new Set();
+  for (let i = Store.log.length - 1; i >= 0 && out.length < (limit || 6); i--) {
+    const l = Store.log[i]; if (l.t < cut) break; if (l.r !== 'miss' || seen.has(l.e)) continue;
+    if (Store.journal.some((j) => j.e === l.e && Math.abs(j.t - l.t) < 36e5 * 6)) continue;
+    if (!Cx.exercises[l.e]) continue; seen.add(l.e); out.push(l);
+  }
   return out;
 }

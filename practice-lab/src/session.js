@@ -28,7 +28,7 @@ const Session = {
     if (r.i >= total) return this.summary(body);
     const s = r.steps[r.i]; const c = Cx.concepts[s.c];
     if (s.k === 'les') {
-      body.appendChild(lessonCard(c, () => { s.done = true; Store.touch('state'); r.i++; this.render(); }, { cta: 'Start practising' }));
+      body.appendChild(lessonCard(c, () => { s.done = true; if (S().c[s.c] && S().c[s.c].relearn) S().c[s.c].relearn = false; Store.touch('state'); r.i++; this.render(); }, { cta: s.relearn ? 'I have re-read it. Practise' : 'Start practising' }));
     } else {
       const ex = Cx.exercises[s.e]; const mode = s.k === 'rev' ? 'rev' : s.k === 'new' ? 'new' : s.k === 'int' ? 'int' : s.k === 'cp' ? 'cp' : 'free';
       const last = r.i === total - 1;

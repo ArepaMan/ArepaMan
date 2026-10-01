@@ -3,7 +3,7 @@ import sys, os, sqlite3, importlib
 HERE=os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0,HERE); sys.path.insert(0,os.path.join(HERE,'..','src'))
 import curriculum
 only=sys.argv[1] if len(sys.argv)>1 else ''
-for m in ['sql_l1','sql_l2','sql_l3','sql_l4','sql_l5']:
+for m in ['sql_l1','sql_l2','sql_l3','sql_l4','sql_l4b','sql_l5','sql_l5b']:
     if not os.path.exists(os.path.join(HERE,'content',m+'.py')): continue
     mod=importlib.import_module('content.'+m)
     for c in mod.CONCEPTS:

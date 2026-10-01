@@ -618,7 +618,7 @@
         "v": {
          "queue": {
           "r": "['bug', 'billing']",
-          "i": 140204397721088
+          "i": 140285906367872
          }
         },
         "o": "",
@@ -629,7 +629,7 @@
         "v": {
          "queue": {
           "r": "['bug', 'billing', 'feature']",
-          "i": 140204397721088
+          "i": 140285906367872
          }
         },
         "o": "",
@@ -640,7 +640,7 @@
         "v": {
          "queue": {
           "r": "['urgent', 'bug', 'billing', 'feature']",
-          "i": 140204397721088
+          "i": 140285906367872
          }
         },
         "o": "",
@@ -651,7 +651,7 @@
         "v": {
          "queue": {
           "r": "['urgent', 'bug', 'billing']",
-          "i": 140204397721088
+          "i": 140285906367872
          },
          "last": {
           "r": "'feature'"
@@ -665,7 +665,7 @@
         "v": {
          "queue": {
           "r": "['urgent', 'bug', 'billing']",
-          "i": 140204397721088
+          "i": 140285906367872
          },
          "last": {
           "r": "'feature'"
@@ -1464,7 +1464,7 @@
          "v": {
           "nums": {
            "r": "[1, 2, 3, 4]",
-           "i": 140204397808640
+           "i": 140285906455360
           }
          },
          "o": "",
@@ -1474,7 +1474,7 @@
          "l": 2,
          "v": {
           ".0": {
-           "r": "<list_iterator object at 0x7f83e1507640>"
+           "r": "<list_iterator object at 0x7f96db9bb7c0>"
           }
          },
          "o": "",
@@ -1487,7 +1487,7 @@
          "l": 2,
          "v": {
           ".0": {
-           "r": "<list_iterator object at 0x7f83e1507640>"
+           "r": "<list_iterator object at 0x7f96db9bb7c0>"
           },
           "n": {
            "r": "1"
@@ -1503,7 +1503,7 @@
          "l": 2,
          "v": {
           ".0": {
-           "r": "<list_iterator object at 0x7f83e1507640>"
+           "r": "<list_iterator object at 0x7f96db9bb7c0>"
           },
           "n": {
            "r": "2"
@@ -1519,7 +1519,7 @@
          "l": 2,
          "v": {
           ".0": {
-           "r": "<list_iterator object at 0x7f83e1507640>"
+           "r": "<list_iterator object at 0x7f96db9bb7c0>"
           },
           "n": {
            "r": "3"
@@ -1535,7 +1535,7 @@
          "l": 2,
          "v": {
           ".0": {
-           "r": "<list_iterator object at 0x7f83e1507640>"
+           "r": "<list_iterator object at 0x7f96db9bb7c0>"
           },
           "n": {
            "r": "4"
@@ -1551,7 +1551,7 @@
          "l": 2,
          "v": {
           ".0": {
-           "r": "<list_iterator object at 0x7f83e1507640>"
+           "r": "<list_iterator object at 0x7f96db9bb7c0>"
           },
           "n": {
            "r": "4"
@@ -1569,11 +1569,11 @@
          "v": {
           "nums": {
            "r": "[1, 2, 3, 4]",
-           "i": 140204397808640
+           "i": 140285906455360
           },
           "result": {
            "r": "[4, 16]",
-           "i": 140204397809152
+           "i": 140285906455872
           }
          },
          "o": "",
@@ -1584,11 +1584,11 @@
          "v": {
           "nums": {
            "r": "[1, 2, 3, 4]",
-           "i": 140204397808640
+           "i": 140285906455360
           },
           "result": {
            "r": "[4, 16]",
-           "i": 140204397809152
+           "i": 140285906455872
           }
          },
          "o": "[4, 16]\n",
@@ -2027,8 +2027,8 @@
          "l": 3,
          "v": {
           "self": {
-           "r": "<__main__.Counter object at 0x7f83e1548150>",
-           "i": 140204397855056
+           "r": "<__main__.Counter object at 0x7f96dba00090>",
+           "i": 140285906518160
           }
          },
          "o": "",
@@ -2041,8 +2041,8 @@
          "l": 3,
          "v": {
           "self": {
-           "r": "<__main__.Counter object at 0x7f83e1548150>",
-           "i": 140204397855056
+           "r": "<__main__.Counter object at 0x7f96dba00090>",
+           "i": 140285906518160
           }
          },
          "o": "",
@@ -2056,8 +2056,8 @@
          "l": 8,
          "v": {
           "a": {
-           "r": "<__main__.Counter object at 0x7f83e1548150>",
-           "i": 140204397855056
+           "r": "<__main__.Counter object at 0x7f96dba00090>",
+           "i": 140285906518160
           }
          },
          "o": "",
@@ -2067,8 +2067,8 @@
          "l": 3,
          "v": {
           "self": {
-           "r": "<__main__.Counter object at 0x7f83e1548050>",
-           "i": 140204397854800
+           "r": "<__main__.Counter object at 0x7f96db9f3f50>",
+           "i": 140285906468688
           }
          },
          "o": "",
@@ -2081,8 +2081,8 @@
          "l": 3,
          "v": {
           "self": {
-           "r": "<__main__.Counter object at 0x7f83e1548050>",
-           "i": 140204397854800
+           "r": "<__main__.Counter object at 0x7f96db9f3f50>",
+           "i": 140285906468688
           }
          },
          "o": "",
@@ -2096,12 +2096,12 @@
          "l": 9,
          "v": {
           "a": {
-           "r": "<__main__.Counter object at 0x7f83e1548150>",
-           "i": 140204397855056
+           "r": "<__main__.Counter object at 0x7f96dba00090>",
+           "i": 140285906518160
           },
           "b": {
-           "r": "<__main__.Counter object at 0x7f83e1548050>",
-           "i": 140204397854800
+           "r": "<__main__.Counter object at 0x7f96db9f3f50>",
+           "i": 140285906468688
           }
          },
          "o": "",
@@ -2111,8 +2111,8 @@
          "l": 5,
          "v": {
           "self": {
-           "r": "<__main__.Counter object at 0x7f83e1548150>",
-           "i": 140204397855056
+           "r": "<__main__.Counter object at 0x7f96dba00090>",
+           "i": 140285906518160
           }
          },
          "o": "",
@@ -2125,8 +2125,8 @@
          "l": 5,
          "v": {
           "self": {
-           "r": "<__main__.Counter object at 0x7f83e1548150>",
-           "i": 140204397855056
+           "r": "<__main__.Counter object at 0x7f96dba00090>",
+           "i": 140285906518160
           }
          },
          "o": "",
@@ -2140,12 +2140,12 @@
          "l": 10,
          "v": {
           "a": {
-           "r": "<__main__.Counter object at 0x7f83e1548150>",
-           "i": 140204397855056
+           "r": "<__main__.Counter object at 0x7f96dba00090>",
+           "i": 140285906518160
           },
           "b": {
-           "r": "<__main__.Counter object at 0x7f83e1548050>",
-           "i": 140204397854800
+           "r": "<__main__.Counter object at 0x7f96db9f3f50>",
+           "i": 140285906468688
           }
          },
          "o": "",
@@ -2155,8 +2155,8 @@
          "l": 5,
          "v": {
           "self": {
-           "r": "<__main__.Counter object at 0x7f83e1548150>",
-           "i": 140204397855056
+           "r": "<__main__.Counter object at 0x7f96dba00090>",
+           "i": 140285906518160
           }
          },
          "o": "",
@@ -2169,8 +2169,8 @@
          "l": 5,
          "v": {
           "self": {
-           "r": "<__main__.Counter object at 0x7f83e1548150>",
-           "i": 140204397855056
+           "r": "<__main__.Counter object at 0x7f96dba00090>",
+           "i": 140285906518160
           }
          },
          "o": "",
@@ -2184,12 +2184,12 @@
          "l": 11,
          "v": {
           "a": {
-           "r": "<__main__.Counter object at 0x7f83e1548150>",
-           "i": 140204397855056
+           "r": "<__main__.Counter object at 0x7f96dba00090>",
+           "i": 140285906518160
           },
           "b": {
-           "r": "<__main__.Counter object at 0x7f83e1548050>",
-           "i": 140204397854800
+           "r": "<__main__.Counter object at 0x7f96db9f3f50>",
+           "i": 140285906468688
           }
          },
          "o": "",
@@ -2199,12 +2199,12 @@
          "l": 0,
          "v": {
           "a": {
-           "r": "<__main__.Counter object at 0x7f83e1548150>",
-           "i": 140204397855056
+           "r": "<__main__.Counter object at 0x7f96dba00090>",
+           "i": 140285906518160
           },
           "b": {
-           "r": "<__main__.Counter object at 0x7f83e1548050>",
-           "i": 140204397854800
+           "r": "<__main__.Counter object at 0x7f96db9f3f50>",
+           "i": 140285906468688
           }
          },
          "o": "2 0\n",
@@ -2448,7 +2448,7 @@
          "v": {
           "a": {
            "r": "[1, 2]",
-           "i": 140204397862528
+           "i": 140285906525632
           }
          },
          "o": "",
@@ -2459,11 +2459,11 @@
          "v": {
           "a": {
            "r": "[1, 2]",
-           "i": 140204397862528
+           "i": 140285906525632
           },
           "b": {
            "r": "[1, 2]",
-           "i": 140204397862528
+           "i": 140285906525632
           }
          },
          "o": "",
@@ -2474,11 +2474,11 @@
          "v": {
           "a": {
            "r": "[1, 2, 3]",
-           "i": 140204397862528
+           "i": 140285906525632
           },
           "b": {
            "r": "[1, 2, 3]",
-           "i": 140204397862528
+           "i": 140285906525632
           }
          },
          "o": "",
@@ -2489,15 +2489,15 @@
          "v": {
           "a": {
            "r": "[1, 2, 3]",
-           "i": 140204397862528
+           "i": 140285906525632
           },
           "b": {
            "r": "[1, 2, 3]",
-           "i": 140204397862528
+           "i": 140285906525632
           },
           "c": {
            "r": "[1, 2, 3]",
-           "i": 140204397862656
+           "i": 140285906525760
           }
          },
          "o": "",
@@ -2508,15 +2508,15 @@
          "v": {
           "a": {
            "r": "[1, 2, 3]",
-           "i": 140204397862528
+           "i": 140285906525632
           },
           "b": {
            "r": "[1, 2, 3]",
-           "i": 140204397862528
+           "i": 140285906525632
           },
           "c": {
            "r": "[1, 2, 3, 4]",
-           "i": 140204397862656
+           "i": 140285906525760
           }
          },
          "o": "",
@@ -2527,15 +2527,15 @@
          "v": {
           "a": {
            "r": "[1, 2, 3]",
-           "i": 140204397862528
+           "i": 140285906525632
           },
           "b": {
            "r": "[1, 2, 3]",
-           "i": 140204397862528
+           "i": 140285906525632
           },
           "c": {
            "r": "[1, 2, 3, 4]",
-           "i": 140204397862656
+           "i": 140285906525760
           }
          },
          "o": "[1, 2, 3] [1, 2, 3] [1, 2, 3, 4]\n",
@@ -2602,7 +2602,7 @@
         "v": {
          "a": {
           "r": "[1, 2]",
-          "i": 140204397866176
+          "i": 140285906529280
          }
         },
         "o": "",
@@ -2613,11 +2613,11 @@
         "v": {
          "a": {
           "r": "[1, 2]",
-          "i": 140204397866176
+          "i": 140285906529280
          },
          "b": {
           "r": "[1, 2]",
-          "i": 140204397866176
+          "i": 140285906529280
          }
         },
         "o": "",
@@ -2628,11 +2628,11 @@
         "v": {
          "a": {
           "r": "[1, 2, 3]",
-          "i": 140204397866176
+          "i": 140285906529280
          },
          "b": {
           "r": "[1, 2, 3]",
-          "i": 140204397866176
+          "i": 140285906529280
          }
         },
         "o": "",
@@ -2643,15 +2643,15 @@
         "v": {
          "a": {
           "r": "[1, 2, 3]",
-          "i": 140204397866176
+          "i": 140285906529280
          },
          "b": {
           "r": "[1, 2, 3]",
-          "i": 140204397866176
+          "i": 140285906529280
          },
          "c": {
           "r": "[1, 2, 3]",
-          "i": 140204397866560
+          "i": 140285906529664
          }
         },
         "o": "",
@@ -2662,15 +2662,15 @@
         "v": {
          "a": {
           "r": "[1, 2, 3]",
-          "i": 140204397866176
+          "i": 140285906529280
          },
          "b": {
           "r": "[1, 2, 3]",
-          "i": 140204397866176
+          "i": 140285906529280
          },
          "c": {
           "r": "[1, 2, 3, 4]",
-          "i": 140204397866560
+          "i": 140285906529664
          }
         },
         "o": "",
@@ -2681,15 +2681,15 @@
         "v": {
          "a": {
           "r": "[1, 2, 3]",
-          "i": 140204397866176
+          "i": 140285906529280
          },
          "b": {
           "r": "[1, 2, 3]",
-          "i": 140204397866176
+          "i": 140285906529280
          },
          "c": {
           "r": "[1, 2, 3, 4]",
-          "i": 140204397866560
+          "i": 140285906529664
          }
         },
         "o": "[1, 2, 3] [1, 2, 3] [1, 2, 3, 4]\n",
@@ -2835,7 +2835,7 @@
           "main",
           "make_counter()"
          ],
-         "n": "returns <function make_counter.<locals>.inc at 0x7f83e1513380>"
+         "n": "returns <function make_counter.<locals>.inc at 0x7f96db9cb2e0>"
         },
         {
          "l": 10,
@@ -3093,7 +3093,7 @@
          "main",
          "make_counter()"
         ],
-        "n": "returns <function make_counter.<locals>.inc at 0x7f83e15136a0>"
+        "n": "returns <function make_counter.<locals>.inc at 0x7f96db9cb600>"
        },
        {
         "l": 10,
@@ -3400,7 +3400,7 @@
          "l": 8,
          "v": {
           "g": {
-           "r": "<generator object count_up at 0x7f83e1973ac0>"
+           "r": "<generator object count_up at 0x7f96dbe1bb90>"
           }
          },
          "o": "",
@@ -3472,7 +3472,7 @@
          "l": 9,
          "v": {
           "g": {
-           "r": "<generator object count_up at 0x7f83e1973ac0>"
+           "r": "<generator object count_up at 0x7f96dbe1bb90>"
           }
          },
          "o": "1\n",
@@ -3547,7 +3547,7 @@
          "l": 0,
          "v": {
           "g": {
-           "r": "<generator object count_up at 0x7f83e1973ac0>"
+           "r": "<generator object count_up at 0x7f96dbe1bb90>"
           }
          },
          "o": "1\n2\n",
@@ -5543,6 +5543,464 @@
    ]
   },
   {
+   "id": "py.numpy4",
+   "level": 4,
+   "title": "NumPy: norms, sorting and vector similarity",
+   "lede": "Embeddings are just vectors. Comparing them, normalising them and picking the top matches is a handful of NumPy moves.",
+   "minutes": 5,
+   "phases": [
+    "data",
+    "deep"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "python",
+      "x": "import numpy as np\na = np.array([3, 4])\nnp.linalg.norm(a)                 # 5.0   the length of the vector\nnp.argsort([30, 10, 20])          # [1 2 0]  positions that would sort the values (smallest first)\nnp.argsort([30, 10, 20])[::-1][:2]   # [0 2]  positions of the 2 largest\n\nu = a / np.linalg.norm(a)         # a unit vector, length 1\nnp.dot(u, u)                      # 1.0\n# cosine similarity of x and y = dot(x, y) / (|x| |y|) = dot of their unit vectors"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`argsort` returns **positions**, not values. Reverse it for \"largest first\" and slice `[:k]` for top-k.",
+       "Normalise vectors once, then similarity is a plain dot product, and a whole matrix of similarities is one `Q @ D.T`.",
+       "Seed randomness (`np.random.default_rng(42)`) so splits, shuffles and weight initialisations repeat exactly."
+      ]
+     },
+     {
+      "t": "tip",
+      "x": "Top-k with full sorting costs O(n log n). For huge arrays `np.argpartition` finds the top-k faster, and vector databases use approximate indexes instead."
+     },
+     {
+      "t": "quick",
+      "q": "`np.argsort([30, 10, 20])` returns:",
+      "choices": [
+       "`[10 20 30]`",
+       "`[1 2 0]`",
+       "`[0 2 1]`",
+       "`[2 1 0]`"
+      ],
+      "a": 1,
+      "why": "Position 1 holds the smallest (10), then position 2 (20), then position 0 (30)."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "The length of the vector (3, 4) is the hypotenuse of a 3-4-5 triangle.",
+      "`argsort` gives positions that would sort the values ascending.",
+      "Reverse it, then take the first two positions."
+     ],
+     "diff": 3,
+     "code": "import numpy as np\na = np.array([3, 4])\nprint(np.linalg.norm(a), np.argsort([30, 10, 20]), np.argsort([30, 10, 20])[::-1][:2])",
+     "answer": "5.0 [1 2 0] [0 2]",
+     "lang": "python",
+     "id": "py.numpy4.1"
+    },
+    {
+     "type": "code",
+     "prompt": "Without NumPy: write `top_k(scores, k)` returning the indexes of the `k` largest scores, best first. If two scores tie, the lower index comes first.",
+     "hints": [
+      "Sort the **indexes**, not the values.",
+      "Sort by descending score, then by index to break ties.",
+      "`sorted(range(len(scores)), key=lambda i: (-scores[i], i))[:k]`"
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "starter": "def top_k(scores, k):\n    pass\n",
+     "solution": "def top_k(scores, k):\n    return sorted(range(len(scores)), key=lambda i: (-scores[i], i))[:k]\n",
+     "tests": "t(\"top_k([0.1, 0.9, 0.5], 2)\", [1, 2])\nt(\"top_k([3, 3, 1], 2)\", [0, 1])\nt(\"top_k([5], 3)\", [0])\nt(\"top_k([], 2)\", [])",
+     "id": "py.numpy4.2"
+    },
+    {
+     "type": "code",
+     "prompt": "Without NumPy: write `unit(v)` that scales a list of numbers to length 1 (divide each by the vector's length). Return the vector unchanged if its length is 0.",
+     "hints": [
+      "The length is the square root of the sum of squares.",
+      "Divide every element by it.",
+      "Guard against dividing by zero."
+     ],
+     "diff": 2,
+     "starter": "def unit(v):\n    pass\n",
+     "solution": "def unit(v):\n    n = sum(x * x for x in v) ** 0.5\n    return [x / n for x in v] if n else list(v)\n",
+     "tests": "t(\"unit([3, 4])\", [0.6, 0.8])\nt(\"unit([0, 0])\", [0, 0])\nt(\"[round(x, 6) for x in unit([1, 2, 3])]\", [0.267261, 0.534522, 0.801784])\nt(\"round(sum(x * x for x in unit([5, 12])), 9)\", 1.0)",
+     "id": "py.numpy4.3"
+    },
+    {
+     "type": "mcq",
+     "prompt": "Why do ML code bases set a random seed such as `np.random.default_rng(42)`?",
+     "hints": [
+      "Think about re-running an experiment next week.",
+      "Without a seed every run draws different numbers.",
+      "Repeatability is the point."
+     ],
+     "diff": 1,
+     "choices": [
+      "It makes random numbers more random",
+      "It makes splits, shuffles and initialisations repeat exactly, so results can be compared and debugged",
+      "It speeds up NumPy",
+      "It is required for `argsort`"
+     ],
+     "answer": 1,
+     "id": "py.numpy4.4"
+    }
+   ]
+  },
+  {
+   "id": "py.pandas3",
+   "level": 4,
+   "title": "Pandas: cleaning text and working with dates",
+   "lede": "Real ticket data is messy: inconsistent case, stray spaces, duplicates and dates stored as strings. Cleaning it well is half of a baseline.",
+   "minutes": 6,
+   "phases": [
+    "data"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "python",
+      "x": "import pandas as pd\ns = pd.Series([\"  Refund \", \"refund\", \"Login BUG\"])\nclean = s.str.strip().str.lower()        # vectorised string methods: no loop\nclean.nunique()                           # 2 distinct values\nclean.duplicated().tolist()              # [False, True, False]\ndf = df.drop_duplicates(subset=\"text\")    # keep the first of each repeated text\n\nd = pd.to_datetime(df[\"created\"])         # strings -> real datetimes\nd.dt.dayofweek                            # 0 = Monday\ndf.set_index(\"created\").resample(\"D\").size()   # tickets per day (index must be a datetime)"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "The `.str` accessor applies a string method to every element: `.str.contains(\"error\")`, `.str.replace(...)`, `.str.len()`.",
+       "`pd.to_datetime` parses strings. After that `.dt` gives `.year`, `.month`, `.dayofweek`, `.date`.",
+       "`resample` needs a datetime **index**. It groups rows into time buckets (day, week, month) like a GROUP BY on dates.",
+       "Prefer vectorised methods to `.apply(lambda ...)`; they are much faster on big columns."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "Always clean text the same way in training and in production (strip, lower, normalise whitespace). A mismatch silently lowers accuracy."
+     },
+     {
+      "t": "quick",
+      "q": "You want tickets per day from a DataFrame with a `created` datetime column. What do you need before `.resample(\"D\")`?",
+      "choices": [
+       "Nothing",
+       "`set_index(\"created\")` so the dates are the index",
+       "`sort_values(\"id\")`",
+       "`dropna()`"
+      ],
+      "a": 1,
+      "why": "`resample` works on a datetime index."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "Cleaning makes the first two values identical.",
+      "`nunique` counts distinct values.",
+      "`duplicated` is True for repeats after the first."
+     ],
+     "diff": 3,
+     "code": "import pandas as pd\ns = pd.Series([\"  Refund \", \"refund\", \"Login BUG\"])\nclean = s.str.strip().str.lower()\nprint(clean.tolist(), clean.nunique(), clean.duplicated().tolist())",
+     "answer": "['refund', 'refund', 'login bug'] 2 [False, True, False]",
+     "lang": "python",
+     "id": "py.pandas3.1"
+    },
+    {
+     "type": "predict",
+     "prompt": "What does this print? (Monday is 0.)",
+     "hints": [
+      "Subtracting dates gives a timedelta.",
+      "September 1st, 2026 is a Tuesday.",
+      "Tuesday is 1 and Thursday is 3."
+     ],
+     "diff": 3,
+     "code": "import pandas as pd\nd = pd.to_datetime([\"2026-09-01\", \"2026-09-03\"])\nprint((d[1] - d[0]).days, pd.Series(d).dt.dayofweek.tolist())",
+     "answer": "2 [1, 3]",
+     "lang": "python",
+     "id": "py.pandas3.2"
+    },
+    {
+     "type": "code",
+     "prompt": "Without pandas: write `clean_text(s)` that strips outer spaces, lower-cases and collapses runs of spaces into one. Then `dedupe(texts)` that returns the cleaned texts with duplicates removed, keeping the first occurrence order.",
+     "hints": [
+      "`split()` with no argument also removes extra spaces.",
+      "Join the words back with a single space.",
+      "A set tracks what you have already seen; a list keeps the order."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "starter": "def clean_text(s):\n    pass\n\ndef dedupe(texts):\n    pass\n",
+     "solution": "def clean_text(s):\n    return \" \".join(s.lower().split())\n\ndef dedupe(texts):\n    seen = set()\n    out = []\n    for t in texts:\n        c = clean_text(t)\n        if c not in seen:\n            seen.add(c)\n            out.append(c)\n    return out\n",
+     "tests": "t(\"clean_text('  Refund   REQUEST ')\", \"refund request\")\nt(\"clean_text('ok')\", \"ok\")\nt(\"dedupe(['Refund', ' refund ', 'Login  bug', 'REFUND'])\", [\"refund\", \"login bug\"])\nt(\"dedupe([])\", [])",
+     "id": "py.pandas3.3"
+    },
+    {
+     "type": "spot",
+     "prompt": "This code should count tickets per day but raises `TypeError: Only valid with DatetimeIndex`. Which line is the problem?",
+     "hints": [
+      "`resample` needs dates as the index.",
+      "The dates are in a column, not the index.",
+      "Set the index first."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "lines": [
+      "df = pd.read_csv(\"tickets.csv\")",
+      "df[\"created\"] = pd.to_datetime(df[\"created\"])",
+      "daily = df.resample(\"D\").size()"
+     ],
+     "bad": [
+      3
+     ],
+     "lang": "python",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "`daily = df.set_index(\"created\").resample(\"D\").size()`",
+       "`daily = df.resample(\"created\").size()`",
+       "`daily = df.groupby(\"D\").size()`",
+       "Convert `created` back to strings"
+      ],
+      "answer": 0
+     },
+     "id": "py.pandas3.4"
+    }
+   ]
+  },
+  {
+   "id": "py.sklearn2",
+   "level": 4,
+   "title": "Model selection: cross-validation, imbalance and macro metrics",
+   "lede": "One train/test split is a noisy estimate. Cross-validation averages several splits, class weights help rare categories, and macro metrics keep rare classes from hiding.",
+   "minutes": 6,
+   "phases": [
+    "data"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "python",
+      "x": "from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV\nfrom sklearn.linear_model import LogisticRegression\n\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.2, stratify=y, random_state=42)   # keep class proportions\n\nmodel = LogisticRegression(class_weight=\"balanced\", max_iter=1000)\ncross_val_score(model, X_train, y_train, cv=5, scoring=\"f1_macro\")   # 5 scores, one per fold\n\ngrid = GridSearchCV(model, {\"C\": [0.1, 1, 10]}, cv=5, scoring=\"f1_macro\")\ngrid.fit(X_train, y_train)         # tune on TRAIN only\ngrid.score(X_test, y_test)         # the test set is used once, at the very end"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`stratify=y` keeps the proportion of each class in both splits. Essential when some categories are rare.",
+       "`class_weight=\"balanced\"` makes rare classes count more during training.",
+       "**Macro** F1 averages the per-class F1 equally, so a tiny class matters as much as a huge one. **Micro** pools all predictions and is dominated by big classes.",
+       "Tune with cross-validation on the training data. The test set is touched once."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "If you tune hyperparameters by looking at the test set, it is no longer a test set. Your final score is optimistic."
+     },
+     {
+      "t": "quick",
+      "q": "A ticket category has only 2% of the data. Which setting helps the split keep it in both train and test?",
+      "choices": [
+       "`shuffle=False`",
+       "`stratify=y`",
+       "`test_size=0.5`",
+       "`random_state=None`"
+      ],
+      "a": 1,
+      "why": "Stratifying preserves class proportions in each split."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "code",
+     "prompt": "Without scikit-learn: write `macro_f1(y_true, y_pred)` for any labels. Compute precision, recall and F1 for each class that appears in either list (F1 is 0 when precision plus recall is 0), then return the plain average of the per-class F1 scores.",
+     "hints": [
+      "Treat each class as the positive class in turn.",
+      "Per class: tp, fp, fn, then precision, recall, F1.",
+      "Average the F1 values, giving every class equal weight."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "starter": "def macro_f1(y_true, y_pred):\n    pass\n",
+     "solution": "def macro_f1(y_true, y_pred):\n    classes = sorted(set(y_true) | set(y_pred))\n    scores = []\n    for c in classes:\n        tp = sum(1 for t, p in zip(y_true, y_pred) if t == c and p == c)\n        fp = sum(1 for t, p in zip(y_true, y_pred) if t != c and p == c)\n        fn = sum(1 for t, p in zip(y_true, y_pred) if t == c and p != c)\n        prec = tp / (tp + fp) if tp + fp else 0.0\n        rec = tp / (tp + fn) if tp + fn else 0.0\n        scores.append(2 * prec * rec / (prec + rec) if prec + rec else 0.0)\n    return sum(scores) / len(scores)\n",
+     "tests": "t(\"round(macro_f1(['bug', 'bill', 'bug', 'feat', 'bill', 'bug'], ['bug', 'bug', 'bug', 'feat', 'bill', 'feat']), 6)\", 0.666667)\nt(\"macro_f1(['a', 'a', 'b', 'b', 'c', 'c'], ['a', 'a', 'b', 'b', 'c', 'c'])\", 1.0)\nt(\"round(macro_f1(['a', 'b', 'c', 'a'], ['b', 'b', 'c', 'a']), 6)\", 0.777778)",
+     "id": "py.sklearn2.1"
+    },
+    {
+     "type": "spot",
+     "prompt": "The team reports a surprisingly high final score. Which line is the problem?",
+     "hints": [
+      "Which data is the search allowed to learn from?",
+      "The test set must stay unseen until the end.",
+      "Line 3 tunes on the test data."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "lines": [
+      "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)",
+      "grid = GridSearchCV(model, {\"C\": [0.1, 1, 10]}, cv=5)",
+      "grid.fit(X_test, y_test)",
+      "print(grid.score(X_test, y_test))"
+     ],
+     "bad": [
+      3
+     ],
+     "lang": "python",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "Fit the search on `X_train, y_train`, and score on the test set once at the end",
+       "Use a bigger test set",
+       "Remove `cv=5`",
+       "Score on the training data instead"
+      ],
+      "answer": 0
+     },
+     "id": "py.sklearn2.2"
+    },
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "`test_size=0.3` of 10 items.",
+      "30% is 3 items.",
+      "The rest is training data."
+     ],
+     "diff": 2,
+     "code": "from sklearn.model_selection import train_test_split\ntrain, test = train_test_split(list(range(10)), test_size=0.3, random_state=0)\nprint(len(train), len(test))",
+     "answer": "7 3",
+     "lang": "python",
+     "id": "py.sklearn2.3"
+    },
+    {
+     "type": "fill",
+     "prompt": "Make a model pay more attention to rare classes.",
+     "hints": [
+      "There is a ready-made option named after the goal.",
+      "It weights classes inversely to their frequency.",
+      "`balanced`"
+     ],
+     "diff": 1,
+     "template": "model = LogisticRegression(class_weight=\"____\", max_iter=1000)",
+     "blanks": [
+      [
+       "balanced"
+      ]
+     ],
+     "lang": "python",
+     "ci": false,
+     "id": "py.sklearn2.4"
+    }
+   ]
+  },
+  {
+   "id": "py.stats2",
+   "level": 4,
+   "title": "Drift statistics: PSI and alert maths",
+   "lede": "Models degrade when live data stops looking like training data. A few small statistics turn that worry into a number you can alert on.",
+   "minutes": 7,
+   "phases": [
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "p",
+      "x": "The **Population Stability Index (PSI)** compares how data is spread across bins in two periods. For each bin with share `e` (expected, from training) and `a` (actual, live):"
+     },
+     {
+      "t": "code",
+      "lang": "text",
+      "x": "PSI = sum over bins of (a - e) * ln(a / e)\n\nPSI < 0.1       stable\n0.1 to 0.25     moderate shift, investigate\n> 0.25          major shift, act"
+     },
+     {
+      "t": "code",
+      "lang": "python",
+      "x": "# shares per bin: training said 50% / 30% / 20%, live traffic shows 30% / 30% / 40%\nexpected = [0.5, 0.3, 0.2]\nactual   = [0.3, 0.3, 0.4]\n# PSI ~ 0.24: a meaningful shift"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "Use PSI on a feature (message length, language) or on the model's score distribution.",
+       "A **z-score alert** compares today's value with the recent mean and standard deviation: `abs(x - mean) / std`.",
+       "Track shifts in inputs (data drift) and in the relationship between inputs and labels (concept drift). The first is visible immediately, the second needs labels."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "PSI between training and live data is 0.4. What does that mean?",
+      "choices": [
+       "Everything is fine",
+       "A major distribution shift: investigate",
+       "The model is 40% accurate",
+       "The data is mislabeled"
+      ],
+      "a": 1,
+      "why": "Above 0.25 is conventionally a major shift."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "code",
+     "prompt": "Write `bin_shares(values, edges)` that counts how many values fall in each bin and returns the shares (each count divided by the total). Bins are `[edges[0], edges[1])`, `[edges[1], edges[2])`, ... and the last bin includes its upper edge. Ignore values outside the edges.",
+     "hints": [
+      "Make one counter per bin.",
+      "A value belongs to the first bin where `edges[i] <= v < edges[i+1]`.",
+      "The final bin also accepts the very last edge."
+     ],
+     "diff": 3,
+     "starter": "def bin_shares(values, edges):\n    pass\n",
+     "solution": "def bin_shares(values, edges):\n    counts = [0] * (len(edges) - 1)\n    for v in values:\n        for i in range(len(edges) - 1):\n            last = i == len(edges) - 2\n            if edges[i] <= v < edges[i + 1] or (last and v == edges[i + 1]):\n                counts[i] += 1\n                break\n    total = sum(counts)\n    return [c / total for c in counts] if total else counts\n",
+     "tests": "t(\"bin_shares([1, 2, 5, 6, 9, 10], [0, 5, 10])\", [1 / 3, 2 / 3])\nt(\"bin_shares([0, 4, 5, 10, 11, -1], [0, 5, 10])\", [0.5, 0.5])\nt(\"bin_shares([1, 2, 3], [0, 10])\", [1.0])\nt(\"bin_shares([], [0, 5, 10])\", [0, 0])",
+     "id": "py.stats2.1"
+    },
+    {
+     "type": "code",
+     "prompt": "Write `psi(expected, actual)` for two lists of bin shares: the sum of `(a - e) * ln(a / e)`. Skip any bin where either share is 0.",
+     "hints": [
+      "Apply the formula to each pair of bins, then add them up.",
+      "`math.log` is the natural logarithm.",
+      "A bin with a zero share has no usable ratio, so skip it."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "starter": "import math\n\ndef psi(expected, actual):\n    pass\n",
+     "solution": "import math\n\ndef psi(expected, actual):\n    return sum((a - e) * math.log(a / e) for e, a in zip(expected, actual) if e > 0 and a > 0)\n",
+     "tests": "t(\"psi([0.5, 0.3, 0.2], [0.5, 0.3, 0.2])\", 0.0)\nt(\"round(psi([0.5, 0.3, 0.2], [0.3, 0.3, 0.4]), 6)\", 0.240795)\nt(\"round(psi([0.25, 0.25, 0.25, 0.25], [0.4, 0.3, 0.2, 0.1]), 6)\", 0.228217)",
+     "id": "py.stats2.2"
+    },
+    {
+     "type": "code",
+     "prompt": "Write `zscore_alerts(xs, window, threshold)` returning the indexes `i` (starting at `i = window`) where `abs(x - mean) / std` of the previous `window` values exceeds `threshold`. Use the population standard deviation. If the window's standard deviation is 0, flag the point only when it differs from the mean.",
+     "hints": [
+      "For each position, look at the `window` values just before it.",
+      "Compute their mean and population standard deviation.",
+      "Handle `std == 0` separately, as the statement says."
+     ],
+     "diff": 3,
+     "starter": "def zscore_alerts(xs, window, threshold):\n    pass\n",
+     "solution": "def zscore_alerts(xs, window, threshold):\n    out = []\n    for i in range(window, len(xs)):\n        w = xs[i - window:i]\n        mean = sum(w) / window\n        std = (sum((x - mean) ** 2 for x in w) / window) ** 0.5\n        if std == 0:\n            if xs[i] != mean:\n                out.append(i)\n        elif abs(xs[i] - mean) / std > threshold:\n            out.append(i)\n    return out\n",
+     "tests": "t(\"zscore_alerts([10, 10, 10, 10, 10, 50, 10], 5, 3)\", [5])\nt(\"zscore_alerts([1, 2, 3, 4, 5, 6, 7, 8], 3, 3)\", [])\nt(\"zscore_alerts([1, 2, 3, 4, 5, 6, 7, 8], 3, 2)\", [3, 4, 5, 6, 7])\nt(\"zscore_alerts([5, 5], 3, 2)\", [])",
+     "id": "py.stats2.3"
+    }
+   ]
+  },
+  {
    "id": "py.torch1",
    "level": 5,
    "title": "PyTorch tensors and shapes",
@@ -6386,6 +6844,510 @@
      "solution": "def conv_params(k, c_in, c_out):\n    return k * k * c_in * c_out + c_out\n",
      "tests": "t(\"conv_params(3, 1, 16)\", 160)\nt(\"conv_params(3, 16, 32)\", 4640)\nt(\"conv_params(1, 64, 10)\", 650)",
      "id": "py.tf.3"
+    }
+   ]
+  },
+  {
+   "id": "py.torch4",
+   "level": 5,
+   "title": "Datasets, DataLoaders and batching",
+   "lede": "A DataLoader turns a pile of examples into shuffled batches of equal shape. Getting batching and padding right avoids both bugs and slow training.",
+   "minutes": 6,
+   "phases": [
+    "deep"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "python",
+      "x": "from torch.utils.data import Dataset, DataLoader\n\nclass TicketDataset(Dataset):\n    def __init__(self, texts, labels):\n        self.texts, self.labels = texts, labels\n    def __len__(self):                 # how many examples\n        return len(self.texts)\n    def __getitem__(self, i):          # one example by index\n        return self.texts[i], self.labels[i]\n\ntrain_loader = DataLoader(TicketDataset(X_train, y_train),\n                          batch_size=32, shuffle=True, collate_fn=collate)\nval_loader = DataLoader(TicketDataset(X_val, y_val), batch_size=64)   # no shuffle needed"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "A `Dataset` needs `__len__` and `__getitem__`. A `DataLoader` handles batching, shuffling and parallel loading.",
+       "`shuffle=True` for training only. `drop_last=True` discards a final smaller batch (useful with batch norm).",
+       "`collate_fn` builds one batch from a list of examples. For text it pads sequences to the longest in the batch and builds the attention mask.",
+       "Sorting by length into buckets (**length bucketing**) cuts wasted padding and speeds up training."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "Do not shuffle the validation set for any reason other than convenience, and never fit preprocessing (tokenizer vocabulary, scalers) on validation or test data."
+     },
+     {
+      "t": "quick",
+      "q": "10 examples, `batch_size=4`, `drop_last=False`. How many batches does the loader produce?",
+      "choices": [
+       "2",
+       "3",
+       "4",
+       "10"
+      ],
+      "a": 1,
+      "why": "4 + 4 + 2: three batches, the last one smaller."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "code",
+     "prompt": "Write a generator `batches(items, size, drop_last=False)` that yields consecutive lists of `size` items. When `drop_last` is true, skip a final shorter batch.",
+     "hints": [
+      "Step through the list in jumps of `size`.",
+      "Slice `items[i:i + size]` for each batch.",
+      "If `drop_last` and the slice is short, stop."
+     ],
+     "diff": 2,
+     "starter": "def batches(items, size, drop_last=False):\n    pass\n",
+     "solution": "def batches(items, size, drop_last=False):\n    for i in range(0, len(items), size):\n        b = items[i:i + size]\n        if drop_last and len(b) < size:\n            return\n        yield b\n",
+     "tests": "t(\"list(batches(list(range(1, 11)), 4))\", [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10]])\nt(\"list(batches(list(range(1, 11)), 4, drop_last=True))\", [[1, 2, 3, 4], [5, 6, 7, 8]])\nt(\"list(batches([1, 2], 5))\", [[1, 2]])\nt(\"list(batches([], 3))\", [])",
+     "id": "py.torch4.1"
+    },
+    {
+     "type": "code",
+     "prompt": "Write `collate(batch, pad_id=0)` for a batch of `(token_ids, label)` pairs. Return a dict with `input_ids` (each list padded on the right to the longest), `attention_mask` (1 for real tokens, 0 for padding) and `labels`.",
+     "hints": [
+      "Find the longest sequence in the batch.",
+      "Pad each list and build a matching mask.",
+      "Collect the labels in a separate list."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "starter": "def collate(batch, pad_id=0):\n    pass\n",
+     "solution": "def collate(batch, pad_id=0):\n    longest = max(len(ids) for ids, _ in batch)\n    return {\n        \"input_ids\": [ids + [pad_id] * (longest - len(ids)) for ids, _ in batch],\n        \"attention_mask\": [[1] * len(ids) + [0] * (longest - len(ids)) for ids, _ in batch],\n        \"labels\": [label for _, label in batch],\n    }\n",
+     "tests": "t(\"collate([([5, 6, 7], 1), ([8], 0)])\", {\"input_ids\": [[5, 6, 7], [8, 0, 0]], \"attention_mask\": [[1, 1, 1], [1, 0, 0]], \"labels\": [1, 0]})\nt(\"collate([([1, 2], 3)], pad_id=9)\", {\"input_ids\": [[1, 2]], \"attention_mask\": [[1, 1]], \"labels\": [3]})",
+     "id": "py.torch4.2"
+    },
+    {
+     "type": "predict",
+     "prompt": "What does this print? (How many batches, and how many items are in the last one?)",
+     "hints": [
+      "10 items in groups of 4.",
+      "Two full batches, then what is left.",
+      "`10 % 4` is 2."
+     ],
+     "diff": 2,
+     "code": "import math\nn, bs = 10, 4\nprint(math.ceil(n / bs), n % bs or bs)",
+     "answer": "3 2",
+     "lang": "python",
+     "id": "py.torch4.3"
+    },
+    {
+     "type": "spot",
+     "prompt": "Training accuracy oscillates strangely. The training data is stored sorted by label. Which line is the problem?",
+     "hints": [
+      "What order do the training batches arrive in?",
+      "Sorted data gives batches full of a single class.",
+      "The training loader is missing an argument."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "lines": [
+      "train_loader = DataLoader(train_ds, batch_size=32)",
+      "val_loader = DataLoader(val_ds, batch_size=64)"
+     ],
+     "bad": [
+      1
+     ],
+     "lang": "python",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "Add `shuffle=True` to the training loader",
+       "Add `shuffle=True` to the validation loader",
+       "Use `batch_size=1`",
+       "Set `drop_last=True` on both"
+      ],
+      "answer": 0
+     },
+     "id": "py.torch4.4"
+    }
+   ]
+  },
+  {
+   "id": "py.torch5",
+   "level": 5,
+   "title": "Fine-tuning: schedules, early stopping and overfitting",
+   "lede": "Most fine-tuning skill is knowing what the curves mean and which two or three knobs to turn.",
+   "minutes": 6,
+   "phases": [
+    "deep"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "python",
+      "x": "# freeze the pretrained body, train only the new head\nfor p in model.base.parameters():\n    p.requires_grad = False\n\n# keep gradients from exploding\ntorch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)\n\n# learning rate: warm up, then decay\n#   lr rises linearly to base_lr over `warmup` steps, then falls linearly to 0 at `total`"
+     },
+     {
+      "t": "table",
+      "cols": [
+       "Curves",
+       "Diagnosis",
+       "Try"
+      ],
+      "rows": [
+       [
+        "train loss and val loss both high",
+        "underfitting",
+        "train longer, bigger model, higher learning rate"
+       ],
+       [
+        "train loss falling, val loss rising",
+        "overfitting",
+        "more data, augmentation, dropout or weight decay, early stopping"
+       ],
+       [
+        "loss jumps to NaN",
+        "exploding gradients or learning rate too high",
+        "lower the learning rate, clip gradients"
+       ],
+       [
+        "val loss noisy",
+        "small validation set or high learning rate",
+        "bigger validation set, lower learning rate"
+       ]
+      ]
+     },
+     {
+      "t": "ul",
+      "x": [
+       "**Early stopping** stops when validation loss has not improved for `patience` epochs and keeps the best checkpoint.",
+       "**Warmup** avoids huge early updates on pretrained weights. Transformers are usually fine-tuned with a small learning rate (about 2e-5) and a warmup.",
+       "Freeze layers when you have little data. Unfreeze later with a smaller learning rate."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "Training loss keeps dropping but validation loss started rising after epoch 3. This is:",
+      "choices": [
+       "Underfitting",
+       "Overfitting",
+       "A bug in the loader",
+       "Normal at any point"
+      ],
+      "a": 1,
+      "why": "The model memorises the training set and generalises worse."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "code",
+     "prompt": "Write `early_stop_epoch(val_losses, patience)` returning the index of the epoch at which training would stop: the first epoch where `patience` epochs in a row have failed to beat the best validation loss so far. Return `None` if it never stops.",
+     "hints": [
+      "Track the best loss so far and how many epochs since it improved.",
+      "A new best resets the counter to zero.",
+      "Return the current index when the counter reaches `patience`."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "starter": "def early_stop_epoch(val_losses, patience):\n    pass\n",
+     "solution": "def early_stop_epoch(val_losses, patience):\n    best = float(\"inf\")\n    since = 0\n    for i, v in enumerate(val_losses):\n        if v < best:\n            best = v\n            since = 0\n        else:\n            since += 1\n            if since >= patience:\n                return i\n    return None\n",
+     "tests": "t(\"early_stop_epoch([1.0, 0.8, 0.7, 0.71, 0.72, 0.73], 3)\", 5)\nt(\"early_stop_epoch([1.0, 0.9, 0.8], 3)\", None)\nt(\"early_stop_epoch([1.0, 1.1, 1.2, 0.5, 0.6], 2)\", 2)\nt(\"early_stop_epoch([1.0, 1.1, 0.9, 1.0, 1.1], 2)\", 4)",
+     "id": "py.torch5.1"
+    },
+    {
+     "type": "code",
+     "prompt": "Write `warmup_linear(step, warmup, total, base_lr)`: the learning rate rises linearly from 0 to `base_lr` over `warmup` steps, then falls linearly to 0 at step `total` (and stays 0 after).",
+     "hints": [
+      "Two phases: before and after `warmup`.",
+      "Phase 1 is a straight line up: `base_lr * step / warmup`.",
+      "Phase 2 is a straight line down to zero at `total`."
+     ],
+     "diff": 3,
+     "starter": "def warmup_linear(step, warmup, total, base_lr):\n    pass\n",
+     "solution": "def warmup_linear(step, warmup, total, base_lr):\n    if step < warmup:\n        return base_lr * step / warmup\n    return base_lr * max(0.0, (total - step) / (total - warmup))\n",
+     "tests": "t(\"warmup_linear(0, 10, 100, 1.0)\", 0.0)\nt(\"warmup_linear(5, 10, 100, 1.0)\", 0.5)\nt(\"warmup_linear(10, 10, 100, 1.0)\", 1.0)\nt(\"warmup_linear(55, 10, 100, 1.0)\", 0.5)\nt(\"warmup_linear(100, 10, 100, 1.0)\", 0.0)\nt(\"warmup_linear(150, 10, 100, 1.0)\", 0.0)",
+     "id": "py.torch5.2"
+    },
+    {
+     "type": "fill",
+     "prompt": "Freeze the pretrained layers and clip gradients to a maximum norm of 1.0.",
+     "hints": [
+      "Freezing means gradients are not computed.",
+      "The second value is the maximum allowed gradient norm.",
+      "`False` and `1.0`."
+     ],
+     "diff": 2,
+     "template": "for p in model.base.parameters():\n    p.requires_grad = ____\ntorch.nn.utils.clip_grad_norm_(model.parameters(), ____)",
+     "blanks": [
+      [
+       "False"
+      ],
+      [
+       "1.0",
+       "1"
+      ]
+     ],
+     "lang": "python",
+     "ci": false,
+     "id": "py.torch5.3"
+    },
+    {
+     "type": "mcq",
+     "prompt": "Training loss: 0.9, 0.5, 0.3, 0.15, 0.08. Validation loss: 0.95, 0.6, 0.55, 0.62, 0.7. What do you do?",
+     "hints": [
+      "Compare the two curves after epoch 3.",
+      "Validation got worse while training got better.",
+      "That is overfitting."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "Train much longer",
+      "Stop around epoch 3 (early stopping) and consider regularisation or more data",
+      "Raise the learning rate",
+      "Delete the validation set"
+     ],
+     "answer": 1,
+     "id": "py.torch5.4"
+    }
+   ]
+  },
+  {
+   "id": "py.rag",
+   "level": 5,
+   "title": "RAG building blocks: chunking, retrieval and evaluation",
+   "lede": "Retrieval-augmented generation answers from your documents: split them, embed the pieces, retrieve the closest, and give them to the model. Each step can be measured.",
+   "minutes": 7,
+   "phases": [
+    "deep",
+    "serving"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "python",
+      "x": "chunks = chunk_text(doc, size=200, overlap=40)        # 1. split into overlapping pieces\nvectors = embed(chunks)                                # 2. embeddings, stored in pgvector\nhits = nearest(embed(question), vectors, k=5)          # 3. retrieve the closest pieces\nprompt = \"Answer using only this context:\\n\" + \"\\n\".join(hits) + \"\\n\\nQuestion: \" + question\nanswer = llm(prompt)                                   # 4. generate"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "**Chunk size**: small chunks are precise but lose context; big chunks carry context but dilute the match. **Overlap** keeps sentences from being cut off.",
+       "Evaluate retrieval separately from generation: if the right passage was never retrieved, no prompt can fix the answer.",
+       "**recall@k**: the share of relevant passages that appear in the top k. **MRR**: the average of 1 / (rank of the first correct result)."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "A fluent answer is not a correct answer. Check that the cited chunk really contains the claim, and test questions the documents cannot answer."
+     },
+     {
+      "t": "quick",
+      "q": "The right passage is retrieved at rank 4, but the model's answer is wrong. Where do you look first?",
+      "choices": [
+       "The embedding model",
+       "The prompt and generation step (retrieval worked)",
+       "The chunk size",
+       "The database index"
+      ],
+      "a": 1,
+      "why": "Retrieval found the passage, so the problem is how it is used."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "code",
+     "prompt": "Write `chunk_text(text, size, overlap)` that splits `text` into word chunks of `size` words, each starting `size - overlap` words after the previous one. The last chunk may be shorter. Return a list of strings joined by single spaces.",
+     "hints": [
+      "Work with words, not characters.",
+      "Each chunk starts `size - overlap` words after the previous start.",
+      "Stop once a chunk reaches the end of the text."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "starter": "def chunk_text(text, size, overlap):\n    pass\n",
+     "solution": "def chunk_text(text, size, overlap):\n    words = text.split()\n    step = size - overlap\n    chunks = []\n    for start in range(0, len(words), step):\n        chunks.append(\" \".join(words[start:start + size]))\n        if start + size >= len(words):\n            break\n    return chunks\n",
+     "tests": "t(\"chunk_text('a b c d e f g', 3, 1)\", [\"a b c\", \"c d e\", \"e f g\"])\nt(\"chunk_text('a b c d e f', 3, 1)\", [\"a b c\", \"c d e\", \"e f\"])\nt(\"chunk_text('a b c', 3, 1)\", [\"a b c\"])\nt(\"chunk_text('x y', 5, 1)\", [\"x y\"])",
+     "id": "py.rag.1"
+    },
+    {
+     "type": "code",
+     "prompt": "Write `recall_at_k(retrieved, relevant, k)`: the fraction of the `relevant` ids that appear in the first `k` of `retrieved`. If `relevant` is empty, return 0.0.",
+     "hints": [
+      "Only the first `k` results count.",
+      "Count how many relevant ids are among them.",
+      "Divide by the number of relevant ids."
+     ],
+     "diff": 2,
+     "starter": "def recall_at_k(retrieved, relevant, k):\n    pass\n",
+     "solution": "def recall_at_k(retrieved, relevant, k):\n    if not relevant:\n        return 0.0\n    return len(set(retrieved[:k]) & set(relevant)) / len(set(relevant))\n",
+     "tests": "t(\"recall_at_k(['a', 'b', 'c'], ['b', 'z'], 2)\", 0.5)\nt(\"recall_at_k(['a', 'b', 'c'], ['b', 'z'], 1)\", 0.0)\nt(\"recall_at_k(['a'], [], 3)\", 0.0)\nt(\"recall_at_k(['a', 'b'], ['a', 'b'], 5)\", 1.0)",
+     "id": "py.rag.2"
+    },
+    {
+     "type": "code",
+     "prompt": "Write `mrr(results)` where `results` is a list of `(retrieved_ids, correct_id)` pairs. For each pair the score is `1 / rank` of the correct id in the list (rank starts at 1), or 0 if it is missing. Return the average. An empty list gives 0.0.",
+     "hints": [
+      "The rank is the list position plus one.",
+      "A missing answer scores 0.",
+      "Add up the scores and divide by the number of queries."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "starter": "def mrr(results):\n    pass\n",
+     "solution": "def mrr(results):\n    if not results:\n        return 0.0\n    total = 0.0\n    for retrieved, correct in results:\n        if correct in retrieved:\n            total += 1 / (retrieved.index(correct) + 1)\n    return total / len(results)\n",
+     "tests": "t(\"mrr([(['a', 'b', 'c'], 'b'), (['x', 'y'], 'z')])\", 0.25)\nt(\"mrr([(['a'], 'a')])\", 1.0)\nt(\"mrr([])\", 0.0)\nt(\"round(mrr([(['a', 'b', 'c'], 'c'), (['q'], 'q')]), 6)\", 0.666667)",
+     "id": "py.rag.3"
+    }
+   ]
+  },
+  {
+   "id": "py.serve2",
+   "level": 5,
+   "title": "Serving ML: startup, testing and resilience",
+   "lede": "A model endpoint fails in boring ways: slow loads, blocked event loops, flaky dependencies and untested routes. Cheap habits prevent most of them.",
+   "minutes": 7,
+   "phases": [
+    "serving"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "python",
+      "x": "from contextlib import asynccontextmanager\nfrom fastapi import FastAPI\nfrom fastapi.testclient import TestClient\n\n@asynccontextmanager\nasync def lifespan(app):\n    app.state.model = load_model()     # once, at startup\n    yield                               # the app serves requests here\n    # cleanup goes after yield\n\napp = FastAPI(lifespan=lifespan)\n\n@app.post(\"/predict\")\ndef predict(ticket: Ticket):            # plain def: FastAPI runs it in a worker thread\n    return {\"label\": app.state.model.predict(ticket.text)}\n\ndef test_predict():\n    with TestClient(app) as client:\n        r = client.post(\"/predict\", json={\"text\": \"refund please\"})\n        assert r.status_code == 200"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "Load the model **once** in `lifespan`, never inside the request function.",
+       "`async def` endpoints must not run slow blocking code (model inference, `requests.get`), or they freeze every other request. Use plain `def` for CPU-bound work, or an executor.",
+       "Add `/health` (process is up) and readiness (model loaded) endpoints. Return **503** while loading, **422** for invalid input.",
+       "Retry flaky outbound calls with a small limit and a delay, and set timeouts."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "A heavy model prediction runs inside an `async def` endpoint. What happens under load?",
+      "choices": [
+       "Requests run in parallel threads",
+       "The event loop is blocked and other requests wait",
+       "FastAPI moves it to the GPU",
+       "Nothing, async is always faster"
+      ],
+      "a": 1,
+      "why": "Blocking work inside async code stops the whole event loop."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "fill",
+     "prompt": "Finish the startup hook and the test.",
+     "hints": [
+      "The hook has to hand control back to the app while it serves.",
+      "A successful request returns this status code.",
+      "`yield` and `200`."
+     ],
+     "diff": 2,
+     "template": "@asynccontextmanager\nasync def lifespan(app):\n    app.state.model = load_model()\n    ____\n\ndef test_predict():\n    r = client.post(\"/predict\", json={\"text\": \"hi\"})\n    assert r.status_code == ____",
+     "blanks": [
+      [
+       "yield"
+      ],
+      [
+       "200"
+      ]
+     ],
+     "lang": "python",
+     "ci": false,
+     "id": "py.serve2.1"
+    },
+    {
+     "type": "spot",
+     "prompt": "Under load the whole service freezes during predictions. Which line is the problem?",
+     "hints": [
+      "Which keyword makes the function run on the event loop?",
+      "CPU-bound code blocks that loop.",
+      "A plain `def` lets FastAPI use a worker thread."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "lines": [
+      "@app.post(\"/predict\")",
+      "async def predict(ticket: Ticket):",
+      "    return {\"label\": model.predict(ticket.text)}   # slow CPU-bound call"
+     ],
+     "bad": [
+      2
+     ],
+     "lang": "python",
+     "fix": {
+      "q": "What is the best fix?",
+      "choices": [
+       "Make it a plain `def` (or run the call in an executor)",
+       "Add `await` in front of `model.predict`",
+       "Add a second `async def` endpoint",
+       "Increase the timeout"
+      ],
+      "answer": 0,
+      "why": [
+       null,
+       "`await` only works on awaitables; `model.predict` is a normal blocking function.",
+       "That does not stop the first one blocking.",
+       "A longer timeout hides the freeze but does not fix it."
+      ]
+     },
+     "id": "py.serve2.2"
+    },
+    {
+     "type": "code",
+     "prompt": "Write `retry(fn, attempts)` that calls `fn()` and returns its result. If it raises, try again, up to `attempts` calls in total. If every attempt fails, re-raise the last error.",
+     "hints": [
+      "Loop up to `attempts` times.",
+      "Return as soon as a call succeeds; remember the last error.",
+      "After the loop, `raise` the remembered error."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "starter": "def retry(fn, attempts):\n    pass\n",
+     "solution": "def retry(fn, attempts):\n    last = None\n    for _ in range(attempts):\n        try:\n            return fn()\n        except Exception as e:\n            last = e\n    raise last\n",
+     "tests": "tx(\"calls = []\\ndef flaky():\\n    calls.append(1)\\n    if len(calls) < 3:\\n        raise ValueError('x')\\n    return 'ok'\", \"retry(flaky, 3)\", \"ok\")\ntx(\"calls2 = []\\ndef flaky2():\\n    calls2.append(1)\\n    raise KeyError('k')\", \"1\", 1)\ntexc(\"retry(flaky2, 2)\", KeyError)\nt(\"len(calls2)\", 2)\nt(\"retry(lambda: 7, 1)\", 7)",
+     "id": "py.serve2.3"
+    },
+    {
+     "type": "mcq",
+     "prompt": "A request arrives while the model is still loading at startup. Which response is most appropriate?",
+     "hints": [
+      "The request itself is fine. The service is not ready.",
+      "422 means the request body was invalid.",
+      "503 tells clients and load balancers to retry later."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "200 with an empty label",
+      "503 Service Unavailable (and a readiness check that stays failing)",
+      "422 Unprocessable Entity",
+      "404 Not Found"
+     ],
+     "answer": 1,
+     "id": "py.serve2.4"
     }
    ]
   }

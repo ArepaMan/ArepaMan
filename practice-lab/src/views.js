@@ -80,7 +80,7 @@ function conceptChip(c, o) {
 }
 
 /* ---------- the App shell ---------- */
-const TABS = [['today', 'Today'], ['map', 'Map'], ['drills', 'Drills'], ['stats', 'Stats']];
+const TABS = [['today', 'Today'], ['map', 'Map'], ['drills', 'Drills'], ['journal', 'Journal'], ['stats', 'Stats']];
 const App = {
   tab: 'today', detail: null, root: null,
   go(t) { this.tab = t; this.detail = null; try { history.replaceState(null, '', '#' + t); } catch (e) { /* ignore */ } this.render(); window.scrollTo(0, 0); },
@@ -112,7 +112,7 @@ const App = {
 };
 function radarMark() { return sv('svg', { width: 26, height: 26, viewBox: '0 0 26 26', 'aria-hidden': 'true' }, sv('circle', { cx: 13, cy: 13, r: 11, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2 }), sv('circle', { cx: 13, cy: 13, r: 6, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 1.5, 'stroke-opacity': 0.6 }), sv('path', { d: 'M13 13 L22 8', stroke: 'var(--accent)', 'stroke-width': 2.2, 'stroke-linecap': 'round' }), sv('circle', { cx: 19, cy: 16, r: 2, fill: 'var(--warn)' })); }
 function tabIcon(id) {
-  const p = { today: 'M4 12l5 5L20 6', map: 'M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14', drills: 'M13 2L4 14h7l-1 8 9-12h-7z', stats: 'M4 20V10M10 20V4M16 20v-8M22 20H2' }[id];
+  const p = { today: 'M4 12l5 5L20 6', map: 'M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14', drills: 'M13 2L4 14h7l-1 8 9-12h-7z', stats: 'M4 20V10M10 20V4M16 20v-8M22 20H2', journal: 'M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11' }[id];
   return sv('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'aria-hidden': 'true' }, sv('path', { d: p }));
 }
 function themeLabel() { const t = S().cfg.theme; return t === 'dark' ? 'Dark' : t === 'light' ? 'Light' : 'Auto'; }
@@ -212,6 +212,45 @@ const View = {
     const pgrid = h('div.dgrid');
     Cx.phases.forEach((ph) => { const r = phaseReadiness(ph.id); pgrid.appendChild(h('div.card.dcard', h('h3', { text: ph.name }), h('p', { text: ph.blurb }), h('div.pline', bar(r.pct), h('b', { text: r.pct + '%' })), h('button.btn.secondary', { type: 'button', text: 'Start phase check', onclick: () => startPhase(ph.id) }))); });
     wrap.appendChild(pgrid);
+    return wrap;
+  },
+
+  journal() {
+    const wrap = h('div.journal', h('h1', { text: 'Journal' }), h('p.lede', { text: 'Every miss carries information. Note why it happened and this page shows the pattern, so you can fix the habit and not only the answer.' }));
+    const st = journalStats(60); const loose = missesWithoutReason(6);
+    if (!st.items.length && !loose.length) {
+      wrap.appendChild(h('div.card.empty', h('h3', { text: 'Nothing here yet' }), h('p', { text: 'When an exercise ends in a miss, or takes a lot of help, you will be asked why. Tap a reason and it is saved here. After a few entries you will see which kind of mistake is yours.' })));
+      return wrap;
+    }
+    const g = h('div.grid');
+    const max = Math.max(1, ...CAUSES.map((c) => st.counts[c.id]));
+    const chart = h('section.card', h('h3', { text: 'What trips you up' }), h('p.muted.small', { text: 'Last 60 days. ' + st.items.length + ' entr' + (st.items.length === 1 ? 'y' : 'ies') + ', ' + st.fixed + ' since fixed.' }));
+    CAUSES.forEach((c) => chart.appendChild(h('div.jbar', h('span.jl', { text: c.label }), h('span.bar', h('i', { style: { width: (st.counts[c.id] / max * 100) + '%' } })), h('b', { text: st.counts[c.id] }))));
+    g.appendChild(chart);
+    g.appendChild(h('section.card', h('h3', { text: st.top ? 'Your top pattern: ' + st.top.label.toLowerCase() : 'Your patterns' }), st.top ? h('p', { text: st.top.tip }) : h('p.muted', { text: 'Tag a few misses with a reason and a suggestion appears here.' }),
+      st.repeat.length ? h('div', h('h4', { text: 'Concepts that keep catching you' }), ...st.repeat.slice(0, 5).map((r) => { const c = Cx.concepts[r.id]; return h('div.wrow', trackChip(c.track), h('button.link', { type: 'button', text: c.title, onclick: () => App.openConcept(c.id) }), h('span.chip.' + (r.fixed ? 'st-mastered' : 'st-shaky'), { text: r.n + ' entries' + (r.fixed ? ', fixed' : '') }), h('button.btn.ghost.sm', { type: 'button', text: 'Practise', onclick: () => startPractice(c.id, 3) })); })) : null));
+    wrap.appendChild(g);
+    if (loose.length) {
+      const sec = h('section.card.looseC', h('h3', { text: 'Recent misses without a reason' }), h('p.muted.small', { text: 'Tap a reason to log it. It takes five seconds and makes the patterns above accurate.' }));
+      loose.forEach((l) => {
+        const ex = Cx.exercises[l.e]; const row = h('div.jentry');
+        const done = () => { clear(row); row.appendChild(h('span.muted', { text: 'Saved.' })); };
+        row.appendChild(h('div.jprompt', trackChip(ex.track), h('span', { text: ex.prompt.replace(/[`*]/g, '').slice(0, 100) })));
+        row.appendChild(h('div.chips', CAUSES.map((c) => h('button.chip.cause', { type: 'button', text: c.label, onclick: () => { const entry = journalAdd(l.e, 'miss', { attempts: l.a, hints: l.h }); entry.t = l.t; journalSet(entry, [c.id], ''); done(); setTimeout(() => App.render(), 600); } }))));
+        sec.appendChild(row);
+      });
+      wrap.appendChild(h('div.stack', sec));
+    }
+    const list = h('section.card', h('h3', { text: 'Entries' }));
+    st.items.slice().reverse().slice(0, 30).forEach((j) => {
+      const ex = Cx.exercises[j.e]; if (!ex) return; const fixed = journalFixed(j);
+      list.appendChild(h('div.jentry', h('div.jprompt', trackChip(ex.track), h('strong', { text: Cx.concepts[j.c].title }), h('span.muted.small', { text: new Date(j.t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) }), h('span.chip.' + (fixed ? 'st-mastered' : 'st-shaky'), { text: fixed ? 'Fixed' : 'Open' })),
+        h('div.small', { text: ex.prompt.replace(/[`*]/g, '').slice(0, 140) }),
+        h('div.chips', j.why.length ? j.why.map((w) => h('span.chip', { text: (CAUSES.find((c) => c.id === w) || { label: w }).label })) : [h('span.chip.muted', { text: 'no reason noted' })]),
+        j.x ? h('p.note.small', { text: j.x }) : null,
+        h('div.actions', h('button.btn.secondary.sm', { type: 'button', text: 'Try it again', onclick: () => Session.start([{ k: 'rev', c: j.c, e: j.e, done: false }], { title: 'Retry from the journal', kind: 'drill' }) }), h('button.btn.ghost.sm', { type: 'button', text: 'Re-read the lesson', onclick: () => App.openConcept(j.c) }))));
+    });
+    wrap.appendChild(list);
     return wrap;
   },
 
