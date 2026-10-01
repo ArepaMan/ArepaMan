@@ -1,0 +1,681 @@
+{
+ "concepts": [
+  {
+   "id": "rx.basics",
+   "level": 1,
+   "title": "Regular expressions: the basics",
+   "lede": "A regular expression (regex) is a pattern for text. It finds, checks and extracts things like ticket ids, emails and dates.",
+   "minutes": 4,
+   "phases": [
+    "data",
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "p",
+      "x": "Type a pattern and watch it highlight the text. Try `\\d+`, then `[A-Z]{3}-\\d{4}`."
+     },
+     {
+      "t": "viz",
+      "kind": "regex",
+      "data": {
+       "title": "Test a pattern",
+       "pattern": "[A-Z]{3}-\\d{4}",
+       "flags": "g",
+       "text": "Tickets TCK-1042 and BUG-7 were merged with TCK-2210.\nContact: ana@acme.com"
+      }
+     },
+     {
+      "t": "table",
+      "cols": [
+       "Pattern",
+       "Matches"
+      ],
+      "rows": [
+       [
+        "`abc`",
+        "the literal text abc"
+       ],
+       [
+        "`.`",
+        "any one character"
+       ],
+       [
+        "`\\d` `\\w` `\\s`",
+        "a digit, a word character, a whitespace"
+       ],
+       [
+        "`[abc]` `[a-z]`",
+        "one character from a set or range"
+       ],
+       [
+        "`*` `+` `?`",
+        "0 or more, 1 or more, 0 or 1"
+       ],
+       [
+        "`{4}` `{2,5}`",
+        "exactly 4, between 2 and 5"
+       ],
+       [
+        "`^` `$`",
+        "start and end of the text"
+       ]
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "`.` and `*` are special. To match a literal dot write `\\.`. In Python always write patterns as raw strings: `r\"\\d+\"`."
+     },
+     {
+      "t": "quick",
+      "q": "Which pattern matches exactly a 4-digit year such as 2026 (and nothing longer)?",
+      "choices": [
+       "`\\d{4}`",
+       "`\\d+`",
+       "`\\d{2,5}`",
+       "`.{4}`"
+      ],
+      "a": 0,
+      "why": "`\\d{4}` is four digits; add `^...$` to anchor it to the whole string."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "mcq",
+     "prompt": "Which pattern matches ticket ids like `TCK-1042` (three capital letters, a dash, four digits)?",
+     "hints": [
+      "Three capitals is `[A-Z]{3}`.",
+      "The dash is a literal character.",
+      "Four digits is `\\d{4}`."
+     ],
+     "diff": 2,
+     "choices": [
+      "`[A-Z]{3}-\\d{4}`",
+      "`[A-Z]+\\d+`",
+      "`\\w{3}\\d{4}`",
+      "`TCK.\\d`"
+     ],
+     "answer": 0,
+     "id": "rx.basics.1"
+    },
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "`\\d+` means one or more digits in a row.",
+      "Each separate run of digits is one match.",
+      "Matches come back as strings."
+     ],
+     "diff": 2,
+     "code": "import re\nprint(re.findall(r\"\\d+\", \"a1b22c333\"))",
+     "answer": "['1', '22', '333']",
+     "lang": "python",
+     "id": "rx.basics.2"
+    },
+    {
+     "type": "fill",
+     "prompt": "Complete the pattern so it matches ids like `TCK-1042`.",
+     "hints": [
+      "Four digits in a row.",
+      "`\\d` is a digit; a number in braces repeats it.",
+      "`\\d{4}`"
+     ],
+     "diff": 2,
+     "template": "pattern = r\"TCK-____\"",
+     "blanks": [
+      [
+       "\\d{4}",
+       "[0-9]{4}"
+      ]
+     ],
+     "lang": "regex",
+     "ci": false,
+     "id": "rx.basics.3"
+    }
+   ]
+  },
+  {
+   "id": "json.basics",
+   "level": 1,
+   "title": "JSON",
+   "lede": "JSON is the universal data format of web APIs. It looks like Python dicts and lists, but the rules are stricter.",
+   "minutes": 4,
+   "phases": [
+    "serving",
+    "data"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "json",
+      "x": "{\n  \"id\": 7,\n  \"text\": \"App crashes on login\",\n  \"labels\": [\"bug\", \"login\"],\n  \"urgent\": true,\n  \"assignee\": null\n}"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "Keys are **always double-quoted strings**. Strings use double quotes, never single quotes.",
+       "Values: string, number, `true`/`false`, `null`, list, object. (Python writes `True`, `False`, `None`.)",
+       "No trailing commas and no comments."
+      ]
+     },
+     {
+      "t": "code",
+      "lang": "python",
+      "x": "import json\ndata = json.loads('{\"id\": 7, \"labels\": [\"bug\"]}')   # text -> Python\ntext = json.dumps(data, indent=2)                    # Python -> text"
+     },
+     {
+      "t": "quick",
+      "q": "Which is valid JSON?",
+      "choices": [
+       "`{'id': 7}`",
+       "`{\"id\": 7,}`",
+       "`{\"id\": 7}`",
+       "`{id: 7}`"
+      ],
+      "a": 2,
+      "why": "Only double-quoted keys with no trailing comma are valid."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "spot",
+     "prompt": "This payload is rejected by the API as invalid JSON. Which line is the problem?",
+     "hints": [
+      "Look at the end of the last entry.",
+      "JSON does not allow a comma after the last item.",
+      "Line 3 ends with a comma before the closing brace."
+     ],
+     "diff": 2,
+     "lines": [
+      "{",
+      "  \"id\": 7,",
+      "  \"labels\": [\"bug\", \"login\"],",
+      "}"
+     ],
+     "bad": [
+      3
+     ],
+     "lang": "json",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "Remove the trailing comma on line 3",
+       "Change double quotes to single quotes",
+       "Add a comma after the `}`",
+       "Remove the brackets"
+      ],
+      "answer": 0
+     },
+     "invalid": "json",
+     "id": "json.basics.1"
+    },
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "`json.dumps` produces JSON text, not Python.",
+      "`None` becomes `null`, `True` becomes `true`.",
+      "Keys and strings use double quotes."
+     ],
+     "diff": 2,
+     "code": "import json\nprint(json.dumps({\"a\": [1, None, True]}))",
+     "answer": "{\"a\": [1, null, true]}",
+     "lang": "python",
+     "id": "json.basics.2"
+    },
+    {
+     "type": "code",
+     "prompt": "Write `top_label(text)` that takes JSON text like `{\"labels\": [\"bug\", \"login\"]}` and returns the first label.",
+     "hints": [
+      "`json.loads` turns text into Python dicts and lists.",
+      "Then index the dict and the list.",
+      "`json.loads(text)[\"labels\"][0]`"
+     ],
+     "diff": 2,
+     "starter": "import json\n\ndef top_label(text):\n    pass\n",
+     "solution": "import json\n\ndef top_label(text):\n    return json.loads(text)[\"labels\"][0]\n",
+     "tests": "t(\"top_label('{\\\"labels\\\": [\\\"bug\\\", \\\"login\\\"]}')\", \"bug\")\nt(\"top_label('{\\\"id\\\": 1, \\\"labels\\\": [\\\"billing\\\"]}')\", \"billing\")",
+     "id": "json.basics.3"
+    }
+   ]
+  },
+  {
+   "id": "md.basics",
+   "level": 1,
+   "title": "Markdown for READMEs",
+   "lede": "Markdown is plain text that renders as formatted text. Your README, PR descriptions and notebooks are all written in it.",
+   "minutes": 3,
+   "phases": [
+    "serving"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "markdown",
+      "x": "# ReviewRadar                          <- level-1 heading (one per page)\n## Quickstart                          <- level-2 heading\n\nShort description with **bold**, *italic* and `inline code`.\n\n- bullet one\n- bullet two\n1. numbered item\n\n[Docs](https://example.com/docs)       <- link\n\n```bash\ndocker compose up                      <- fenced code block with a language\n```\n\n| Model | F1 |                        <- table\n|-------|----|\n| v1    | 0.81 |"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "Leave a **blank line** between paragraphs and before lists.",
+       "Fence code with three backticks and name the language for highlighting.",
+       "A good README answers: what is this, how do I run it, how do I use it, how do I contribute."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "Which line makes a level-2 heading?",
+      "choices": [
+       "`# Title`",
+       "`## Title`",
+       "`2. Title`",
+       "`**Title**`"
+      ],
+      "a": 1,
+      "why": "Two hashes give a level-2 heading."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "order",
+     "prompt": "Put these README lines in a sensible order.",
+     "hints": [
+      "The title comes first, then a short description.",
+      "A fenced block opens and closes with three backticks.",
+      "License is usually last."
+     ],
+     "diff": 2,
+     "lines": [
+      "# ReviewRadar",
+      "Classifies support tickets and answers with retrieval.",
+      "## Quickstart",
+      "```bash",
+      "docker compose up",
+      "```",
+      "## License"
+     ],
+     "lang": "markdown",
+     "id": "md.basics.1"
+    },
+    {
+     "type": "fill",
+     "prompt": "Write a link to the docs.",
+     "hints": [
+      "The text goes in square brackets, the address in round brackets.",
+      "The address starts with the protocol.",
+      "`https`"
+     ],
+     "diff": 1,
+     "template": "[Docs](____://example.com/docs)",
+     "blanks": [
+      [
+       "https"
+      ]
+     ],
+     "lang": "markdown",
+     "ci": false,
+     "id": "md.basics.2"
+    },
+    {
+     "type": "mcq",
+     "prompt": "How do you show a block of shell commands in Markdown?",
+     "hints": [
+      "Fences use a special character three times.",
+      "The language name after the opening fence enables highlighting.",
+      "Triple backticks."
+     ],
+     "diff": 1,
+     "choices": [
+      "Indent with tabs only",
+      "Fence it with three backticks and `bash`",
+      "Wrap it in `<code>` tags only",
+      "Use `>` at the start of each line"
+     ],
+     "answer": 1,
+     "id": "md.basics.3"
+    }
+   ]
+  },
+  {
+   "id": "rx.groups",
+   "level": 2,
+   "title": "Regex groups, alternation and greedy matching",
+   "lede": "Brackets capture parts of a match. `|` means or. By default patterns are greedy, taking as much as they can.",
+   "minutes": 5,
+   "phases": [
+    "data",
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "viz",
+      "kind": "regex",
+      "data": {
+       "title": "Groups",
+       "pattern": "(\\w+)@(\\w+)\\.com",
+       "flags": "g",
+       "text": "ana@acme.com, ben@globex.com, someone@example.org"
+      }
+     },
+     {
+      "t": "code",
+      "lang": "regex",
+      "x": "(\\w+)@(\\w+)\\.com          # two capture groups: user and domain\nERROR|WARN                  # either word\n(?P<level>[A-Z]+)           # a NAMED group (Python syntax)\n<.+>                        # greedy: <a><b> matches the WHOLE string\n<.+?>                       # lazy: matches <a>, then <b>\n\\bcat\\b                    # \\b = word boundary: 'cat' but not 'concatenate'"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "Groups are numbered by their opening bracket: `\\1`, `\\2`, or `m.group(1)`.",
+       "`(?:...)` groups without capturing. `(?P<name>...)` captures with a name.",
+       "Greedy `.*` grabs as much as possible. Add `?` (`.*?`) to take as little as possible."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "`re.findall(r\"<.+>\", \"<a><b>\")` returns:",
+      "choices": [
+       "`['<a>', '<b>']`",
+       "`['<a><b>']`",
+       "`['a', 'b']`",
+       "`[]`"
+      ],
+      "a": 1,
+      "why": "`.+` is greedy, so it runs to the last `>`."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "Group 1 is the user, group 2 the domain.",
+      "`\\2:\\1` swaps their order.",
+      "The `.com` is part of the matched text, so it is replaced too."
+     ],
+     "diff": 3,
+     "code": "import re\nprint(re.sub(r\"(\\w+)@(\\w+)\\.com\", r\"\\2:\\1\", \"ana@acme.com\"))",
+     "answer": "acme:ana",
+     "lang": "python",
+     "id": "rx.groups.1"
+    },
+    {
+     "type": "code",
+     "prompt": "Write `ticket_number(s)` that returns the number in a ticket id like `\"TCK-1042\"` as an `int`, or `None` if the whole string is not exactly three capital letters, a dash and four digits.",
+     "hints": [
+      "Capture the digits in a group.",
+      "Anchor the end with `$`. `re.match` already anchors the start.",
+      "`m.group(1)` is the captured text, convert it with `int`. (Note: the in-browser runner loses groups with `re.fullmatch`, so use `re.match(r\"...$\")`.)"
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "starter": "import re\n\ndef ticket_number(s):\n    pass\n",
+     "solution": "import re\n\ndef ticket_number(s):\n    m = re.match(r\"[A-Z]{3}-(\\d{4})$\", s)\n    return int(m.group(1)) if m else None\n",
+     "tests": "t(\"ticket_number('TCK-1042')\", 1042)\nt(\"ticket_number('BUG-0007')\", 7)\nt(\"ticket_number('TCK-12')\", None)\nt(\"ticket_number('xTCK-1042')\", None)\nt(\"ticket_number('tck-1042')\", None)",
+     "id": "rx.groups.2"
+    },
+    {
+     "type": "mcq",
+     "prompt": "`re.findall(r\"<.+?>\", \"<a><b>\")` returns:",
+     "hints": [
+      "The `?` after `+` makes it lazy.",
+      "Lazy takes the shortest possible match each time.",
+      "Two short matches."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "`['<a><b>']`",
+      "`['<a>', '<b>']`",
+      "`['a', 'b']`",
+      "`[]`"
+     ],
+     "answer": 1,
+     "id": "rx.groups.3"
+    }
+   ]
+  },
+  {
+   "id": "rx.python",
+   "level": 2,
+   "title": "Regex in Python: the re module",
+   "lede": "`re` has a handful of functions that cover almost everything: search, match, findall, sub and compile.",
+   "minutes": 5,
+   "phases": [
+    "data",
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "python",
+      "x": "import re\n\nre.search(r\"\\d+\", \"ticket 42 open\")        # first match anywhere -> match object (or None)\nre.match(r\"\\d+\", \"ticket 42\")              # must match at the START -> None here\nre.fullmatch(r\"\\d+\", \"42\")                 # the WHOLE string must match\nre.findall(r\"\\d+\", \"a1b22\")                # list of all matches\nre.sub(r\"\\d+\", \"#\", \"a1b22\")               # replace -> 'a#b#'\n\nm = re.match(r\"(?P<level>[A-Z]+) (?P<msg>.*)\", \"ERROR disk full\")\nm.group(\"level\"), m.groupdict()            # ('ERROR', {...})\n\npat = re.compile(r\"\\d+\", re.IGNORECASE)    # compile once, reuse"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "A match object is truthy, `None` is falsy, so `if m:` works.",
+       "Always use raw strings `r\"...\"` so backslashes reach `re` untouched.",
+       "`re.IGNORECASE`, `re.MULTILINE` and `re.VERBOSE` change behaviour."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "`re.match` only matches at the beginning. If you want \"anywhere\", use `re.search`. This trips up almost everyone once."
+     },
+     {
+      "t": "tip",
+      "x": "The in-browser Python runner on this page is Brython, whose `re.fullmatch` drops capture groups. In real Python it works fine; here, use `re.match(r\"...$\")` when you need groups."
+     },
+     {
+      "t": "quick",
+      "q": "`re.match(\"b\", \"abc\")` returns:",
+      "choices": [
+       "a match for `b`",
+       "`None`",
+       "an error",
+       "`['b']`"
+      ],
+      "a": 1,
+      "why": "`match` only looks at the start of the string, which is `a`."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "code",
+     "prompt": "Write `parse_log(line)` for lines like `2026-09-01 12:00:03 ERROR disk full`. Return a dict with keys `level` and `msg`, or `None` if the line does not fit the pattern `DATE TIME LEVEL message` (LEVEL in capitals).",
+     "hints": [
+      "Two whitespace-free chunks (date and time), then the level, then the message.",
+      "Named groups make the result easy to read.",
+      "Return `None` when `re.match` finds nothing."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "starter": "import re\n\ndef parse_log(line):\n    pass\n",
+     "solution": "import re\n\ndef parse_log(line):\n    m = re.match(r\"\\S+ \\S+ (?P<level>[A-Z]+) (?P<msg>.*)\", line)\n    return {\"level\": m.group(\"level\"), \"msg\": m.group(\"msg\")} if m else None\n",
+     "tests": "t(\"parse_log('2026-09-01 12:00:03 ERROR disk full')\", {\"level\": \"ERROR\", \"msg\": \"disk full\"})\nt(\"parse_log('2026-09-01 12:00:04 INFO started')\", {\"level\": \"INFO\", \"msg\": \"started\"})\nt(\"parse_log('garbage')\", None)",
+     "id": "rx.python.1"
+    },
+    {
+     "type": "code",
+     "prompt": "Write `redact_emails(text)` that replaces every email address with `[email]`. Treat an email as word characters, dots or dashes, then `@`, then a domain with at least one dot.",
+     "hints": [
+      "`re.sub(pattern, replacement, text)` does the swap.",
+      "The local part: `[\\w.-]+`; then `@`; then the domain.",
+      "Domains look like `name.tld`, possibly with more dots."
+     ],
+     "diff": 3,
+     "starter": "import re\n\ndef redact_emails(text):\n    pass\n",
+     "solution": "import re\n\ndef redact_emails(text):\n    return re.sub(r\"[\\w.-]+@[\\w-]+(\\.[\\w-]+)+\", \"[email]\", text)\n",
+     "tests": "t(\"redact_emails('Contact ana@acme.com now')\", \"Contact [email] now\")\nt(\"redact_emails('a@b.co and c.d@e-f.org')\", \"[email] and [email]\")\nt(\"redact_emails('no address here')\", \"no address here\")",
+     "id": "rx.python.2"
+    },
+    {
+     "type": "mcq",
+     "prompt": "What does `re.match(r\"\\d+\", \"ticket 42\")` return?",
+     "hints": [
+      "`match` anchors at the beginning of the string.",
+      "The string starts with `t`.",
+      "Use `search` to find it anywhere."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "a match for `42`",
+      "`None`",
+      "`['42']`",
+      "an error"
+     ],
+     "answer": 1,
+     "id": "rx.python.3"
+    }
+   ]
+  },
+  {
+   "id": "toml.basics",
+   "level": 2,
+   "title": "TOML and pyproject.toml",
+   "lede": "TOML is a small, readable config format. Python projects use it for `pyproject.toml`, which holds dependencies, tool settings and metadata.",
+   "minutes": 4,
+   "phases": [
+    "serving",
+    "cloud"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "toml",
+      "x": "[project]                                   # a table (section)\nname = \"reviewradar\"                         # strings MUST be quoted\nversion = \"0.1.0\"\ndependencies = [\"fastapi\", \"uvicorn\"]        # an array\n\n[tool.pytest.ini_options]                    # nested table: tool -> pytest -> ini_options\naddopts = \"-q\"\n\n[tool.ruff]\nline-length = 100                            # numbers and booleans are not quoted"
+     },
+     {
+      "t": "table",
+      "cols": [
+       "Format",
+       "Comments",
+       "Best for"
+      ],
+      "rows": [
+       [
+        "JSON",
+        "no",
+        "data exchange between programs"
+       ],
+       [
+        "YAML",
+        "yes",
+        "CI and Kubernetes config (indentation based)"
+       ],
+       [
+        "TOML",
+        "yes",
+        "tool and project config (explicit and hard to get wrong)"
+       ]
+      ]
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`[table]` headers group keys. Dots nest: `[tool.ruff]` is the table `ruff` inside `tool`.",
+       "Read it in Python 3.11+ with `tomllib.loads(text)` (or `tomllib.load(file)` on a binary file)."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "In TOML, how do you write the text `reviewradar`?",
+      "choices": [
+       "`name = reviewradar`",
+       "`name = \"reviewradar\"`",
+       "`name: reviewradar`",
+       "`name := reviewradar`"
+      ],
+      "a": 1,
+      "why": "Strings need quotes in TOML."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "predict",
+     "prompt": "The text below is parsed with `tomllib.loads` into `cfg`. What does `cfg[\"project\"][\"dependencies\"][1]` give?",
+     "hints": [
+      "`[project]` is a table, `dependencies` an array.",
+      "Arrays are indexed from 0.",
+      "The second item."
+     ],
+     "diff": 2,
+     "code": "[project]\nname = \"reviewradar\"\nversion = \"0.1.0\"\ndependencies = [\"fastapi\", \"uvicorn\"]\n\n[tool.pytest.ini_options]\naddopts = \"-q\"",
+     "answer": "uvicorn",
+     "lang": "toml",
+     "id": "toml.basics.1"
+    },
+    {
+     "type": "spot",
+     "prompt": "`tomllib` refuses to load this file. Which line is the problem?",
+     "hints": [
+      "Compare how the two values are written.",
+      "TOML strings must be quoted.",
+      "Line 2 is a bare word."
+     ],
+     "diff": 2,
+     "lines": [
+      "[project]",
+      "name = reviewradar",
+      "version = \"0.1.0\""
+     ],
+     "bad": [
+      2
+     ],
+     "lang": "toml",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "`name = \"reviewradar\"`",
+       "`name: reviewradar`",
+       "`name = 'reviewradar` (open quote only)",
+       "Remove the `[project]` line"
+      ],
+      "answer": 0
+     },
+     "invalid": "toml",
+     "id": "toml.basics.2"
+    },
+    {
+     "type": "mcq",
+     "prompt": "You need a config file that holds comments and is hard to mis-indent. Which format fits best?",
+     "hints": [
+      "JSON has no comments.",
+      "YAML relies on indentation.",
+      "TOML is explicit."
+     ],
+     "diff": 1,
+     "choices": [
+      "JSON",
+      "TOML",
+      "CSV",
+      "Plain text"
+     ],
+     "answer": 1,
+     "id": "toml.basics.3"
+    }
+   ]
+  }
+ ]
+}

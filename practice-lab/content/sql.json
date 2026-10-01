@@ -1,0 +1,2076 @@
+{
+ "concepts": [
+  {
+   "id": "sql.select",
+   "level": 1,
+   "title": "SELECT: choosing columns",
+   "lede": "A table is a grid of rows and named columns. `SELECT` picks which columns you want to see, and `FROM` says which table.",
+   "minutes": 4,
+   "phases": [
+    "data",
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "p",
+      "x": "The tables below are a small support-desk database, like the tickets ReviewRadar classifies. Open the **Tables you can query** box in any exercise to see them."
+     },
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "SELECT name, country FROM customers;          -- two columns, every row\n\nSELECT id, words AS length FROM tickets;      -- AS gives a column a new name\n\nSELECT id, words / 200.0 AS minutes FROM tickets;   -- compute a value"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`SELECT *` means every column. Handy for a quick look, but name your columns in real code.",
+       "Keywords are case-insensitive, but writing them in capitals makes queries easier to read.",
+       "`--` starts a comment. End a statement with `;`."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "`/` between two whole numbers does integer division in SQLite and Postgres: `7 / 2` is 3. Use `7 / 2.0` to get 3.5."
+     },
+     {
+      "t": "quick",
+      "q": "Which query returns only the `plan` column of `customers`?",
+      "choices": [
+       "`SELECT plan FROM customers;`",
+       "`SELECT customers FROM plan;`",
+       "`FROM customers SELECT plan;`",
+       "`SELECT * plan;`"
+      ],
+      "a": 0,
+      "why": "The pattern is `SELECT columns FROM table`."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "sql",
+     "prompt": "Show every customer's `name` and `country`.",
+     "hints": [
+      "You need two columns from one table.",
+      "List the columns after SELECT, separated by a comma.",
+      "`SELECT name, country FROM customers;`"
+     ],
+     "diff": 1,
+     "dataset": "support",
+     "starter": "-- write your query\n",
+     "solution": "SELECT name, country FROM customers",
+     "ordered": false,
+     "names": false,
+     "id": "sql.select.1"
+    },
+    {
+     "type": "sql",
+     "prompt": "Show each ticket's `id` and its `words` renamed to `length`.",
+     "hints": [
+      "Two columns: `id` and `words`.",
+      "`AS` renames a column in the result.",
+      "`SELECT id, words AS length FROM tickets;`"
+     ],
+     "diff": 2,
+     "dataset": "support",
+     "starter": "-- use AS to rename\n",
+     "solution": "SELECT id, words AS length FROM tickets",
+     "ordered": false,
+     "names": true,
+     "id": "sql.select.2"
+    },
+    {
+     "type": "sql",
+     "prompt": "For each ticket show its `id` and the reading time in minutes, named `minutes`, rounded to 2 decimals. Assume 200 words per minute.",
+     "hints": [
+      "Divide `words` by 200.",
+      "Use `200.0` so the division keeps decimals.",
+      "`SELECT id, ROUND(words / 200.0, 2) AS minutes FROM tickets;`"
+     ],
+     "diff": 2,
+     "dataset": "support",
+     "starter": "-- ROUND(value, 2)\n",
+     "solution": "SELECT id, ROUND(words / 200.0, 2) AS minutes FROM tickets",
+     "ordered": false,
+     "names": true,
+     "id": "sql.select.3"
+    }
+   ]
+  },
+  {
+   "id": "sql.where",
+   "level": 1,
+   "title": "WHERE: filtering rows",
+   "lede": "`WHERE` keeps only the rows that satisfy a condition. Combine conditions with `AND`, `OR` and `NOT`.",
+   "minutes": 4,
+   "phases": [
+    "data"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "SELECT id FROM tickets WHERE status = 'open' AND priority = 3;\nSELECT name FROM customers WHERE plan IN ('pro', 'enterprise');\nSELECT id FROM tickets WHERE words BETWEEN 20 AND 100;\nSELECT name FROM customers WHERE name LIKE 'A%';        -- starts with A\nSELECT id FROM tickets WHERE agent_id IS NULL;          -- no agent yet"
+     },
+     {
+      "t": "table",
+      "cols": [
+       "Pattern",
+       "Means"
+      ],
+      "rows": [
+       [
+        "`=` `<>` `<` `>=`",
+        "compare (`<>` is not equal)"
+       ],
+       [
+        "`IN (a, b)`",
+        "one of several values"
+       ],
+       [
+        "`LIKE 'x%'`",
+        "`%` any text, `_` one character"
+       ],
+       [
+        "`IS NULL`",
+        "the value is missing"
+       ]
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "`NULL` means \"unknown\", so `x = NULL` is never true, even for NULL rows. Always write `IS NULL` or `IS NOT NULL`."
+     },
+     {
+      "t": "quick",
+      "q": "Which clause correctly finds tickets that have not been resolved (`resolved_at` is missing)?",
+      "choices": [
+       "`WHERE resolved_at = NULL`",
+       "`WHERE resolved_at IS NULL`",
+       "`WHERE resolved_at = ''`",
+       "`WHERE NOT resolved_at`"
+      ],
+      "a": 1,
+      "why": "Only `IS NULL` tests for a missing value."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "sql",
+     "prompt": "Find the `id` of every ticket that is `open` and has priority 3.",
+     "hints": [
+      "Two conditions must both be true.",
+      "Text values go in single quotes: `'open'`.",
+      "`WHERE status = 'open' AND priority = 3`"
+     ],
+     "diff": 1,
+     "dataset": "support",
+     "starter": "-- WHERE with AND\n",
+     "solution": "SELECT id FROM tickets WHERE status = 'open' AND priority = 3",
+     "ordered": false,
+     "names": false,
+     "id": "sql.where.1"
+    },
+    {
+     "type": "sql",
+     "prompt": "List the `name` of every customer who is not on the `free` plan.",
+     "hints": [
+      "Use a comparison that means \"not equal\".",
+      "`<>` or `!=`, or `IN ('pro', 'enterprise')`.",
+      "`WHERE plan <> 'free'`"
+     ],
+     "diff": 1,
+     "dataset": "support",
+     "starter": "-- not free\n",
+     "solution": "SELECT name FROM customers WHERE plan <> 'free'",
+     "ordered": false,
+     "names": false,
+     "id": "sql.where.2"
+    },
+    {
+     "type": "sql",
+     "prompt": "Which tickets have no agent assigned? Show their `id`.",
+     "hints": [
+      "The `agent_id` is missing (NULL) for these tickets.",
+      "`= NULL` never matches.",
+      "`WHERE agent_id IS NULL`"
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "dataset": "support",
+     "starter": "-- careful with NULL\n",
+     "solution": "SELECT id FROM tickets WHERE agent_id IS NULL",
+     "ordered": false,
+     "names": false,
+     "id": "sql.where.3"
+    },
+    {
+     "type": "mcq",
+     "prompt": "What does `SELECT id FROM tickets WHERE resolved_at = NULL;` return?",
+     "hints": [
+      "Compare anything with NULL using `=`.",
+      "The result is not true, it is unknown.",
+      "`WHERE` keeps only rows where the condition is true."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "why": "`resolved_at = NULL` evaluates to NULL (unknown) for every row, and `WHERE` keeps only rows that are true. Use `IS NULL`.",
+     "choices": [
+      "The unresolved tickets",
+      "All tickets",
+      "No rows at all",
+      "An error"
+     ],
+     "answer": 2,
+     "id": "sql.where.4"
+    }
+   ]
+  },
+  {
+   "id": "sql.order",
+   "level": 1,
+   "title": "ORDER BY, LIMIT and DISTINCT",
+   "lede": "Rows come back in no guaranteed order unless you ask. `ORDER BY` sorts, `LIMIT` trims, and `DISTINCT` removes repeats.",
+   "minutes": 4,
+   "phases": [
+    "data",
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "SELECT id, words FROM tickets ORDER BY words DESC LIMIT 3;     -- 3 longest\nSELECT DISTINCT category FROM tickets ORDER BY category;       -- unique values\nSELECT id FROM tickets ORDER BY priority DESC, created_at ASC; -- tie-breaker after the comma"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`ASC` is the default (smallest first); `DESC` is largest first.",
+       "Sort by several columns: later ones only matter when earlier ones tie.",
+       "`LIMIT n` keeps the first `n` rows, so it only makes sense after an `ORDER BY`."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "Without `ORDER BY`, the database may return rows in any order and that order can change. Never rely on it."
+     },
+     {
+      "t": "quick",
+      "q": "Which gives the 5 most recent tickets?",
+      "choices": [
+       "`ORDER BY created_at LIMIT 5`",
+       "`ORDER BY created_at DESC LIMIT 5`",
+       "`LIMIT 5 ORDER BY created_at`",
+       "`SELECT DISTINCT 5`"
+      ],
+      "a": 1,
+      "why": "Newest first means descending date, then take 5."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "sql",
+     "prompt": "Show the `id` and `words` of the 3 longest tickets, longest first.",
+     "hints": [
+      "Sort by length first.",
+      "`DESC` puts the biggest at the top.",
+      "`ORDER BY words DESC LIMIT 3`"
+     ],
+     "diff": 1,
+     "dataset": "support",
+     "starter": "-- ORDER BY ... DESC LIMIT\n",
+     "solution": "SELECT id, words FROM tickets ORDER BY words DESC LIMIT 3",
+     "ordered": true,
+     "names": false,
+     "id": "sql.order.1"
+    },
+    {
+     "type": "sql",
+     "prompt": "List the distinct ticket categories in alphabetical order.",
+     "hints": [
+      "You want each category once.",
+      "`DISTINCT` removes duplicates.",
+      "`SELECT DISTINCT category FROM tickets ORDER BY category`"
+     ],
+     "diff": 1,
+     "dataset": "support",
+     "starter": "-- DISTINCT + ORDER BY\n",
+     "solution": "SELECT DISTINCT category FROM tickets ORDER BY category",
+     "ordered": true,
+     "names": false,
+     "id": "sql.order.2"
+    },
+    {
+     "type": "sql",
+     "prompt": "List every ticket `id`, highest priority first. For tickets with the same priority, oldest `created_at` first.",
+     "hints": [
+      "Sort by priority, then break ties.",
+      "Separate the sort keys with a comma.",
+      "`ORDER BY priority DESC, created_at ASC`"
+     ],
+     "diff": 2,
+     "dataset": "support",
+     "starter": "-- two sort keys\n",
+     "solution": "SELECT id FROM tickets ORDER BY priority DESC, created_at ASC",
+     "ordered": true,
+     "names": false,
+     "id": "sql.order.3"
+    }
+   ]
+  },
+  {
+   "id": "sql.agg",
+   "level": 2,
+   "title": "Aggregates: COUNT, SUM, AVG and GROUP BY",
+   "lede": "Aggregate functions squeeze many rows into one number. `GROUP BY` does it once per group.",
+   "minutes": 5,
+   "phases": [
+    "data",
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "p",
+      "x": "Press the buttons to group the rows by category and change the function."
+     },
+     {
+      "t": "viz",
+      "kind": "groupby",
+      "data": {
+       "title": "Watch GROUP BY collapse rows",
+       "table": "tickets",
+       "cols": [
+        "id",
+        "category",
+        "words"
+       ],
+       "group": "category",
+       "value": "words",
+       "rows": [
+        [
+         1,
+         "billing",
+         42
+        ],
+        [
+         2,
+         "bug",
+         118
+        ],
+        [
+         3,
+         "account",
+         20
+        ],
+        [
+         4,
+         "bug",
+         95
+        ],
+        [
+         5,
+         "feature",
+         60
+        ],
+        [
+         6,
+         "billing",
+         38
+        ],
+        [
+         7,
+         "bug",
+         150
+        ],
+        [
+         8,
+         "account",
+         15
+        ]
+       ]
+      }
+     },
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "SELECT COUNT(*) FROM tickets;                              -- how many rows\nSELECT category, COUNT(*) AS n FROM tickets GROUP BY category;\nSELECT category, ROUND(AVG(words), 1) AS avg_words\nFROM tickets\nGROUP BY category\nHAVING COUNT(*) > 3;                                       -- filter groups"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`COUNT(*)` counts rows; `COUNT(col)` skips NULLs.",
+       "`WHERE` filters **rows before** grouping. `HAVING` filters **groups after** aggregating.",
+       "Every selected column must be either in `GROUP BY` or inside an aggregate."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "You cannot use an aggregate in `WHERE`. `WHERE COUNT(*) > 3` is an error; use `HAVING COUNT(*) > 3`."
+     },
+     {
+      "t": "quick",
+      "q": "Which clause removes whole groups, such as categories with fewer than 3 tickets?",
+      "choices": [
+       "`WHERE`",
+       "`HAVING`",
+       "`ORDER BY`",
+       "`DISTINCT`"
+      ],
+      "a": 1,
+      "why": "`HAVING` runs after grouping, so it can test aggregates."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "sql",
+     "prompt": "How many tickets are in each category? Show `category` and the count as `n`.",
+     "hints": [
+      "You need one row per category.",
+      "Count rows with `COUNT(*)`.",
+      "`SELECT category, COUNT(*) AS n FROM tickets GROUP BY category`"
+     ],
+     "diff": 1,
+     "dataset": "support",
+     "starter": "-- GROUP BY\n",
+     "solution": "SELECT category, COUNT(*) AS n FROM tickets GROUP BY category",
+     "ordered": false,
+     "names": true,
+     "id": "sql.agg.1"
+    },
+    {
+     "type": "sql",
+     "prompt": "For categories with more than 3 tickets, show `category` and the average `words` rounded to 1 decimal as `avg_words`.",
+     "hints": [
+      "Group by category, then keep only big groups.",
+      "Filter groups with `HAVING`, not `WHERE`.",
+      "`... GROUP BY category HAVING COUNT(*) > 3`"
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "dataset": "support",
+     "starter": "-- GROUP BY with HAVING\n",
+     "solution": "SELECT category, ROUND(AVG(words), 1) AS avg_words FROM tickets GROUP BY category HAVING COUNT(*) > 3",
+     "ordered": false,
+     "names": true,
+     "id": "sql.agg.2"
+    },
+    {
+     "type": "sql",
+     "prompt": "How many **open** tickets are there for each priority? Show `priority` and `n`.",
+     "hints": [
+      "Filter the rows before grouping.",
+      "`WHERE` comes before `GROUP BY`.",
+      "`WHERE status = 'open' GROUP BY priority`"
+     ],
+     "diff": 2,
+     "dataset": "support",
+     "starter": "-- filter rows first, then group\n",
+     "solution": "SELECT priority, COUNT(*) AS n FROM tickets WHERE status = 'open' GROUP BY priority",
+     "ordered": false,
+     "names": true,
+     "id": "sql.agg.3"
+    },
+    {
+     "type": "mcq",
+     "prompt": "You want customers' ticket counts but only for customers with at least 3 tickets. Where does that condition go?",
+     "hints": [
+      "The count only exists after grouping.",
+      "Aggregates cannot appear in `WHERE`.",
+      "`HAVING` filters groups."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "explain": {
+      "ask": "In your own words: what is the difference between WHERE and HAVING?",
+      "points": [
+       "WHERE filters individual rows before grouping",
+       "HAVING filters groups after aggregates are computed"
+      ],
+      "model": "`WHERE` is applied to rows before they are grouped, so it cannot see aggregate results. `HAVING` runs after `GROUP BY` and can filter on `COUNT`, `SUM` and friends."
+     },
+     "choices": [
+      "`WHERE COUNT(*) >= 3`",
+      "`HAVING COUNT(*) >= 3`",
+      "`GROUP BY COUNT(*) >= 3`",
+      "`LIMIT 3`"
+     ],
+     "answer": 1,
+     "id": "sql.agg.4"
+    }
+   ]
+  },
+  {
+   "id": "sql.joins",
+   "level": 2,
+   "title": "Joins: combining tables",
+   "lede": "Data lives in separate tables linked by keys. A join lines rows up by a matching column, and the join type decides what happens to rows without a partner.",
+   "minutes": 6,
+   "phases": [
+    "data",
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "viz",
+      "kind": "join",
+      "data": {
+       "title": "See how each join treats unmatched rows",
+       "left": {
+        "name": "customers",
+        "cols": [
+         "id",
+         "name"
+        ],
+        "rows": [
+         [
+          1,
+          "Ana"
+         ],
+         [
+          2,
+          "Ben"
+         ],
+         [
+          3,
+          "Chika"
+         ],
+         [
+          10,
+          "Jorge"
+         ]
+        ]
+       },
+       "right": {
+        "name": "tickets",
+        "cols": [
+         "id",
+         "customer_id",
+         "category"
+        ],
+        "rows": [
+         [
+          1,
+          1,
+          "billing"
+         ],
+         [
+          2,
+          2,
+          "bug"
+         ],
+         [
+          8,
+          1,
+          "account"
+         ],
+         [
+          11,
+          null,
+          "other"
+         ]
+        ]
+       },
+       "on": [
+        "id",
+        "customer_id"
+       ]
+      }
+     },
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "SELECT t.id, c.name\nFROM tickets AS t\nJOIN customers AS c ON c.id = t.customer_id;           -- INNER JOIN\n\nSELECT c.name, COUNT(t.id) AS n\nFROM customers AS c\nLEFT JOIN tickets AS t ON t.customer_id = c.id          -- keep customers with no tickets\nGROUP BY c.id;"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`INNER JOIN` (just `JOIN`) keeps only matching rows.",
+       "`LEFT JOIN` keeps every left row; missing partners become NULL.",
+       "Short aliases (`AS t`, `AS c`) keep queries readable."
+      ]
+     },
+     {
+      "t": "tip",
+      "x": "To find rows **without** a partner (customers with no tickets): `LEFT JOIN`, then `WHERE t.id IS NULL`."
+     },
+     {
+      "t": "quick",
+      "q": "Which join keeps customers who have no tickets?",
+      "choices": [
+       "INNER JOIN",
+       "LEFT JOIN from customers",
+       "LEFT JOIN from tickets",
+       "CROSS JOIN"
+      ],
+      "a": 1,
+      "why": "A LEFT JOIN keeps every row from the table on its left, here `customers`."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "sql",
+     "prompt": "Show each ticket's `id` together with the customer's `name`. Tickets without a customer can be left out.",
+     "hints": [
+      "Two tables are needed.",
+      "Match `tickets.customer_id` with `customers.id`.",
+      "`FROM tickets t JOIN customers c ON c.id = t.customer_id`"
+     ],
+     "diff": 1,
+     "dataset": "support",
+     "starter": "-- JOIN ... ON\n",
+     "solution": "SELECT t.id, c.name FROM tickets t JOIN customers c ON c.id = t.customer_id",
+     "ordered": false,
+     "names": false,
+     "id": "sql.joins.1"
+    },
+    {
+     "type": "sql",
+     "prompt": "List **every** customer's `name` with their number of tickets as `n`, including customers with zero tickets.",
+     "hints": [
+      "Customers with no tickets must survive the join.",
+      "Use `LEFT JOIN` from customers.",
+      "`COUNT(t.id)` counts only real tickets, so it gives 0 for no match."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "dataset": "support",
+     "starter": "-- LEFT JOIN + GROUP BY\n",
+     "solution": "SELECT c.name, COUNT(t.id) AS n FROM customers c LEFT JOIN tickets t ON t.customer_id = c.id GROUP BY c.id",
+     "ordered": false,
+     "names": false,
+     "id": "sql.joins.2"
+    },
+    {
+     "type": "sql",
+     "prompt": "Which customers have never opened a ticket? Show their `name`.",
+     "hints": [
+      "Start from a LEFT JOIN.",
+      "A customer with no tickets gets NULLs on the ticket side.",
+      "`WHERE t.id IS NULL`"
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "explain": {
+      "ask": "In your own words: why does `t.id IS NULL` find customers with no tickets?",
+      "points": [
+       "LEFT JOIN fills the ticket columns with NULL when nothing matches",
+       "A real ticket always has a non-NULL id"
+      ],
+      "model": "A left join keeps every customer. If none of their tickets match, all ticket columns come back as NULL. A real ticket has a non-null `id`, so `IS NULL` isolates the unmatched customers."
+     },
+     "dataset": "support",
+     "starter": "-- anti-join\n",
+     "solution": "SELECT c.name FROM customers c LEFT JOIN tickets t ON t.customer_id = c.id WHERE t.id IS NULL",
+     "ordered": false,
+     "names": false,
+     "id": "sql.joins.3"
+    }
+   ]
+  },
+  {
+   "id": "sql.dml",
+   "level": 2,
+   "title": "Changing data: INSERT, UPDATE, DELETE",
+   "lede": "Besides reading, SQL writes. The golden rule: always check your `WHERE` before you run an `UPDATE` or `DELETE`.",
+   "minutes": 5,
+   "phases": [
+    "data",
+    "serving"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "INSERT INTO customers (id, name, plan, country) VALUES (11, 'Kai Nowak', 'pro', 'PL');\n\nUPDATE tickets SET status = 'closed', resolved_at = '2026-09-19' WHERE id = 4;\n\nDELETE FROM tickets WHERE status = 'closed' AND priority = 1;"
+     },
+     {
+      "t": "warn",
+      "x": "`UPDATE tickets SET status = 'closed'` **without** `WHERE` changes every row. Run the same condition as a `SELECT` first to see what will be touched."
+     },
+     {
+      "t": "ul",
+      "x": [
+       "Constraints such as `PRIMARY KEY`, `NOT NULL` and `UNIQUE` make the database reject bad data.",
+       "A **transaction** (`BEGIN` ... `COMMIT`) makes several changes succeed or fail together.",
+       "In these exercises changes affect a throwaway copy of the data. A check query then reads the result."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "What happens with `DELETE FROM tickets;` (no `WHERE`)?",
+      "choices": [
+       "Nothing",
+       "It deletes every row",
+       "It deletes the table",
+       "It deletes the first row"
+      ],
+      "a": 1,
+      "why": "All rows go. The table itself stays."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "sql",
+     "prompt": "Add a new customer: id `11`, name `Kai Nowak`, plan `pro`, country `PL`.",
+     "hints": [
+      "Name the table and the columns.",
+      "Then `VALUES (...)` in the same order.",
+      "`INSERT INTO customers (id, name, plan, country) VALUES (11, 'Kai Nowak', 'pro', 'PL');`"
+     ],
+     "diff": 1,
+     "dataset": "support",
+     "starter": "-- INSERT INTO ... VALUES\n",
+     "solution": "INSERT INTO customers (id, name, plan, country) VALUES (11, 'Kai Nowak', 'pro', 'PL')",
+     "ordered": false,
+     "names": false,
+     "after": "SELECT id, name, plan, country FROM customers WHERE id = 11",
+     "id": "sql.dml.1"
+    },
+    {
+     "type": "sql",
+     "prompt": "Close ticket 4: set `status` to `closed` and `resolved_at` to `2026-09-19`.",
+     "hints": [
+      "Only one ticket should change.",
+      "Set both columns separated by a comma.",
+      "`UPDATE tickets SET status = 'closed', resolved_at = '2026-09-19' WHERE id = 4;`"
+     ],
+     "diff": 2,
+     "dataset": "support",
+     "starter": "-- UPDATE ... SET ... WHERE\n",
+     "solution": "UPDATE tickets SET status = 'closed', resolved_at = '2026-09-19' WHERE id = 4",
+     "ordered": false,
+     "names": false,
+     "after": "SELECT id, status, resolved_at FROM tickets WHERE id = 4",
+     "id": "sql.dml.2"
+    },
+    {
+     "type": "sql",
+     "prompt": "Delete all tickets that are `closed` and have priority 1.",
+     "hints": [
+      "Both conditions must hold.",
+      "A `DELETE` takes a `WHERE` just like a `SELECT`.",
+      "`DELETE FROM tickets WHERE status = 'closed' AND priority = 1;`"
+     ],
+     "diff": 2,
+     "dataset": "support",
+     "starter": "-- DELETE ... WHERE\n",
+     "solution": "DELETE FROM tickets WHERE status = 'closed' AND priority = 1",
+     "ordered": false,
+     "names": false,
+     "after": "SELECT COUNT(*) FROM tickets",
+     "id": "sql.dml.3"
+    },
+    {
+     "type": "spot",
+     "prompt": "A teammate wants to close ticket 9 only, but this deletes the wrong data. Which line is the problem?",
+     "hints": [
+      "Read what the statement actually targets.",
+      "Which rows will it change?",
+      "There is no `WHERE`, so every ticket changes."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "lines": [
+      "UPDATE tickets",
+      "SET status = 'closed'",
+      ";"
+     ],
+     "bad": [
+      2
+     ],
+     "lang": "sql",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "Add `WHERE id = 9` before the semicolon",
+       "Add `LIMIT 1` before the semicolon",
+       "Replace `UPDATE` with `INSERT`",
+       "Nothing, the statement is fine"
+      ],
+      "answer": 0,
+      "why": [
+       null,
+       "`LIMIT` is not allowed in a standard `UPDATE` and does not say which row.",
+       "`INSERT` adds rows; it cannot change existing ones.",
+       "It would close every ticket."
+      ]
+     },
+     "id": "sql.dml.4"
+    }
+   ]
+  },
+  {
+   "id": "sql.subq",
+   "level": 3,
+   "title": "Subqueries",
+   "lede": "A query can sit inside another. A subquery computes a value or a list of values that the outer query then uses.",
+   "minutes": 6,
+   "phases": [
+    "data",
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "-- scalar subquery: one value\nSELECT id, words FROM tickets\nWHERE words > (SELECT AVG(words) FROM tickets);\n\n-- IN: a list of values\nSELECT name FROM customers\nWHERE id IN (SELECT customer_id FROM tickets WHERE status = 'open');\n\n-- EXISTS: is there at least one matching row?\nSELECT name FROM customers c\nWHERE NOT EXISTS (SELECT 1 FROM tickets t WHERE t.customer_id = c.id);"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "A subquery in parentheses can return **one value**, **a column** (for `IN`) or **a table** (in `FROM`).",
+       "A **correlated** subquery refers to the outer row (`c.id` above) and is re-evaluated per row.",
+       "`EXISTS` stops at the first match, so it is often faster than `IN` for big tables."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "`x NOT IN (subquery)` returns **no rows at all** if the subquery produces even one `NULL`. Prefer `NOT EXISTS`."
+     },
+     {
+      "t": "quick",
+      "q": "Which keyword asks whether a subquery returns at least one row?",
+      "choices": [
+       "`ANY`",
+       "`EXISTS`",
+       "`HAVING`",
+       "`DISTINCT`"
+      ],
+      "a": 1,
+      "why": "`EXISTS (subquery)` is true when the subquery finds a row."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "sql",
+     "prompt": "Show the `id` and `words` of every ticket longer than the average ticket.",
+     "hints": [
+      "First you need the average length as a single number.",
+      "Put that query in parentheses inside the `WHERE`.",
+      "`WHERE words > (SELECT AVG(words) FROM tickets)`"
+     ],
+     "diff": 1,
+     "dataset": "support",
+     "starter": "-- WHERE words > (subquery)\n",
+     "solution": "SELECT id, words FROM tickets WHERE words > (SELECT AVG(words) FROM tickets)",
+     "ordered": false,
+     "names": false,
+     "id": "sql.subq.1"
+    },
+    {
+     "type": "sql",
+     "prompt": "Show the `name` of every customer who has at least one **open** ticket.",
+     "hints": [
+      "Find the customer ids of open tickets first.",
+      "Then keep customers whose id is in that list.",
+      "`WHERE id IN (SELECT customer_id FROM tickets WHERE status = 'open')`"
+     ],
+     "diff": 2,
+     "dataset": "support",
+     "starter": "-- IN or EXISTS\n",
+     "solution": "SELECT name FROM customers WHERE id IN (SELECT customer_id FROM tickets WHERE status = 'open')",
+     "ordered": false,
+     "names": false,
+     "id": "sql.subq.2"
+    },
+    {
+     "type": "sql",
+     "prompt": "Using `NOT EXISTS`, show the `name` of customers who have never opened a ticket.",
+     "hints": [
+      "The subquery must look at the current customer.",
+      "Compare `t.customer_id` with `c.id` inside it.",
+      "`WHERE NOT EXISTS (SELECT 1 FROM tickets t WHERE t.customer_id = c.id)`"
+     ],
+     "diff": 3,
+     "dataset": "support",
+     "starter": "-- correlated subquery\n",
+     "solution": "SELECT name FROM customers c WHERE NOT EXISTS (SELECT 1 FROM tickets t WHERE t.customer_id = c.id)",
+     "ordered": false,
+     "names": false,
+     "id": "sql.subq.3"
+    },
+    {
+     "type": "mcq",
+     "prompt": "`SELECT name FROM customers WHERE id NOT IN (SELECT customer_id FROM tickets);` What does it return here? (One ticket has no customer, so its `customer_id` is NULL.)",
+     "hints": [
+      "`id NOT IN (1, 2, NULL)` can never be true.",
+      "Comparing with NULL gives unknown.",
+      "The `NULL` in the list poisons the whole test."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "explain": {
+      "ask": "In your own words: why does the NULL break NOT IN?",
+      "points": [
+       "NOT IN means not equal to any value in the list",
+       "Comparing with NULL is unknown, so the test is never true"
+      ],
+      "model": "`id NOT IN (a, b, NULL)` expands to `id <> a AND id <> b AND id <> NULL`. The last part is unknown, so the whole condition can never be true."
+     },
+     "why": "`NOT IN` with a NULL in the list evaluates to unknown for every row, so nothing passes the filter. `NOT EXISTS` (or filtering the NULL out of the subquery) avoids it.",
+     "choices": [
+      "Customers with no tickets",
+      "No rows at all",
+      "All customers",
+      "An error"
+     ],
+     "answer": 1,
+     "id": "sql.subq.4"
+    }
+   ]
+  },
+  {
+   "id": "sql.cte",
+   "level": 3,
+   "title": "CTEs: WITH clauses",
+   "lede": "A common table expression gives a subquery a name so the query reads top to bottom, one idea per step.",
+   "minutes": 6,
+   "phases": [
+    "data",
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "WITH open_t AS (\n    SELECT * FROM tickets WHERE status = 'open'\n),\nper_cat AS (\n    SELECT category, COUNT(*) AS n FROM open_t GROUP BY category\n)\nSELECT category, n FROM per_cat WHERE n >= 2;"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`WITH name AS (...)` defines a temporary table that exists only for this statement.",
+       "Chain several CTEs with commas. A later CTE can use an earlier one.",
+       "CTEs are for **readability**. The planner treats them much like subqueries."
+      ]
+     },
+     {
+      "t": "tip",
+      "x": "Write complicated queries as a series of small named steps and test each step by selecting from it."
+     },
+     {
+      "t": "quick",
+      "q": "A CTE lives:",
+      "choices": [
+       "Forever, like a table",
+       "For the one statement that defines it",
+       "Until the connection closes",
+       "Only inside `HAVING`"
+      ],
+      "a": 1,
+      "why": "It is a named subquery for a single statement."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "sql",
+     "prompt": "Use a CTE named `open_t` holding the open tickets. Then count them per category: show `category` and `n`.",
+     "hints": [
+      "Define the CTE first, then select from it.",
+      "Filter inside the CTE, group outside.",
+      "`WITH open_t AS (SELECT * FROM tickets WHERE status = 'open') SELECT category, COUNT(*) AS n FROM open_t GROUP BY category`"
+     ],
+     "diff": 1,
+     "dataset": "support",
+     "starter": "-- WITH open_t AS (...)\n",
+     "solution": "WITH open_t AS (SELECT * FROM tickets WHERE status = 'open') SELECT category, COUNT(*) AS n FROM open_t GROUP BY category",
+     "ordered": false,
+     "names": true,
+     "id": "sql.cte.1"
+    },
+    {
+     "type": "sql",
+     "prompt": "Show the `category` of every category whose average `words` is above the average of all tickets. Use two CTEs.",
+     "hints": [
+      "One CTE for each category's average, one for the overall average.",
+      "The overall CTE has a single row, so you can join it to every category.",
+      "`FROM per_cat, overall WHERE per_cat.a > overall.a`"
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "dataset": "support",
+     "starter": "-- per_cat and overall\n",
+     "solution": "WITH per_cat AS (SELECT category, AVG(words) AS a FROM tickets GROUP BY category), overall AS (SELECT AVG(words) AS a FROM tickets) SELECT per_cat.category FROM per_cat, overall WHERE per_cat.a > overall.a",
+     "ordered": false,
+     "names": false,
+     "id": "sql.cte.2"
+    },
+    {
+     "type": "sql",
+     "prompt": "Show the `name` and ticket count `n` of customers who have **more tickets than the average customer** (average over customers who have at least one ticket). Ignore tickets with no customer.",
+     "hints": [
+      "Count tickets per customer id first.",
+      "Then compare each count to `(SELECT AVG(n) FROM per_c)`.",
+      "Join to `customers` at the end to get the names."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "dataset": "support",
+     "starter": "-- count per customer in a CTE\n",
+     "solution": "WITH per_c AS (SELECT customer_id, COUNT(*) AS n FROM tickets WHERE customer_id IS NOT NULL GROUP BY customer_id) SELECT c.name, p.n FROM per_c p JOIN customers c ON c.id = p.customer_id WHERE p.n > (SELECT AVG(n) FROM per_c)",
+     "ordered": false,
+     "names": false,
+     "id": "sql.cte.3"
+    },
+    {
+     "type": "order",
+     "prompt": "Put the lines in order to build a query that lists the categories having at least 3 open tickets.",
+     "hints": [
+      "A `WITH` block must come before the main `SELECT`.",
+      "The CTE body is inside the brackets.",
+      "`HAVING` comes after `GROUP BY`."
+     ],
+     "diff": 2,
+     "lines": [
+      "WITH open_t AS (",
+      "    SELECT * FROM tickets WHERE status = 'open'",
+      ")",
+      "SELECT category, COUNT(*) AS n",
+      "FROM open_t",
+      "GROUP BY category",
+      "HAVING COUNT(*) >= 3;"
+     ],
+     "lang": "sql",
+     "id": "sql.cte.4"
+    }
+   ]
+  },
+  {
+   "id": "sql.case",
+   "level": 3,
+   "title": "CASE, COALESCE, NULLs and dates",
+   "lede": "`CASE` is SQL's if/else. `COALESCE` replaces missing values. Both appear in nearly every real query.",
+   "minutes": 6,
+   "phases": [
+    "data",
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "SELECT id,\n       CASE WHEN words < 20 THEN 'short'\n            WHEN words < 100 THEN 'medium'\n            ELSE 'long' END AS size\nFROM tickets;\n\nSELECT t.id, COALESCE(a.name, 'unassigned') AS agent\nFROM tickets t LEFT JOIN agents a ON a.id = t.agent_id;\n\n-- days between two dates (SQLite). In PostgreSQL: resolved_at - created_at\nSELECT id, CAST(julianday(resolved_at) - julianday(created_at) AS INTEGER) AS days\nFROM tickets WHERE resolved_at IS NOT NULL;"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`CASE` checks `WHEN` branches top to bottom and uses the first that is true.",
+       "`COALESCE(a, b, c)` returns the first value that is not NULL.",
+       "Aggregates such as `AVG` and `SUM` **ignore NULLs**. `COUNT(*)` counts rows, `COUNT(col)` counts non-NULLs.",
+       "Anything + NULL is NULL. Any comparison with NULL is unknown."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "Date functions differ between databases: `julianday`/`strftime` in SQLite, `date_trunc` and date subtraction in PostgreSQL. The ideas carry over; the function names do not."
+     },
+     {
+      "t": "quick",
+      "q": "What is `COALESCE(NULL, NULL, 3, 4)`?",
+      "choices": [
+       "NULL",
+       "3",
+       "4",
+       "7"
+      ],
+      "a": 1,
+      "why": "It returns the first non-NULL argument."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "sql",
+     "prompt": "Label each ticket by length: show `id` and `size`, where `size` is `short` (under 20 words), `medium` (under 100) or `long`.",
+     "hints": [
+      "`CASE` goes in the select list.",
+      "Check the smallest range first.",
+      "`CASE WHEN words < 20 THEN 'short' WHEN words < 100 THEN 'medium' ELSE 'long' END AS size`"
+     ],
+     "diff": 2,
+     "dataset": "support",
+     "starter": "-- CASE WHEN\n",
+     "solution": "SELECT id, CASE WHEN words < 20 THEN 'short' WHEN words < 100 THEN 'medium' ELSE 'long' END AS size FROM tickets",
+     "ordered": false,
+     "names": true,
+     "id": "sql.case.1"
+    },
+    {
+     "type": "sql",
+     "prompt": "For resolved tickets show `id` and the whole number of days between `created_at` and `resolved_at`, named `days`. (In SQLite use `julianday(...)`.)",
+     "hints": [
+      "Subtract the two day numbers.",
+      "Only tickets with a `resolved_at` qualify.",
+      "`CAST(julianday(resolved_at) - julianday(created_at) AS INTEGER) AS days`"
+     ],
+     "diff": 3,
+     "dataset": "support",
+     "starter": "-- julianday(date) gives a day number\n",
+     "solution": "SELECT id, CAST(julianday(resolved_at) - julianday(created_at) AS INTEGER) AS days FROM tickets WHERE resolved_at IS NOT NULL",
+     "ordered": false,
+     "names": true,
+     "id": "sql.case.2"
+    },
+    {
+     "type": "sql",
+     "prompt": "Show every ticket `id` and its agent's name as `agent`. Use `unassigned` when there is no agent.",
+     "hints": [
+      "Unassigned tickets must not disappear.",
+      "A LEFT JOIN gives NULL when there is no agent.",
+      "`COALESCE(a.name, 'unassigned') AS agent`"
+     ],
+     "diff": 3,
+     "dataset": "support",
+     "starter": "-- LEFT JOIN + COALESCE\n",
+     "solution": "SELECT t.id, COALESCE(a.name, 'unassigned') AS agent FROM tickets t LEFT JOIN agents a ON a.id = t.agent_id",
+     "ordered": false,
+     "names": true,
+     "id": "sql.case.3"
+    },
+    {
+     "type": "mcq",
+     "prompt": "A column holds the values 2, NULL, 4. What does `AVG(col)` return?",
+     "hints": [
+      "Do aggregates count the NULL?",
+      "`AVG` ignores NULLs: (2 + 4) / 2.",
+      "If NULL counted as 0 it would be 2, but it is skipped."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "2",
+      "3",
+      "NULL",
+      "1.5"
+     ],
+     "answer": 1,
+     "id": "sql.case.4"
+    }
+   ]
+  },
+  {
+   "id": "sql.setops",
+   "level": 3,
+   "title": "Set operations and self-joins",
+   "lede": "Stack results with `UNION`, compare them with `INTERSECT` and `EXCEPT`, or join a table to itself to compare its own rows.",
+   "minutes": 6,
+   "phases": [
+    "data",
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "-- customers with BOTH an open and a closed ticket\nSELECT customer_id FROM tickets WHERE status = 'open'\nINTERSECT\nSELECT customer_id FROM tickets WHERE status = 'closed';\n\n-- combos in open tickets that never appear in closed ones\nSELECT category, priority FROM tickets WHERE status = 'open'\nEXCEPT\nSELECT category, priority FROM tickets WHERE status = 'closed';\n\n-- self-join: pairs of tickets from the same customer\nSELECT a.id AS a_id, b.id AS b_id\nFROM tickets a JOIN tickets b ON a.customer_id = b.customer_id AND a.id < b.id;"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`UNION` removes duplicates; `UNION ALL` keeps them and is faster.",
+       "Both queries must return the same number of columns with compatible types.",
+       "A self-join needs two **aliases** for the same table. `a.id < b.id` stops each pair appearing twice and a row pairing with itself."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "Which keeps duplicate rows?",
+      "choices": [
+       "`UNION`",
+       "`UNION ALL`",
+       "`INTERSECT`",
+       "`EXCEPT`"
+      ],
+      "a": 1,
+      "why": "`UNION` de-duplicates; `UNION ALL` does not."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "sql",
+     "prompt": "Show the `name` of customers who have both an open ticket and a closed ticket.",
+     "hints": [
+      "You need the customers who appear in both groups.",
+      "Two `IN` tests joined with `AND` work, or `INTERSECT` on ids.",
+      "`WHERE id IN (open ids) AND id IN (closed ids)`"
+     ],
+     "diff": 3,
+     "dataset": "support",
+     "starter": "-- INTERSECT or two IN tests\n",
+     "solution": "SELECT name FROM customers WHERE id IN (SELECT customer_id FROM tickets WHERE status = 'open') AND id IN (SELECT customer_id FROM tickets WHERE status = 'closed')",
+     "ordered": false,
+     "names": false,
+     "id": "sql.setops.1"
+    },
+    {
+     "type": "sql",
+     "prompt": "Which `category` and `priority` combinations occur in open tickets but never in closed tickets?",
+     "hints": [
+      "Take the open combinations, then remove the closed ones.",
+      "`EXCEPT` subtracts the second result from the first.",
+      "`SELECT ... WHERE status = 'open' EXCEPT SELECT ... WHERE status = 'closed'`"
+     ],
+     "diff": 3,
+     "dataset": "support",
+     "starter": "-- EXCEPT\n",
+     "solution": "SELECT category, priority FROM tickets WHERE status = 'open' EXCEPT SELECT category, priority FROM tickets WHERE status = 'closed'",
+     "ordered": false,
+     "names": false,
+     "id": "sql.setops.2"
+    },
+    {
+     "type": "sql",
+     "prompt": "List every pair of tickets raised by the same customer. Show `a_id` and `b_id` with `a_id` smaller than `b_id`, so each pair appears once.",
+     "hints": [
+      "Use the `tickets` table twice with different aliases.",
+      "Match on `customer_id`.",
+      "`a.id < b.id` removes duplicates."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "dataset": "support",
+     "starter": "-- join tickets to tickets\n",
+     "solution": "SELECT a.id AS a_id, b.id AS b_id FROM tickets a JOIN tickets b ON a.customer_id = b.customer_id AND a.id < b.id",
+     "ordered": false,
+     "names": true,
+     "id": "sql.setops.3"
+    },
+    {
+     "type": "mcq",
+     "prompt": "You combine two result sets that overlap and want to keep every row, including duplicates. Which should you use?",
+     "hints": [
+      "One of them removes duplicates by sorting or hashing.",
+      "The other just appends.",
+      "`UNION ALL`."
+     ],
+     "diff": 2,
+     "choices": [
+      "`UNION`",
+      "`UNION ALL`",
+      "`INTERSECT`",
+      "`JOIN`"
+     ],
+     "answer": 1,
+     "id": "sql.setops.4"
+    }
+   ]
+  },
+  {
+   "id": "sql.window1",
+   "level": 4,
+   "title": "Window functions: ranking and running totals",
+   "lede": "A window function calculates across related rows **without collapsing them**. Unlike `GROUP BY`, every row stays in the result.",
+   "minutes": 7,
+   "phases": [
+    "monitor",
+    "data"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "p",
+      "x": "Switch the function and toggle the partition to see how rows are numbered and totalled."
+     },
+     {
+      "t": "viz",
+      "kind": "window",
+      "data": {
+       "title": "Windows keep the rows",
+       "table": "tickets",
+       "cols": [
+        "id",
+        "category",
+        "words"
+       ],
+       "part": "category",
+       "order": "words",
+       "value": "words",
+       "rows": [
+        [
+         1,
+         "billing",
+         42
+        ],
+        [
+         2,
+         "bug",
+         118
+        ],
+        [
+         4,
+         "bug",
+         95
+        ],
+        [
+         6,
+         "billing",
+         38
+        ],
+        [
+         7,
+         "bug",
+         150
+        ],
+        [
+         9,
+         "billing",
+         70
+        ],
+        [
+         10,
+         "bug",
+         210
+        ],
+        [
+         13,
+         "billing",
+         30
+        ]
+       ]
+      }
+     },
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "SELECT id, category, words,\n       ROW_NUMBER() OVER (PARTITION BY category ORDER BY words DESC) AS rn\nFROM tickets;\n\nSELECT id, SUM(words) OVER (ORDER BY id) AS running FROM tickets;   -- running total"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`OVER (...)` defines the window: `PARTITION BY` splits rows into groups, `ORDER BY` orders inside each group.",
+       "`ROW_NUMBER()` 1,2,3...; `RANK()` leaves gaps after ties; `DENSE_RANK()` does not.",
+       "A window function runs **after** `WHERE`, so you cannot filter on it directly. Wrap the query in a CTE and filter there."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "For **top-N per group**, rank in a CTE and then keep `rn <= N` in the outer query. This is a classic interview question."
+     },
+     {
+      "t": "quick",
+      "q": "Three rows have scores 90, 90, 80 (high first). What does `RANK()` give?",
+      "choices": [
+       "1, 2, 3",
+       "1, 1, 2",
+       "1, 1, 3",
+       "1, 2, 2"
+      ],
+      "a": 2,
+      "why": "Tied rows share rank 1, and the next rank skips to 3."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "sql",
+     "prompt": "Number each ticket within its category from longest to shortest. Show `id`, `category` and the number as `rn`.",
+     "hints": [
+      "The numbering restarts for every category.",
+      "`PARTITION BY category ORDER BY words DESC`",
+      "`ROW_NUMBER() OVER (PARTITION BY category ORDER BY words DESC) AS rn`"
+     ],
+     "diff": 3,
+     "dataset": "support",
+     "starter": "-- ROW_NUMBER() OVER (PARTITION BY ...)\n",
+     "solution": "SELECT id, category, ROW_NUMBER() OVER (PARTITION BY category ORDER BY words DESC) AS rn FROM tickets",
+     "ordered": false,
+     "names": true,
+     "id": "sql.window1.1"
+    },
+    {
+     "type": "sql",
+     "prompt": "Show each ticket `id` with the running total of `words` in `id` order, named `running`.",
+     "hints": [
+      "A running total is a sum over a growing window.",
+      "Add `OVER (ORDER BY id)` after `SUM(words)`.",
+      "`SUM(words) OVER (ORDER BY id) AS running`"
+     ],
+     "diff": 3,
+     "dataset": "support",
+     "starter": "-- SUM(...) OVER (ORDER BY ...)\n",
+     "solution": "SELECT id, SUM(words) OVER (ORDER BY id) AS running FROM tickets",
+     "ordered": false,
+     "names": true,
+     "id": "sql.window1.2"
+    },
+    {
+     "type": "sql",
+     "prompt": "Show the **two longest tickets in each category**: `id`, `category`, `words`.",
+     "hints": [
+      "You cannot filter on a window function in the same query.",
+      "Compute the row number in a CTE.",
+      "Then `WHERE rn <= 2` in the outer query."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "explain": {
+      "ask": "In your own words: why do you need a CTE for top-N per group?",
+      "points": [
+       "Window functions are evaluated after WHERE",
+       "So you must compute the rank first and filter on it in an outer query"
+      ],
+      "model": "`WHERE` is applied before window functions run, so the rank does not exist yet at that point. Computing it in a CTE (or subquery) makes it an ordinary column the outer `WHERE` can use."
+     },
+     "dataset": "support",
+     "starter": "-- rank in a CTE, filter outside\n",
+     "solution": "WITH ranked AS (SELECT id, category, words, ROW_NUMBER() OVER (PARTITION BY category ORDER BY words DESC) AS rn FROM tickets) SELECT id, category, words FROM ranked WHERE rn <= 2",
+     "ordered": false,
+     "names": false,
+     "id": "sql.window1.3"
+    },
+    {
+     "type": "mcq",
+     "prompt": "Scores 90, 90, 80 ordered high to low. What does `DENSE_RANK()` return?",
+     "hints": [
+      "Tied rows share a rank.",
+      "`DENSE_RANK` never skips numbers.",
+      "The 80 gets rank 2."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "1, 2, 3",
+      "1, 1, 2",
+      "1, 1, 3",
+      "1, 2, 2"
+     ],
+     "answer": 1,
+     "id": "sql.window1.4"
+    }
+   ]
+  },
+  {
+   "id": "sql.window2",
+   "level": 4,
+   "title": "Windows for monitoring: LAG, daily metrics and drift",
+   "lede": "Window functions shine for time series: compare each day with the previous one, or compute a metric per day. This is the SQL behind ReviewRadar's monitoring.",
+   "minutes": 7,
+   "phases": [
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "p",
+      "x": "The `predictions` table logs every model prediction with the true label once known. Open **Tables you can query** to see it."
+     },
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "-- accuracy per day\nSELECT day,\n       ROUND(AVG(CASE WHEN pred_label = true_label THEN 1.0 ELSE 0.0 END), 2) AS accuracy\nFROM predictions\nGROUP BY day\nORDER BY day;\n\n-- compare with the previous row\nSELECT id, confidence, LAG(confidence) OVER (ORDER BY id) AS prev_conf\nFROM predictions;"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`LAG(col)` is the value from the previous row, `LEAD(col)` from the next. The first row has `NULL`.",
+       "Averaging a 1/0 flag gives the fraction of rows where it is 1. That is how you compute accuracy in SQL.",
+       "Daily accuracy, confidence and class mix are the first things to chart when watching for **drift**."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "In PostgreSQL you cannot average a boolean directly, so use `CASE WHEN ... THEN 1.0 ELSE 0.0 END` as above. It works everywhere."
+     },
+     {
+      "t": "quick",
+      "q": "What does `LAG(x) OVER (ORDER BY day)` give for the very first day?",
+      "choices": [
+       "0",
+       "NULL",
+       "the same day's x",
+       "an error"
+      ],
+      "a": 1,
+      "why": "There is no previous row, so the result is NULL."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "sql",
+     "prompt": "For each prediction show `id`, `confidence` and the previous row's confidence (ordered by `id`) as `prev_conf`.",
+     "hints": [
+      "You need the value from the row before.",
+      "`LAG(confidence)` needs an `OVER (ORDER BY id)`.",
+      "`LAG(confidence) OVER (ORDER BY id) AS prev_conf`"
+     ],
+     "diff": 2,
+     "dataset": "ml",
+     "starter": "-- LAG(...) OVER (ORDER BY id)\n",
+     "solution": "SELECT id, confidence, LAG(confidence) OVER (ORDER BY id) AS prev_conf FROM predictions",
+     "ordered": false,
+     "names": true,
+     "id": "sql.window2.1"
+    },
+    {
+     "type": "sql",
+     "prompt": "Compute the model's accuracy for each `day`: show `day` and `accuracy` (the fraction of rows where `pred_label` equals `true_label`, rounded to 2 decimals), in day order.",
+     "hints": [
+      "Turn each row into 1 (correct) or 0 (wrong) with `CASE`.",
+      "The average of those flags is the accuracy.",
+      "`GROUP BY day ORDER BY day`"
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "dataset": "ml",
+     "starter": "-- AVG of a 1/0 flag\n",
+     "solution": "SELECT day, ROUND(AVG(CASE WHEN pred_label = true_label THEN 1.0 ELSE 0.0 END), 2) AS accuracy FROM predictions GROUP BY day ORDER BY day",
+     "ordered": true,
+     "names": true,
+     "id": "sql.window2.2"
+    },
+    {
+     "type": "sql",
+     "prompt": "Compare the two model versions: show `model` and its `accuracy` rounded to 2 decimals.",
+     "hints": [
+      "Reuse the accuracy expression.",
+      "Group by `model` instead of `day`.",
+      "`GROUP BY model`"
+     ],
+     "diff": 2,
+     "dataset": "ml",
+     "starter": "-- same idea, grouped by model\n",
+     "solution": "SELECT model, ROUND(AVG(CASE WHEN pred_label = true_label THEN 1.0 ELSE 0.0 END), 2) AS accuracy FROM predictions GROUP BY model",
+     "ordered": false,
+     "names": true,
+     "id": "sql.window2.3"
+    },
+    {
+     "type": "sql",
+     "prompt": "Drift check: for each `day` show `accuracy` (rounded to 2 decimals) and `change`, the difference from the previous day's accuracy (rounded to 2 decimals). Order by day.",
+     "hints": [
+      "Build the daily accuracy first, in a CTE.",
+      "Then subtract `LAG(accuracy) OVER (ORDER BY day)`.",
+      "The first day has no previous day, so `change` is NULL."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "dataset": "ml",
+     "starter": "-- CTE for daily accuracy, then LAG\n",
+     "solution": "WITH daily AS (SELECT day, ROUND(AVG(CASE WHEN pred_label = true_label THEN 1.0 ELSE 0.0 END), 2) AS accuracy FROM predictions GROUP BY day) SELECT day, accuracy, ROUND(accuracy - LAG(accuracy) OVER (ORDER BY day), 2) AS change FROM daily ORDER BY day",
+     "ordered": true,
+     "names": true,
+     "id": "sql.window2.4"
+    }
+   ]
+  },
+  {
+   "id": "sql.design",
+   "level": 4,
+   "title": "Schema design: keys, constraints and normalisation",
+   "lede": "Good tables make bad data impossible. Keys identify rows, foreign keys link tables, and normalising stops the same fact living in two places.",
+   "minutes": 5,
+   "phases": [
+    "serving",
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "CREATE TABLE labels (\n    ticket_id INTEGER PRIMARY KEY,                -- unique, never NULL\n    label     TEXT NOT NULL,                      -- must have a value\n    FOREIGN KEY (ticket_id) REFERENCES tickets(id) -- must point at a real ticket\n);"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "**Primary key**: uniquely identifies a row. **Foreign key**: a column that must match a primary key elsewhere.",
+       "**Normalisation**: store each fact once. Keep the customer's name in `customers`, and refer to it by id from `tickets`.",
+       "Pick types deliberately: integers for ids and counts, `TEXT` for strings, a real date type for dates, `REAL`/`NUMERIC` for decimals."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "Storing a customer's name in every ticket row means renaming a customer requires updating hundreds of rows, and missing one leaves the data inconsistent."
+     },
+     {
+      "t": "quick",
+      "q": "A foreign key guarantees that:",
+      "choices": [
+       "The column is unique",
+       "The value matches an existing row in the referenced table",
+       "The column is indexed",
+       "The column is never NULL"
+      ],
+      "a": 1,
+      "why": "It protects the link between the tables."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "fill",
+     "prompt": "Complete the table definition.",
+     "hints": [
+      "The first makes each ticket id appear only once.",
+      "The second forbids a missing label.",
+      "`PRIMARY`, `NOT`, `REFERENCES`."
+     ],
+     "diff": 1,
+     "template": "CREATE TABLE labels (\n    ticket_id INTEGER ____ KEY,\n    label TEXT ____ NULL,\n    FOREIGN KEY (ticket_id) ____ tickets(id)\n);",
+     "blanks": [
+      [
+       "PRIMARY"
+      ],
+      [
+       "NOT"
+      ],
+      [
+       "REFERENCES"
+      ]
+     ],
+     "lang": "sql",
+     "ci": true,
+     "id": "sql.design.1"
+    },
+    {
+     "type": "sql",
+     "prompt": "Create a table `reviews` with `id INTEGER PRIMARY KEY` and `score INTEGER NOT NULL`, then insert two rows: `(1, 5)` and `(2, 3)`.",
+     "hints": [
+      "Two statements: one creates the table, one inserts.",
+      "Separate statements with semicolons.",
+      "`INSERT INTO reviews VALUES (1, 5);`"
+     ],
+     "diff": 2,
+     "dataset": "support",
+     "starter": "-- CREATE TABLE ...; INSERT ...;\n",
+     "solution": "CREATE TABLE reviews (id INTEGER PRIMARY KEY, score INTEGER NOT NULL); INSERT INTO reviews VALUES (1, 5); INSERT INTO reviews VALUES (2, 3)",
+     "ordered": false,
+     "names": false,
+     "after": "SELECT id, score FROM reviews ORDER BY id",
+     "id": "sql.design.2"
+    },
+    {
+     "type": "mcq",
+     "prompt": "Why is storing `customer_name` in every row of `tickets` a design problem?",
+     "hints": [
+      "Think about renaming one customer.",
+      "Which rows must change?",
+      "Repeated facts can disagree."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "It makes queries impossible",
+      "The same fact is repeated, so updates can leave the data inconsistent",
+      "SQL does not allow text columns",
+      "It breaks the primary key"
+     ],
+     "answer": 1,
+     "id": "sql.design.3"
+    }
+   ]
+  },
+  {
+   "id": "sql.index",
+   "level": 5,
+   "title": "Indexes and reading query plans",
+   "lede": "An index is a sorted lookup structure. It turns a scan of every row into a few steps, at the cost of extra storage and slower writes.",
+   "minutes": 6,
+   "phases": [
+    "monitor",
+    "serving"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "viz",
+      "kind": "search",
+      "data": {
+       "title": "Scan vs index",
+       "n": 16
+      }
+     },
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "CREATE INDEX idx_tickets_customer ON tickets(customer_id);\n\nEXPLAIN QUERY PLAN SELECT * FROM tickets WHERE customer_id = 3;\n-- SQLite:  SEARCH tickets USING INDEX idx_tickets_customer (customer_id=?)   <- index used\n--          SCAN tickets                                                       <- every row read\n-- PostgreSQL: EXPLAIN ANALYZE ...   shows \"Index Scan\" or \"Seq Scan\" with real timings"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "Index the columns you filter, join and sort on, mainly foreign keys such as `customer_id`.",
+       "A **composite** index `(a, b)` helps queries on `a` or on `a` and `b`, but not on `b` alone (leftmost prefix rule).",
+       "Every index slows `INSERT`/`UPDATE`/`DELETE` and uses disk. Do not index everything."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "The planner may ignore an index on a tiny table or a column where most rows match. Always read the plan instead of guessing."
+     },
+     {
+      "t": "quick",
+      "q": "Which plan line means the database used an index?",
+      "choices": [
+       "`SCAN tickets`",
+       "`SEARCH tickets USING INDEX ...`",
+       "`USE TEMP B-TREE`",
+       "`SCAN CONSTANT ROW`"
+      ],
+      "a": 1,
+      "why": "SCAN reads every row; SEARCH ... USING INDEX jumps straight to matches."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "sql",
+     "prompt": "Create an index named `idx_tickets_customer` on the `customer_id` column of `tickets`.",
+     "hints": [
+      "Name the index, then the table and column.",
+      "`CREATE INDEX <name> ON <table>(<column>)`",
+      "`CREATE INDEX idx_tickets_customer ON tickets(customer_id);`"
+     ],
+     "diff": 1,
+     "dataset": "support",
+     "starter": "-- CREATE INDEX name ON table(column)\n",
+     "solution": "CREATE INDEX idx_tickets_customer ON tickets(customer_id)",
+     "ordered": false,
+     "names": false,
+     "after": "SELECT name FROM sqlite_master WHERE type = 'index' AND name = 'idx_tickets_customer'",
+     "id": "sql.index.1"
+    },
+    {
+     "type": "mcq",
+     "prompt": "There is a composite index on `tickets(customer_id, created_at)`. Which queries can use it efficiently? (Select all that apply.)",
+     "hints": [
+      "An index is sorted by the first column, then the second within it.",
+      "You must be able to use the **leftmost** column.",
+      "Queries 1 and 3 start with `customer_id`."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "explain": {
+      "ask": "In your own words: why can't a query on only `created_at` use that index well?",
+      "points": [
+       "The index is sorted by customer_id first",
+       "Matching created_at values are scattered across the whole index"
+      ],
+      "model": "The index is ordered by `customer_id` and only then by `created_at`. Rows with the same date are spread out through the index, so it cannot jump to them; it would have to scan everything."
+     },
+     "choices": [
+      "`WHERE customer_id = 3`",
+      "`WHERE created_at = '2026-09-01'`",
+      "`WHERE customer_id = 3 AND created_at > '2026-09-05'`",
+      "`WHERE status = 'open'`"
+     ],
+     "answer": [
+      0,
+      2
+     ],
+     "id": "sql.index.2"
+    },
+    {
+     "type": "mcq",
+     "prompt": "What is the main cost of adding many indexes to a table?",
+     "hints": [
+      "Think about what must happen on every `INSERT`.",
+      "Each index also has to be updated.",
+      "More structures to maintain."
+     ],
+     "diff": 2,
+     "choices": [
+      "Reads become slower",
+      "Writes become slower and storage grows",
+      "Queries return wrong results",
+      "The primary key changes"
+     ],
+     "answer": 1,
+     "id": "sql.index.3"
+    }
+   ]
+  },
+  {
+   "id": "sql.plans",
+   "level": 5,
+   "title": "Slow-query patterns",
+   "lede": "Most slow queries come from a handful of patterns. Spotting them is a core skill for anyone who owns a database behind an API.",
+   "minutes": 6,
+   "phases": [
+    "serving",
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "-- 1. A function on the column hides it from the index\nSELECT * FROM customers WHERE LOWER(name) = 'ana ruiz';       -- cannot use an index on name\n-- fix: store normalised data, or create an index ON customers(LOWER(name)) in PostgreSQL\n\n-- 2. Leading wildcard\nSELECT * FROM customers WHERE name LIKE 'Ana%';    -- can use an index\nSELECT * FROM customers WHERE name LIKE '%Ruiz';   -- must scan everything\n\n-- 3. N+1 queries: one query for tickets, then one per ticket for its customer.\n--    Fix: one JOIN."
+     },
+     {
+      "t": "ul",
+      "x": [
+       "**SELECT \\*** pulls columns you do not need and defeats covering indexes.",
+       "**OFFSET pagination** gets slower on later pages. Use keyset pagination: `WHERE id > :last_id ORDER BY id LIMIT 20`.",
+       "In PostgreSQL, `EXPLAIN ANALYZE` actually runs the query and shows real timings."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "Which `LIKE` can use an ordinary index on `name`?",
+      "choices": [
+       "`LIKE '%son'`",
+       "`LIKE '%son%'`",
+       "`LIKE 'Joh%'`",
+       "None of them"
+      ],
+      "a": 2,
+      "why": "A fixed prefix lets the database jump into the sorted index."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "spot",
+     "prompt": "This query is slow even though `customers.name` is indexed. Which line is the problem?",
+     "hints": [
+      "Look at what the `WHERE` does to the indexed column.",
+      "The index stores `name`, not `LOWER(name)`.",
+      "Wrapping the column in a function hides it from the index."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "lines": [
+      "SELECT id",
+      "FROM customers",
+      "WHERE LOWER(name) = 'ana ruiz';"
+     ],
+     "bad": [
+      3
+     ],
+     "lang": "sql",
+     "fix": {
+      "q": "What is the best fix?",
+      "choices": [
+       "Compare the raw column, or create an expression index on `LOWER(name)`",
+       "Add `LIMIT 1`",
+       "Replace `FROM` with `JOIN`",
+       "Use `SELECT *`"
+      ],
+      "answer": 0
+     },
+     "id": "sql.plans.1"
+    },
+    {
+     "type": "mcq",
+     "prompt": "A page loads 50 tickets with one query, then runs 50 more queries to fetch each ticket's customer. What is this called and how do you fix it?",
+     "hints": [
+      "One query plus N more queries.",
+      "Databases are good at combining tables.",
+      "A JOIN (or `IN`) fetches everything at once."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "N+1; fetch customers with a single JOIN",
+      "Deadlock; add an index",
+      "Dirty read; use a transaction",
+      "Normalisation; split the table"
+     ],
+     "answer": 0,
+     "id": "sql.plans.2"
+    },
+    {
+     "type": "fill",
+     "prompt": "Ask PostgreSQL to run the query and report real timings.",
+     "hints": [
+      "Plain `EXPLAIN` only estimates.",
+      "A keyword makes it execute the query as well.",
+      "`ANALYZE`"
+     ],
+     "diff": 1,
+     "template": "EXPLAIN ____ SELECT * FROM tickets WHERE customer_id = 3;",
+     "blanks": [
+      [
+       "ANALYZE"
+      ]
+     ],
+     "lang": "sql",
+     "ci": true,
+     "id": "sql.plans.3"
+    }
+   ]
+  },
+  {
+   "id": "sql.pgvector",
+   "level": 5,
+   "title": "pgvector: similarity search in Postgres",
+   "lede": "An embedding turns text into a list of numbers so that similar meanings sit close together. pgvector stores those vectors in Postgres and finds the nearest ones.",
+   "minutes": 7,
+   "phases": [
+    "deep",
+    "serving"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "sql",
+      "x": "CREATE EXTENSION IF NOT EXISTS vector;\n\nCREATE TABLE docs (\n    id bigserial PRIMARY KEY,\n    body text,\n    embedding vector(384)          -- one 384-number embedding per row\n);\n\n-- the 5 most similar documents to a query vector\nSELECT id, body\nFROM docs\nORDER BY embedding <=> '[0.12, 0.03, ...]'\nLIMIT 5;\n\nCREATE INDEX ON docs USING hnsw (embedding vector_cosine_ops);   -- approximate, fast"
+     },
+     {
+      "t": "table",
+      "cols": [
+       "Operator",
+       "Distance"
+      ],
+      "rows": [
+       [
+        "`<->`",
+        "Euclidean (L2)"
+       ],
+       [
+        "`<=>`",
+        "cosine distance"
+       ],
+       [
+        "`<#>`",
+        "negative inner product"
+       ]
+      ]
+     },
+     {
+      "t": "ul",
+      "x": [
+       "Smaller distance means more similar. Sort ascending and take `LIMIT k`.",
+       "Without an index this is an **exact** scan of every row. `HNSW` and `IVFFlat` indexes are **approximate**: much faster, with a small chance of missing the true nearest neighbour.",
+       "You can combine vector search with normal filters (`WHERE customer_id = 3`) and joins. That is the retrieval step of RAG."
+      ]
+     },
+     {
+      "t": "p",
+      "x": "Cosine distance is `1 - (a . b) / (|a| |b|)`. It ignores the length of the vectors and compares only direction. You can write the exact search yourself in a few lines, and the exercises do."
+     },
+     {
+      "t": "quick",
+      "q": "A vector index of type HNSW gives you:",
+      "choices": [
+       "Exact results, slower",
+       "Faster approximate nearest neighbours",
+       "Compression of the text",
+       "Automatic embeddings"
+      ],
+      "a": 1,
+      "why": "It trades a little recall for a big speed-up."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "fill",
+     "prompt": "Complete the vector search.",
+     "hints": [
+      "The column type comes from the extension and takes the dimension in brackets.",
+      "For cosine distance the operator is a symbol with `=` in the middle.",
+      "`vector` and `<=>`."
+     ],
+     "diff": 2,
+     "template": "CREATE TABLE docs (id bigserial PRIMARY KEY, body text, embedding ____(384));\n\nSELECT id, body FROM docs\nORDER BY embedding ____ '[0.12, 0.03, 0.88]'\nLIMIT 5;",
+     "blanks": [
+      [
+       "vector"
+      ],
+      [
+       "<=>",
+       "<->"
+      ]
+     ],
+     "lang": "sql",
+     "ci": false,
+     "id": "sql.pgvector.1"
+    },
+    {
+     "type": "code",
+     "prompt": "Write `cosine_distance(a, b)` for two equal-length lists of numbers: `1 - dot(a, b) / (|a| * |b|)`.",
+     "hints": [
+      "The dot product is the sum of pairwise products.",
+      "A vector's length is the square root of the sum of its squares.",
+      "`1 - dot / (na * nb)`"
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "starter": "def cosine_distance(a, b):\n    pass\n",
+     "solution": "def cosine_distance(a, b):\n    dot = sum(x * y for x, y in zip(a, b))\n    na = sum(x * x for x in a) ** 0.5\n    nb = sum(y * y for y in b) ** 0.5\n    return 1 - dot / (na * nb)\n",
+     "tests": "t(\"cosine_distance([1, 0], [1, 0])\", 0.0)\nt(\"cosine_distance([1, 0], [0, 1])\", 1.0)\nt(\"cosine_distance([1, 0], [-1, 0])\", 2.0)\nt(\"round(cosine_distance([1, 2, 3], [2, 4, 6]), 9)\", 0.0)",
+     "id": "sql.pgvector.2"
+    },
+    {
+     "type": "code",
+     "prompt": "Write `nearest(query, items, k)` where `items` is a dict from id to vector. Return the ids of the `k` items closest to `query` by cosine distance, closest first. (This is what `ORDER BY embedding <=> query LIMIT k` does.)",
+     "hints": [
+      "Compute a distance from the query to every item.",
+      "Sort the ids by that distance and slice the first `k`.",
+      "`sorted(items, key=lambda i: cosine_distance(query, items[i]))[:k]`"
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "starter": "def nearest(query, items, k):\n    pass\n",
+     "solution": "def cosine_distance(a, b):\n    dot = sum(x * y for x, y in zip(a, b))\n    na = sum(x * x for x in a) ** 0.5\n    nb = sum(y * y for y in b) ** 0.5\n    return 1 - dot / (na * nb)\n\ndef nearest(query, items, k):\n    return sorted(items, key=lambda i: cosine_distance(query, items[i]))[:k]\n",
+     "tests": "docs = {\"refund\": [1.0, 0.1], \"login\": [0.0, 1.0], \"billing\": [0.9, 0.3], \"crash\": [0.1, 0.9]}\nt(\"nearest([1, 0], docs, 2)\", [\"refund\", \"billing\"])\nt(\"nearest([0, 1], docs, 1)\", [\"login\"])\nt(\"nearest([0.5, 0.5], docs, 4)[0] in ('billing', 'crash')\", True)",
+     "id": "sql.pgvector.3"
+    }
+   ]
+  }
+ ]
+}

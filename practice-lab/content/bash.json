@@ -1,0 +1,1276 @@
+{
+ "concepts": [
+  {
+   "id": "sh.nav",
+   "level": 1,
+   "title": "Finding your way around",
+   "lede": "The shell is a text conversation with your computer. You always stand in one directory, and a few commands let you look around and move.",
+   "minutes": 4,
+   "phases": [
+    "data",
+    "serving"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "bash",
+      "x": "$ pwd                  # print working directory: where am I?\n/home/ana/projects\n$ ls                   # list files here\nreviewradar  notes.txt\n$ ls -la               # long format, including hidden files (names starting with .)\n$ cd reviewradar       # move into a folder\n$ cd ..                # up one level\n$ cd ~                 # your home folder (also just: cd)\n$ cd /                 # the very top"
+     },
+     {
+      "t": "table",
+      "cols": [
+       "Symbol",
+       "Means"
+      ],
+      "rows": [
+       [
+        "`.`",
+        "the current folder"
+       ],
+       [
+        "`..`",
+        "the parent folder"
+       ],
+       [
+        "`~`",
+        "your home folder"
+       ],
+       [
+        "`/` at the start",
+        "an **absolute** path, from the top"
+       ]
+      ]
+     },
+     {
+      "t": "p",
+      "x": "A path that starts with `/` is **absolute**: it works from anywhere. Anything else is **relative** to where you are standing."
+     },
+     {
+      "t": "tip",
+      "x": "Press **Tab** to auto-complete names and the up arrow to bring back earlier commands. `command --help` and `man command` explain flags."
+     },
+     {
+      "t": "quick",
+      "q": "You are in `/home/ana/projects`. Where does `cd ../..` take you?",
+      "choices": [
+       "/home/ana",
+       "/home",
+       "/",
+       "stays where it is"
+      ],
+      "a": 1,
+      "why": "Each `..` goes up one level: projects, then ana, landing in /home."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "predict",
+     "prompt": "What does this print? (`basename` shows only the last part of the path.)",
+     "hints": [
+      "Track which folder you are in after each `cd`.",
+      "`..` goes to the parent folder.",
+      "First `proj/data`, then up and into `src`, then up to `proj`."
+     ],
+     "diff": 1,
+     "code": "mkdir -p proj/data proj/src\ncd proj/data\ncd ../src\nbasename \"$PWD\"\ncd ..\nbasename \"$PWD\"",
+     "answer": "src\nproj",
+     "lang": "bash",
+     "id": "sh.nav.1"
+    },
+    {
+     "type": "mcq",
+     "prompt": "You are in `/home/ana/projects/reviewradar/src`. Which command returns you to `/home/ana`?",
+     "hints": [
+      "`~` is a shortcut.",
+      "Count the folders if you use `..`: src, reviewradar, projects.",
+      "`cd ~` goes to your home, and `cd ../../..` also works here."
+     ],
+     "diff": 2,
+     "choices": [
+      "`cd ../..`",
+      "`cd ~`",
+      "`cd ../../..`",
+      "`cd .`"
+     ],
+     "answer": 1,
+     "whys": [
+      "That only reaches /home/ana/projects.",
+      null,
+      "That reaches /home/ana only because the path is exactly three levels deep.",
+      "`.` is the folder you are already in."
+     ],
+     "id": "sh.nav.2"
+    },
+    {
+     "type": "fill",
+     "prompt": "List all files, including hidden ones, in long format.",
+     "hints": [
+      "`-l` means long format.",
+      "`-a` means all, including names that start with a dot.",
+      "`-la`"
+     ],
+     "diff": 1,
+     "template": "ls ____",
+     "blanks": [
+      [
+       "-la",
+       "-al",
+       "-l -a",
+       "-a -l"
+      ]
+     ],
+     "lang": "bash",
+     "ci": false,
+     "id": "sh.nav.3"
+    }
+   ]
+  },
+  {
+   "id": "sh.files",
+   "level": 1,
+   "title": "Working with files and globs",
+   "lede": "Create, copy, move and delete from the command line, and use wildcards (globs) to act on many files at once.",
+   "minutes": 4,
+   "phases": [
+    "data",
+    "serving"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "bash",
+      "x": "$ mkdir logs                 # new folder\n$ touch notes.txt            # new empty file\n$ cp notes.txt backup.txt    # copy\n$ mv backup.txt logs/        # move (also renames: mv old new)\n$ rm notes.txt               # delete a file (no recycle bin!)\n$ rm -r old_folder           # delete a folder and everything in it\n$ ls *.csv                   # * matches any text\n$ ls report?.csv             # ? matches exactly one character\n$ cat notes.txt              # print a file; less notes.txt to page through it"
+     },
+     {
+      "t": "warn",
+      "x": "`rm` has no undo. Be careful with `rm -r`, and never run `rm -rf` with a path you have not double-checked. A stray space in `rm * .log` deletes **everything** and then looks for a file called `.log`."
+     },
+     {
+      "t": "ul",
+      "x": [
+       "The **shell** expands `*.csv` into a list of file names before the command runs.",
+       "Quote names with spaces: `cp \"my file.txt\" backup/`.",
+       "`mv` renames when the target is a new name in the same folder."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "Which pattern matches `report1.csv` and `report2.csv` but not `report10.csv`?",
+      "choices": [
+       "`report*.csv`",
+       "`report?.csv`",
+       "`report.csv`",
+       "`*.csv`"
+      ],
+      "a": 1,
+      "why": "`?` matches exactly one character."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "`ls` lists names in alphabetical order.",
+      "`mv c.log logs/` moves the file into the folder.",
+      "After the move `c.log` is no longer in the current folder."
+     ],
+     "diff": 1,
+     "code": "touch b.txt a.txt c.log\nmkdir logs\nmv c.log logs/\nls\nls logs",
+     "answer": "a.txt\nb.txt\nlogs\nc.log",
+     "lang": "bash",
+     "id": "sh.files.1"
+    },
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "`?` matches exactly one character.",
+      "`report10.csv` has two characters between `report` and `.csv`.",
+      "`*.txt` matches only `notes.txt`."
+     ],
+     "diff": 2,
+     "code": "touch report1.csv report2.csv report10.csv notes.txt\nls report?.csv\nls *.txt",
+     "answer": "report1.csv\nreport2.csv\nnotes.txt",
+     "lang": "bash",
+     "id": "sh.files.2"
+    },
+    {
+     "type": "spot",
+     "prompt": "You want to delete all `.log` files in the current folder. This command is dangerous. Which line is the problem?",
+     "hints": [
+      "Look closely at the space in the second line.",
+      "The shell sees two arguments: `*` and `.log`.",
+      "`*` matches every file."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "lines": [
+      "cd logs",
+      "rm * .log"
+     ],
+     "bad": [
+      2
+     ],
+     "lang": "bash",
+     "fix": {
+      "q": "What is the correct command?",
+      "choices": [
+       "`rm *.log`",
+       "`rm -rf *`",
+       "`rm .log*`",
+       "`rm * -log`"
+      ],
+      "answer": 0
+     },
+     "id": "sh.files.3"
+    }
+   ]
+  },
+  {
+   "id": "sh.pipes",
+   "level": 2,
+   "title": "Pipes and redirection",
+   "lede": "Small tools that each do one thing become powerful when you connect them. A pipe `|` feeds one command's output into the next.",
+   "minutes": 5,
+   "phases": [
+    "data",
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "p",
+      "x": "Tap the stages to see exactly what comes out of each step. The output below is from really running these commands."
+     },
+     {
+      "t": "viz",
+      "kind": "pipe",
+      "data": {
+       "title": "Follow the data through the pipe",
+       "input": "bug login\nbilling refund\nbug crash\nfeature dark-mode\nbug slow\nbilling invoice",
+       "stages": [
+        {
+         "cmd": "cat data.txt",
+         "out": "bug login\nbilling refund\nbug crash\nfeature dark-mode\nbug slow\nbilling invoice"
+        },
+        {
+         "cmd": "cut -d' ' -f1",
+         "out": "bug\nbilling\nbug\nfeature\nbug\nbilling"
+        },
+        {
+         "cmd": "sort",
+         "out": "billing\nbilling\nbug\nbug\nbug\nfeature"
+        },
+        {
+         "cmd": "uniq -c",
+         "out": "      2 billing\n      3 bug\n      1 feature"
+        },
+        {
+         "cmd": "sort -rn",
+         "out": "      3 bug\n      2 billing\n      1 feature"
+        }
+       ]
+      }
+     },
+     {
+      "t": "code",
+      "lang": "bash",
+      "x": "cat access.log | grep 404 | wc -l       # how many 404s?\necho \"first\" > out.txt                  # > overwrite a file\necho \"second\" >> out.txt                # >> append to a file\nwc -l < out.txt                         # < read a file as input\ncommand 2> errors.txt                   # 2> sends error messages to a file\ncommand > all.txt 2>&1                  # stdout and stderr to the same place"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`sort`, `uniq -c` (count adjacent duplicates), `head`, `tail`, `wc -l`, `cut -d, -f2` are the everyday toolbox.",
+       "`uniq` only collapses **adjacent** duplicates, so sort first.",
+       "`>` truncates the file first. Use `>>` to add to the end."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "What does `2>&1` do?",
+      "choices": [
+       "Runs the command twice",
+       "Sends error output to the same place as normal output",
+       "Renames file 2",
+       "Discards errors"
+      ],
+      "a": 1,
+      "why": "File descriptor 2 is stderr and 1 is stdout."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "`sort` puts equal lines next to each other.",
+      "`uniq -c` prefixes each line with its count.",
+      "`sort -rn` puts the largest count first and `head -1` keeps one line."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "code": "printf 'bug\\nbilling\\nbug\\nfeature\\nbug\\n' | sort | uniq -c | sort -rn | head -1",
+     "answer": "3 bug",
+     "lang": "bash",
+     "id": "sh.pipes.1"
+    },
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "`>` replaces the file's contents.",
+      "Only the last write survives.",
+      "So the file has one line."
+     ],
+     "diff": 2,
+     "explain": {
+      "ask": "In your own words: why is `first` gone from the file?",
+      "points": [
+       "`>` truncates (empties) the file before writing",
+       "`>>` would have appended instead"
+      ],
+      "model": "A single `>` opens the file for writing from scratch, wiping what was there. Only `>>` adds to the end. The final `echo \"third\" > out.txt` therefore left a one-line file."
+     },
+     "code": "echo \"first\" > out.txt\necho \"second\" >> out.txt\necho \"third\" > out.txt\ncat out.txt\nwc -l < out.txt",
+     "answer": "third\n1",
+     "lang": "bash",
+     "id": "sh.pipes.2"
+    },
+    {
+     "type": "fill",
+     "prompt": "Show the top 3 numbers, largest first.",
+     "hints": [
+      "`sort -n` sorts numerically.",
+      "`-r` reverses the order.",
+      "`head -3` keeps the first three lines."
+     ],
+     "diff": 2,
+     "template": "sort ____ numbers.txt | head ____",
+     "blanks": [
+      [
+       "-rn",
+       "-nr",
+       "-r -n",
+       "-n -r"
+      ],
+      [
+       "-3",
+       "-n 3",
+       "-n3"
+      ]
+     ],
+     "lang": "bash",
+     "ci": false,
+     "id": "sh.pipes.3"
+    },
+    {
+     "type": "mcq",
+     "prompt": "Which command appends the word `done` to `log.txt` without erasing its contents?",
+     "hints": [
+      "One redirection overwrites, another adds.",
+      "A pipe sends output to another command, not a file.",
+      "`>>` appends."
+     ],
+     "diff": 1,
+     "choices": [
+      "`echo done > log.txt`",
+      "`echo done >> log.txt`",
+      "`echo done | log.txt`",
+      "`echo done < log.txt`"
+     ],
+     "answer": 1,
+     "id": "sh.pipes.4"
+    }
+   ]
+  },
+  {
+   "id": "sh.grep",
+   "level": 2,
+   "title": "Searching with grep and find",
+   "lede": "`grep` finds lines that match a pattern. `find` finds files by name, type or age. Together they answer most \"where is it?\" questions.",
+   "minutes": 4,
+   "phases": [
+    "monitor",
+    "data"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "bash",
+      "x": "grep ERROR app.log                  # lines containing ERROR\ngrep -c ERROR app.log               # just the count\ngrep -n timeout app.log             # show line numbers\ngrep -v INFO app.log                # lines that do NOT match\ngrep -i \"error\" app.log             # ignore case\ngrep -r \"TODO\" src/                 # search every file under src/\ngrep -E 'ERROR|WARN' app.log        # extended regex: either word\n\nfind . -name \"*.py\"                 # files by name\nfind . -type f -mtime -1            # files changed in the last day"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`-i` ignore case, `-v` invert, `-n` line numbers, `-c` count, `-r` recursive, `-l` just file names.",
+       "Quote patterns so the shell does not expand them first.",
+       "Pipe into `grep` to filter any command's output: `ps aux | grep python`."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "Which command counts the lines that contain `ERROR`?",
+      "choices": [
+       "`grep ERROR file | head`",
+       "`grep -c ERROR file`",
+       "`grep -v ERROR file`",
+       "`find ERROR file`"
+      ],
+      "a": 1,
+      "why": "`-c` prints the number of matching lines."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "The log has 5 lines; two contain ERROR.",
+      "`-v` keeps lines without INFO.",
+      "`-n` prefixes the line number and a colon."
+     ],
+     "diff": 2,
+     "code": "grep -c ERROR app.log\ngrep -v INFO app.log | head -2\ngrep -n timeout app.log",
+     "answer": "2\nERROR disk full\nWARN slow\n4:ERROR timeout",
+     "lang": "bash",
+     "id": "sh.grep.1"
+    },
+    {
+     "type": "fill",
+     "prompt": "Search for `error`, ignoring case, in every file under `logs/`.",
+     "hints": [
+      "You need two flags: recursive and case-insensitive.",
+      "`-r` recurses, `-i` ignores case.",
+      "`-ri`"
+     ],
+     "diff": 1,
+     "template": "grep ____ \"error\" logs/",
+     "blanks": [
+      [
+       "-ri",
+       "-ir",
+       "-r -i",
+       "-i -r"
+      ]
+     ],
+     "lang": "bash",
+     "ci": false,
+     "id": "sh.grep.2"
+    },
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "`find` walks the whole folder tree.",
+      "Only names ending in `.py` match.",
+      "`sort` puts `a/b/y.py` before `a/x.py`."
+     ],
+     "diff": 2,
+     "code": "mkdir -p a/b\ntouch a/x.py a/b/y.py a/z.txt\nfind a -name \"*.py\" | sort",
+     "answer": "a/b/y.py\na/x.py",
+     "lang": "bash",
+     "id": "sh.grep.3"
+    }
+   ]
+  },
+  {
+   "id": "sh.sed",
+   "level": 3,
+   "title": "sed: edit streams of text",
+   "lede": "`sed` rewrites text as it flows past. Its most useful trick is substitution: `s/old/new/`.",
+   "minutes": 4,
+   "phases": [
+    "monitor",
+    "cloud"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "bash",
+      "x": "echo \"bug in bug fix\" | sed 's/bug/issue/'     # issue in bug fix    (first match per line)\necho \"bug in bug fix\" | sed 's/bug/issue/g'    # issue in issue fix  (g = every match)\nsed -n '2,3p' file.txt                         # print only lines 2 to 3\nsed '/^#/d' config.txt                         # delete comment lines\nsed -i.bak 's/localhost/prod-db/g' config.txt  # edit the file in place, keep a backup"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "The form is `s/pattern/replacement/flags`. Use another separator when the text has slashes: `s#/old/path#/new/path#`.",
+       "`-n` plus `p` prints only the lines you select.",
+       "`-i` edits the file **in place**. Adding `.bak` keeps the original."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "`sed -i` changes the file directly. Try the command without `-i` first, or keep a `.bak` copy."
+     },
+     {
+      "t": "quick",
+      "q": "What does the `g` in `s/a/b/g` do?",
+      "choices": [
+       "Greedy matching",
+       "Replaces every match on a line, not just the first",
+       "Global search across files",
+       "Case-insensitive match"
+      ],
+      "a": 1,
+      "why": "Without `g`, only the first match in each line is replaced."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "Without `g` only the first match per line changes.",
+      "With `g` every match changes.",
+      "The input is the same for both."
+     ],
+     "diff": 1,
+     "code": "echo \"bug in bug fix\" | sed 's/bug/issue/'\necho \"bug in bug fix\" | sed 's/bug/issue/g'",
+     "answer": "issue in bug fix\nissue in issue fix",
+     "lang": "bash",
+     "id": "sh.sed.1"
+    },
+    {
+     "type": "fill",
+     "prompt": "Replace every `localhost` with `prod-db` in `config.txt`, editing the file in place.",
+     "hints": [
+      "The pattern goes first, the replacement second.",
+      "Fields are separated by slashes.",
+      "`localhost` then `prod-db`."
+     ],
+     "diff": 2,
+     "template": "sed -i 's/____/____/g' config.txt",
+     "blanks": [
+      [
+       "localhost"
+      ],
+      [
+       "prod-db"
+      ]
+     ],
+     "lang": "bash",
+     "ci": false,
+     "id": "sh.sed.2"
+    },
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "`-n` suppresses normal output.",
+      "`2,3p` prints lines 2 to 3.",
+      "Count lines starting from 1."
+     ],
+     "diff": 2,
+     "code": "sed -n '2,3p' notes.txt",
+     "answer": "second\nthird",
+     "lang": "bash",
+     "id": "sh.sed.3"
+    }
+   ]
+  },
+  {
+   "id": "sh.awk",
+   "level": 3,
+   "title": "awk: work with columns",
+   "lede": "`awk` splits each line into fields (`$1`, `$2`, ...) and runs a small program on each. It is perfect for logs and tables.",
+   "minutes": 4,
+   "phases": [
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "bash",
+      "x": "awk '{print $1}' sales.txt                      # first column\nawk '$2 > 6 {print $1}' sales.txt               # only rows where column 2 is above 6\nawk -F, '{print $2}' data.csv                   # -F sets the field separator\nawk 'NR == 2 {print $1}' sales.txt              # NR = current line number\nawk '{sum[$1] += $2} END {for (k in sum) print k, sum[k]}' sales.txt   # total per name"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`$0` is the whole line, `$NF` the last field, `NR` the line number, `NF` the number of fields.",
+       "`BEGIN { }` runs before the first line, `END { }` after the last.",
+       "Associative arrays (`sum[$1]`) are awk's dictionaries."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "What does `-F,` do in `awk -F, '{print $2}'`?",
+      "choices": [
+       "Prints a file",
+       "Makes the comma the field separator",
+       "Forces output",
+       "Filters by comma"
+      ],
+      "a": 1,
+      "why": "`-F` chooses the separator, so lines split at commas."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "predict",
+     "prompt": "What does this print? (the output is sorted)",
+     "hints": [
+      "`s[$1] += $2` adds column 2 into a bucket named by column 1.",
+      "ana: 10 + 7, ben: 5 + 8.",
+      "The `END` block prints each total."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "code": "awk '{s[$1] += $2} END {for (k in s) print k, s[k]}' sales.txt | sort",
+     "answer": "ana 17\nben 13",
+     "lang": "bash",
+     "id": "sh.awk.1"
+    },
+    {
+     "type": "fill",
+     "prompt": "Print the first column of rows whose second column is greater than 6.",
+     "hints": [
+      "Fields are numbered from 1.",
+      "The name is in the first column.",
+      "`$1`"
+     ],
+     "diff": 2,
+     "template": "awk '$2 > 6 {print ____}' sales.txt",
+     "blanks": [
+      [
+       "$1"
+      ]
+     ],
+     "lang": "bash",
+     "ci": false,
+     "id": "sh.awk.2"
+    },
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "`NR == 2` selects the second line.",
+      "The second line is `ben 5`.",
+      "The total of column 2 is 10 + 5 + 7 + 8."
+     ],
+     "diff": 2,
+     "code": "awk 'NR == 2 {print $1}' sales.txt\nawk '{n += $2} END {print n}' sales.txt",
+     "answer": "ben\n30",
+     "lang": "bash",
+     "id": "sh.awk.3"
+    }
+   ]
+  },
+  {
+   "id": "sh.env",
+   "level": 3,
+   "title": "Environment variables and quoting",
+   "lede": "Variables carry configuration into programs. Quotes decide whether the shell expands them. Both matter for secrets and for ReviewRadar's config.",
+   "minutes": 5,
+   "phases": [
+    "serving",
+    "cloud"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "bash",
+      "x": "NAME=ana                          # no spaces around =\necho \"hi $NAME\"                   # hi ana        (double quotes expand variables)\necho 'hi $NAME'                   # hi $NAME      (single quotes do not)\nexport STAGE=prod                 # make it visible to programs you start\nbash -c 'echo $STAGE'             # prod\nDB_HOST=localhost python app.py   # set a variable for one command only\necho $PATH                        # folders searched for commands"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "A plain variable lives only in the current shell. `export` passes it on to child processes.",
+       "`$PATH` lists where the shell looks for commands. `which python` shows which one it found.",
+       "Secrets such as API keys belong in environment variables or a secret store, **never** in code or git."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "Always quote variables that may contain spaces: `\"$file\"`, not `$file`. Unquoted values get split into several words."
+     },
+     {
+      "t": "quick",
+      "q": "Which prints the literal text `$HOME`?",
+      "choices": [
+       "`echo $HOME`",
+       "`echo \"$HOME\"`",
+       "`echo '$HOME'`",
+       "`echo ~`"
+      ],
+      "a": 2,
+      "why": "Single quotes switch off expansion."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "Double quotes expand, single quotes do not.",
+      "A child `bash` only sees exported variables.",
+      "`OTHER` was never exported."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "explain": {
+      "ask": "In your own words: why is `OTHER` empty in the child shell?",
+      "points": [
+       "Only exported variables are passed to child processes",
+       "OTHER was set without export so it stays in the parent shell"
+      ],
+      "model": "A plain assignment creates a shell variable that only the current shell can see. `export` marks it for inheritance, so child processes receive a copy."
+     },
+     "code": "NAME=ana\necho \"hi $NAME\" 'hi $NAME'\nexport STAGE=prod\nbash -c 'echo $STAGE'\nOTHER=x\nbash -c 'echo \"[$OTHER]\"'",
+     "answer": "hi ana hi $NAME\nprod\n[]",
+     "lang": "bash",
+     "id": "sh.env.1"
+    },
+    {
+     "type": "spot",
+     "prompt": "This should print `Price is 5`, but it prints the text `Price is $price`. Which line is the problem?",
+     "hints": [
+      "Look at the type of quotes.",
+      "Single quotes stop the shell from expanding variables.",
+      "Switch to double quotes."
+     ],
+     "diff": 2,
+     "lines": [
+      "price=5",
+      "echo 'Price is $price'"
+     ],
+     "bad": [
+      2
+     ],
+     "lang": "bash",
+     "fix": {
+      "q": "How do you fix it?",
+      "choices": [
+       "Use double quotes: `echo \"Price is $price\"`",
+       "Remove the quotes: `echo Price is $price` is the only option",
+       "Use `export price`",
+       "Write `echo 'Price is' + $price`"
+      ],
+      "answer": 0
+     },
+     "id": "sh.env.2"
+    },
+    {
+     "type": "mcq",
+     "prompt": "A teammate hard-codes an API key in `train.py` and pushes to GitHub. What is the right approach?",
+     "hints": [
+      "Anything pushed to git history can be copied.",
+      "The old key must be treated as leaked.",
+      "New key, read from the environment."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "Delete the file next week",
+      "Rotate the key now and load it from an environment variable or secret store",
+      "Make the repository private and leave it",
+      "Encode the key in base64"
+     ],
+     "answer": 1,
+     "id": "sh.env.3"
+    }
+   ]
+  },
+  {
+   "id": "sh.script",
+   "level": 4,
+   "title": "Writing shell scripts",
+   "lede": "A script is a text file of commands. Add a shebang, a few variables and a loop, and repetitive work becomes one command.",
+   "minutes": 5,
+   "phases": [
+    "monitor",
+    "cloud"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "bash",
+      "x": "#!/bin/bash                       # which program runs this file\nname=${1:-world}                  # first argument, default \"world\"\nfor f in *.csv; do                # loop over files\n    echo \"processing $f\"\ndone\nif [ -f \"$name\" ]; then           # test: is it a regular file?\n    echo \"exists\"\nfi\ncount=$(wc -l < data.txt)         # capture a command's output\necho \"$count lines\""
+     },
+     {
+      "t": "ul",
+      "x": [
+       "Make it runnable once with `chmod +x script.sh`, then start it with `./script.sh arg1 arg2`.",
+       "`$1`, `$2` are arguments, `$@` is all of them, `$#` is how many. `$(cmd)` captures output.",
+       "Tests live in `[ ... ]`: `-f` file, `-d` folder, `-z` empty string, `-eq` numbers equal, `==` strings equal. **Spaces inside the brackets are required.**"
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "Unquoted variables break on spaces. If `file=\"my report.txt\"`, then `rm $file` runs `rm my report.txt` and tries to delete two files. Write `rm \"$file\"`."
+     },
+     {
+      "t": "quick",
+      "q": "Inside a script, what is `$1`?",
+      "choices": [
+       "The script's name",
+       "The first argument",
+       "The exit code",
+       "The number of arguments"
+      ],
+      "a": 1,
+      "why": "`$0` is the name, `$1` the first argument, `$#` the count."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "predict",
+     "prompt": "The file `greet.sh` below is run as `bash greet.sh ana` and then as `bash greet.sh`. What is printed in total?",
+     "hints": [
+      "`${1:-world}` means: the first argument, or `world` if there is none.",
+      "The loop runs twice for each run.",
+      "First run uses `ana`, the second uses `world`."
+     ],
+     "diff": 3,
+     "code": "#!/bin/bash\nname=${1:-world}\nfor i in 1 2; do\n  echo \"hello $name $i\"\ndone",
+     "answer": "hello ana 1\nhello ana 2\nhello world 1\nhello world 2",
+     "lang": "bash",
+     "id": "sh.script.1"
+    },
+    {
+     "type": "order",
+     "prompt": "Put the lines in order to back up every CSV into a `backup` folder and then print `done`.",
+     "hints": [
+      "The shebang is always the first line.",
+      "Create the folder before copying into it.",
+      "The loop body sits between `do` and `done`."
+     ],
+     "diff": 2,
+     "lines": [
+      "#!/bin/bash",
+      "mkdir -p backup",
+      "for f in *.csv; do",
+      "  cp \"$f\" \"backup/$f\"",
+      "done",
+      "echo \"done\""
+     ],
+     "lang": "bash",
+     "id": "sh.script.2"
+    },
+    {
+     "type": "spot",
+     "prompt": "This script should delete `my report.txt`, but it fails with two errors. Which line is the problem?",
+     "hints": [
+      "Compare how line 2 and line 3 use the variable.",
+      "Unquoted variables are split at spaces.",
+      "Line 3 runs `rm my report.txt`."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "lines": [
+      "file=\"my report.txt\"",
+      "touch \"$file\"",
+      "rm $file"
+     ],
+     "bad": [
+      3
+     ],
+     "lang": "bash",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "`rm \"$file\"`",
+       "`rm -f $file`",
+       "`rm '$file'`",
+       "`rm file`"
+      ],
+      "answer": 0,
+      "why": [
+       null,
+       "`-f` hides the error but still tries to delete two wrong files.",
+       "Single quotes pass the literal text `$file`.",
+       "That deletes a file literally called `file`."
+      ]
+     },
+     "id": "sh.script.3"
+    },
+    {
+     "type": "fill",
+     "prompt": "Complete the test.",
+     "hints": [
+      "An `if` in bash is closed by `fi`. What keyword opens its body?",
+      "It comes after the semicolon.",
+      "`then`"
+     ],
+     "diff": 1,
+     "template": "if [ -f \"$1\" ]; ____\n  echo \"exists\"\nfi",
+     "blanks": [
+      [
+       "then"
+      ]
+     ],
+     "lang": "bash",
+     "ci": false,
+     "id": "sh.script.4"
+    }
+   ]
+  },
+  {
+   "id": "sh.exit",
+   "level": 4,
+   "title": "Exit codes and safe scripts",
+   "lede": "Every command ends with a number: 0 means success, anything else means failure. Safe scripts check it, and stop when something goes wrong.",
+   "minutes": 5,
+   "phases": [
+    "monitor",
+    "cloud"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "bash",
+      "x": "true;  echo $?          # 0   ($? is the last exit code)\nfalse; echo $?          # 1\n\nmkdir build && cd build        # && : run the next only if the first succeeded\ncmd1 || echo \"cmd1 failed\"     # || : run the next only if the first failed\n\n#!/bin/bash\nset -euo pipefail              # e: stop on error, u: error on unset variables, pipefail: a failing pipe step fails the whole pipe\ntrap 'rm -f \"$tmp\"' EXIT       # always clean up, even on error\ncd \"$BUILD_DIR\" || exit 1      # never carry on in the wrong folder"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "CI systems judge a job by its exit code. Exit 0 means pass, so a script that swallows errors makes CI lie.",
+       "`set -e` stops at the first failing command. `set -u` catches typos in variable names.",
+       "`exit 3` ends the script with your own code."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "`cd \"$DIR\"` followed by `rm -rf ./*` is a famous disaster: if `cd` fails, the `rm` runs in the wrong folder. Guard with `cd \"$DIR\" || exit 1`."
+     },
+     {
+      "t": "quick",
+      "q": "What does `set -e` do?",
+      "choices": [
+       "Echoes each command",
+       "Stops the script when a command fails",
+       "Makes variables read-only",
+       "Exports variables"
+      ],
+      "a": 1,
+      "why": "The script exits as soon as a command returns non-zero."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "`&&` runs the right side only after success.",
+      "`||` runs the right side only after failure.",
+      "`test -f nofile` fails, so `$?` is 1."
+     ],
+     "diff": 2,
+     "code": "true && echo A\nfalse && echo B\nfalse || echo C\ntest -f nofile; echo $?",
+     "answer": "A\nC\n1",
+     "lang": "bash",
+     "id": "sh.exit.1"
+    },
+    {
+     "type": "mcq",
+     "prompt": "A CI step runs `./deploy.sh`. The script's last command fails but the script ends with `echo finished`. What exit code does the script return, and what does CI show?",
+     "hints": [
+      "A script's exit code is the exit code of its last command.",
+      "`echo` succeeds.",
+      "Use `set -e` so the failure stops the script."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "Non-zero, CI fails",
+      "0, CI passes even though something failed",
+      "It depends on the OS",
+      "CI ignores exit codes"
+     ],
+     "answer": 1,
+     "id": "sh.exit.2"
+    },
+    {
+     "type": "spot",
+     "prompt": "This cleanup script deletes the wrong files when `$BUILD_DIR` does not exist. Which line is the problem?",
+     "hints": [
+      "What happens to line 3 if line 2 fails?",
+      "Without protection the script keeps going.",
+      "It would delete everything in the current folder."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "lines": [
+      "#!/bin/bash",
+      "cd \"$BUILD_DIR\"",
+      "rm -rf ./*"
+     ],
+     "bad": [
+      2
+     ],
+     "lang": "bash",
+     "fix": {
+      "q": "What is the best fix?",
+      "choices": [
+       "`cd \"$BUILD_DIR\" || exit 1`",
+       "Add `ls` before `rm`",
+       "Use `rm -r` instead of `rm -rf`",
+       "Wrap the path in single quotes"
+      ],
+      "answer": 0
+     },
+     "id": "sh.exit.3"
+    },
+    {
+     "type": "fill",
+     "prompt": "Make the script always remove the temp file when it ends, even after an error.",
+     "hints": [
+      "`trap` runs a command when a signal or event happens.",
+      "There is a pseudo-signal for \"the script is ending\".",
+      "`EXIT`"
+     ],
+     "diff": 2,
+     "template": "tmp=$(mktemp)\ntrap 'rm -f \"$tmp\"' ____",
+     "blanks": [
+      [
+       "EXIT"
+      ]
+     ],
+     "lang": "bash",
+     "ci": false,
+     "id": "sh.exit.4"
+    }
+   ]
+  },
+  {
+   "id": "sh.make",
+   "level": 5,
+   "title": "Makefile basics",
+   "lede": "A Makefile names the commands you run all the time (`make test`, `make lint`, `make docker`) so everyone, and CI, runs them the same way.",
+   "minutes": 5,
+   "phases": [
+    "cloud",
+    "serving"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "bash",
+      "x": "GREETING = hello                     # a variable\n\n.PHONY: test lint all                # these names are tasks, not files\n\nall: lint test                       # default target: runs these first\n\ntest:                                # target:\n\tpytest -q                          #   recipe (must start with a TAB)\n\nlint:\n\truff check .\n\ndocker:\n\tdocker build -t reviewradar:$(TAG) ."
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`target: prerequisites` followed by recipe lines indented with a **TAB**, not spaces.",
+       "`make` with no argument runs the first target. `make test` runs `test`.",
+       "`.PHONY` says the target is a task. Without it, a file called `test` would make `make test` think the work is already done.",
+       "Inside recipes `$@` is the target name and `$<` the first prerequisite. Variables are read with `$(NAME)`."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "Recipes indented with spaces fail with `missing separator`. Configure your editor to insert a real tab in Makefiles."
+     },
+     {
+      "t": "quick",
+      "q": "What does `.PHONY: test` protect you from?",
+      "choices": [
+       "Typos in recipes",
+       "A file named `test` making `make test` do nothing",
+       "Running tests twice",
+       "Missing variables"
+      ],
+      "a": 1,
+      "why": "Make skips a target whose file already exists and is up to date; `.PHONY` forces the recipe to run."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "predict",
+     "prompt": "Given this Makefile, what does `make` (no arguments) print? (Recipe lines start with a tab.)",
+     "hints": [
+      "`make` runs the first target, `all`.",
+      "`all` depends on `build`, so `build` runs first.",
+      "`$(GREETING)` expands to `hello`. `@` hides the command itself."
+     ],
+     "diff": 3,
+     "code": "GREETING = hello\n\nall: build\n\t@echo done\n\nbuild:\n\t@echo \"$(GREETING) from build\"",
+     "answer": "hello from build\ndone",
+     "lang": "bash",
+     "id": "sh.make.1"
+    },
+    {
+     "type": "fill",
+     "prompt": "Declare the targets that are tasks rather than files.",
+     "hints": [
+      "The name is spelled in capitals, after a dot.",
+      "It means \"these targets are not files\".",
+      "`.PHONY`"
+     ],
+     "diff": 1,
+     "template": ".____: test lint\ntest:\n\tpytest -q\nlint:\n\truff check .",
+     "blanks": [
+      [
+       "PHONY"
+      ]
+     ],
+     "lang": "bash",
+     "ci": false,
+     "id": "sh.make.2"
+    },
+    {
+     "type": "mcq",
+     "prompt": "In a recipe, what does `$@` stand for?",
+     "hints": [
+      "It is an automatic variable.",
+      "Think of it as \"at the target\".",
+      "`$<` is the first prerequisite."
+     ],
+     "diff": 2,
+     "choices": [
+      "The first prerequisite",
+      "The name of the target being built",
+      "All prerequisites",
+      "The current directory"
+     ],
+     "answer": 1,
+     "id": "sh.make.3"
+    }
+   ]
+  },
+  {
+   "id": "sh.ci",
+   "level": 5,
+   "title": "Shell in CI and automation",
+   "lede": "CI pipelines are mostly shell. A few patterns (`xargs`, loops, strict flags, `curl --fail`) cover most automation you will write.",
+   "minutes": 5,
+   "phases": [
+    "cloud",
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "bash",
+      "x": "printf 'a.txt\\nb.txt\\n' | xargs -I{} echo \"file: {}\"     # run a command once per input line\nfind . -name \"*.pyc\" -delete                             # find and delete\nfor f in a b; do echo \"run $f\"; done | wc -l             # 2\n\ncurl -sf https://api.example.com/health || exit 1        # -s quiet, -f fail on HTTP errors\ndocker build -t app . && docker push app                 # push only if build succeeded\nset -x                                                   # echo every command (do NOT use with secrets)"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`&&` chains steps that depend on each other. `;` runs the next step regardless, which is rarely what CI wants.",
+       "Never print secrets. CI masks known secrets, but `set -x` or `echo \"$TOKEN\"` can still leak derived values.",
+       "Use `jq` to read JSON from APIs: `curl -s url | jq -r .status`."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "You want to push a Docker image only if the build worked. Which is right?",
+      "choices": [
+       "`docker build -t app . ; docker push app`",
+       "`docker build -t app . && docker push app`",
+       "`docker push app || docker build -t app .`",
+       "`docker build -t app . | docker push app`"
+      ],
+      "a": 1,
+      "why": "`&&` stops the chain when the build fails."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "predict",
+     "prompt": "What does this print?",
+     "hints": [
+      "`xargs -I{}` runs the command once per input line.",
+      "The loop prints three lines.",
+      "`wc -l` counts them."
+     ],
+     "diff": 2,
+     "code": "printf 'a.txt\\nb.txt\\n' | xargs -I{} echo \"file: {}\"\nfor f in a b c; do echo \"run $f\"; done | wc -l",
+     "answer": "file: a.txt\nfile: b.txt\n3",
+     "lang": "bash",
+     "id": "sh.ci.1"
+    },
+    {
+     "type": "spot",
+     "prompt": "This CI script pushes an image even when the build fails. Which line is the problem?",
+     "hints": [
+      "Look at how the two commands are joined.",
+      "A semicolon ignores the result of the first command.",
+      "Use `&&`, or add `set -e` at the top."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "lines": [
+      "#!/bin/bash",
+      "docker build -t app . ; docker push app"
+     ],
+     "bad": [
+      2
+     ],
+     "lang": "bash",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "Join with `&&` (or add `set -e`)",
+       "Add `sudo`",
+       "Swap the order of the commands",
+       "Add `-q` to `docker build`"
+      ],
+      "answer": 0
+     },
+     "id": "sh.ci.2"
+    },
+    {
+     "type": "fill",
+     "prompt": "Make `curl` quiet and make it fail on HTTP errors, so a failed health check fails the job.",
+     "hints": [
+      "`-s` silences the progress meter.",
+      "`-f` makes HTTP errors (like 500) return a non-zero exit code.",
+      "`-sf`"
+     ],
+     "diff": 2,
+     "template": "curl ____ https://api.example.com/health || exit 1",
+     "blanks": [
+      [
+       "-sf",
+       "-fs",
+       "-s -f",
+       "-f -s"
+      ]
+     ],
+     "lang": "bash",
+     "ci": false,
+     "id": "sh.ci.3"
+    }
+   ]
+  }
+ ]
+}

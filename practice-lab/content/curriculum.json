@@ -1,0 +1,225 @@
+{
+ "tracks": [
+  {
+   "id": "python",
+   "name": "Python",
+   "short": "Python",
+   "blurb": "Core language to NumPy, Pandas, scikit-learn, PyTorch and FastAPI.",
+   "requires": [],
+   "unlockText": "",
+   "levels": [
+    {
+     "n": 1,
+     "name": "Foundations",
+     "blurb": "Variables, loops, functions, lists, dicts."
+    },
+    {
+     "n": 2,
+     "name": "Working",
+     "blurb": "Comprehensions, classes, errors, mutability."
+    },
+    {
+     "n": 3,
+     "name": "Fluent",
+     "blurb": "Typing, generators, decorators, pytest, complexity."
+    },
+    {
+     "n": 4,
+     "name": "Advanced",
+     "blurb": "NumPy, Pandas, SciPy, scikit-learn, metrics."
+    },
+    {
+     "n": 5,
+     "name": "Expert",
+     "blurb": "PyTorch shapes, Hugging Face, FastAPI, performance."
+    }
+   ]
+  },
+  {
+   "id": "sql",
+   "name": "SQL",
+   "short": "SQL",
+   "blurb": "From SELECT to window functions, indexes and pgvector ideas.",
+   "requires": [],
+   "unlockText": "",
+   "levels": [
+    {
+     "n": 1,
+     "name": "Foundations",
+     "blurb": "SELECT, WHERE, ORDER BY."
+    },
+    {
+     "n": 2,
+     "name": "Working",
+     "blurb": "Aggregates, joins, changing data."
+    },
+    {
+     "n": 3,
+     "name": "Fluent",
+     "blurb": "Subqueries, CTEs, CASE, set operations."
+    },
+    {
+     "n": 4,
+     "name": "Advanced",
+     "blurb": "Window functions and schema design."
+    },
+    {
+     "n": 5,
+     "name": "Expert",
+     "blurb": "Indexes, query plans, vector search."
+    }
+   ]
+  },
+  {
+   "id": "bash",
+   "name": "Bash and shell",
+   "short": "Bash",
+   "blurb": "Navigate, pipe, search, script and automate.",
+   "requires": [],
+   "unlockText": "",
+   "levels": [
+    {
+     "n": 1,
+     "name": "Foundations",
+     "blurb": "Paths, files, globs."
+    },
+    {
+     "n": 2,
+     "name": "Working",
+     "blurb": "Pipes, redirection, grep, find."
+    },
+    {
+     "n": 3,
+     "name": "Fluent",
+     "blurb": "sed, awk, environment variables, quoting."
+    },
+    {
+     "n": 4,
+     "name": "Advanced",
+     "blurb": "Scripts, exit codes, strict mode."
+    },
+    {
+     "n": 5,
+     "name": "Expert",
+     "blurb": "Makefiles and CI-style scripting."
+    }
+   ]
+  },
+  {
+   "id": "devops",
+   "name": "YAML, Docker and Terraform",
+   "short": "Config",
+   "blurb": "Read and fix GitHub Actions, Dockerfiles, Kubernetes and Terraform.",
+   "requires": [
+    {
+     "track": "python",
+     "cleared": 1
+    },
+    {
+     "track": "bash",
+     "cleared": 1
+    }
+   ],
+   "unlockText": "Unlocks after you clear Level 1 of Python and of Bash, so the config makes sense.",
+   "levels": [
+    {
+     "n": 1,
+     "name": "Foundations",
+     "blurb": "YAML syntax and its traps."
+    },
+    {
+     "n": 2,
+     "name": "Working",
+     "blurb": "GitHub Actions workflows."
+    },
+    {
+     "n": 3,
+     "name": "Fluent",
+     "blurb": "Dockerfiles, layers, multi-stage builds."
+    },
+    {
+     "n": 4,
+     "name": "Advanced",
+     "blurb": "Kubernetes manifests."
+    },
+    {
+     "n": 5,
+     "name": "Expert",
+     "blurb": "Terraform on AWS."
+    }
+   ]
+  },
+  {
+   "id": "light",
+   "name": "Regex, JSON, TOML, Markdown",
+   "short": "Light",
+   "blurb": "The small formats you touch every day.",
+   "requires": [],
+   "unlockText": "",
+   "levels": [
+    {
+     "n": 1,
+     "name": "Basics",
+     "blurb": "Regex, JSON, Markdown."
+    },
+    {
+     "n": 2,
+     "name": "Working",
+     "blurb": "Groups, TOML, Python re."
+    }
+   ]
+  }
+ ],
+ "phases": [
+  {
+   "id": "data",
+   "name": "Data and baselines",
+   "short": "Data",
+   "blurb": "Clean tickets, build features, train a first scikit-learn baseline."
+  },
+  {
+   "id": "deep",
+   "name": "Deep model",
+   "short": "Deep",
+   "blurb": "Fine-tune a transformer with PyTorch and Hugging Face."
+  },
+  {
+   "id": "serving",
+   "name": "Serving",
+   "short": "Serving",
+   "blurb": "FastAPI endpoint, tests, a lean Docker image."
+  },
+  {
+   "id": "cloud",
+   "name": "Cloud and CI/CD",
+   "short": "Cloud",
+   "blurb": "GitHub Actions, Kubernetes manifests, Terraform on AWS."
+  },
+  {
+   "id": "monitor",
+   "name": "Monitoring",
+   "short": "Monitor",
+   "blurb": "Track predictions and drift with SQL, shell scripts and Python stats."
+  }
+ ],
+ "rotation": [
+  "sql",
+  "bash",
+  "sql",
+  "devops",
+  "light",
+  "bash",
+  "sql",
+  "devops",
+  "bash",
+  "light"
+ ],
+ "datasets": {
+  "support": {
+   "setup": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT, plan TEXT, country TEXT);\nCREATE TABLE agents(id INTEGER PRIMARY KEY, name TEXT, team TEXT);\nCREATE TABLE tickets(id INTEGER PRIMARY KEY, customer_id INTEGER, category TEXT, priority INTEGER, status TEXT, created_at TEXT, resolved_at TEXT, words INTEGER, agent_id INTEGER);\nINSERT INTO customers VALUES(1,'Ana Ruiz','pro','ES');\nINSERT INTO customers VALUES(2,'Ben Carter','free','US');\nINSERT INTO customers VALUES(3,'Chika Obi','enterprise','NG');\nINSERT INTO customers VALUES(4,'Dmitri Volkov','pro','RU');\nINSERT INTO customers VALUES(5,'Elena Rossi','free','IT');\nINSERT INTO customers VALUES(6,'Farid Haddad','enterprise','MA');\nINSERT INTO customers VALUES(7,'Grace Lee','pro','US');\nINSERT INTO customers VALUES(8,'Hiro Tanaka','free','JP');\nINSERT INTO customers VALUES(9,'Isla Murphy','pro','IE');\nINSERT INTO customers VALUES(10,'Jorge Pena','free','MX');\nINSERT INTO agents VALUES(1,'Mia','tier1');\nINSERT INTO agents VALUES(2,'Noah','tier2');\nINSERT INTO agents VALUES(3,'Olu','tier1');\nINSERT INTO agents VALUES(4,'Priya','tier2');\nINSERT INTO tickets VALUES(1,1,'billing',2,'closed','2026-09-01','2026-09-02',42,1);\nINSERT INTO tickets VALUES(2,2,'bug',3,'closed','2026-09-01','2026-09-04',118,2);\nINSERT INTO tickets VALUES(3,3,'account',1,'closed','2026-09-02','2026-09-02',20,1);\nINSERT INTO tickets VALUES(4,4,'bug',3,'open','2026-09-03',NULL,95,2);\nINSERT INTO tickets VALUES(5,5,'feature',1,'open','2026-09-03',NULL,60,NULL);\nINSERT INTO tickets VALUES(6,6,'billing',2,'closed','2026-09-04','2026-09-05',38,3);\nINSERT INTO tickets VALUES(7,7,'bug',2,'closed','2026-09-05','2026-09-08',150,2);\nINSERT INTO tickets VALUES(8,1,'account',1,'closed','2026-09-06','2026-09-06',15,1);\nINSERT INTO tickets VALUES(9,2,'billing',3,'open','2026-09-07',NULL,70,3);\nINSERT INTO tickets VALUES(10,3,'bug',3,'closed','2026-09-08','2026-09-10',210,4);\nINSERT INTO tickets VALUES(11,NULL,'other',1,'open','2026-09-08',NULL,12,NULL);\nINSERT INTO tickets VALUES(12,4,'feature',2,'closed','2026-09-09','2026-09-15',88,4);\nINSERT INTO tickets VALUES(13,5,'billing',1,'closed','2026-09-10','2026-09-11',30,1);\nINSERT INTO tickets VALUES(14,6,'bug',3,'open','2026-09-10',NULL,132,2);\nINSERT INTO tickets VALUES(15,7,'account',2,'closed','2026-09-11','2026-09-12',25,3);\nINSERT INTO tickets VALUES(16,8,'bug',2,'closed','2026-09-12','2026-09-14',77,2);\nINSERT INTO tickets VALUES(17,9,'feature',1,'open','2026-09-12',NULL,64,NULL);\nINSERT INTO tickets VALUES(18,1,'bug',3,'closed','2026-09-13','2026-09-16',140,4);\nINSERT INTO tickets VALUES(19,3,'billing',2,'closed','2026-09-14','2026-09-14',33,3);\nINSERT INTO tickets VALUES(20,8,'billing',1,'closed','2026-09-15','2026-09-16',29,1);\nINSERT INTO tickets VALUES(21,9,'bug',2,'open','2026-09-15',NULL,101,2);\nINSERT INTO tickets VALUES(22,4,'account',1,'closed','2026-09-16','2026-09-16',18,1);\nINSERT INTO tickets VALUES(23,2,'feature',2,'closed','2026-09-17','2026-09-20',72,4);\nINSERT INTO tickets VALUES(24,6,'billing',3,'open','2026-09-18',NULL,55,3);"
+  },
+  "ml": {
+   "setup": "CREATE TABLE predictions(id INTEGER PRIMARY KEY, model TEXT, day TEXT, true_label TEXT, pred_label TEXT, confidence REAL);\nINSERT INTO predictions VALUES(1,'v1','2026-09-01','feature','feature',0.97);\nINSERT INTO predictions VALUES(2,'v1','2026-09-01','account','account',0.91);\nINSERT INTO predictions VALUES(3,'v1','2026-09-02','bug','account',0.88);\nINSERT INTO predictions VALUES(4,'v1','2026-09-02','bug','bug',0.62);\nINSERT INTO predictions VALUES(5,'v1','2026-09-03','billing','billing',0.95);\nINSERT INTO predictions VALUES(6,'v1','2026-09-03','feature','account',0.58);\nINSERT INTO predictions VALUES(7,'v1','2026-09-04','account','account',0.93);\nINSERT INTO predictions VALUES(8,'v1','2026-09-04','account','account',0.89);\nINSERT INTO predictions VALUES(9,'v1','2026-09-05','bug','billing',0.55);\nINSERT INTO predictions VALUES(10,'v1','2026-09-05','billing','billing',0.96);\nINSERT INTO predictions VALUES(11,'v1','2026-09-06','feature','feature',0.92);\nINSERT INTO predictions VALUES(12,'v1','2026-09-06','feature','feature',0.9);\nINSERT INTO predictions VALUES(13,'v2','2026-09-07','account','account',0.87);\nINSERT INTO predictions VALUES(14,'v2','2026-09-07','bug','account',0.51);\nINSERT INTO predictions VALUES(15,'v2','2026-09-08','billing','billing',0.94);\nINSERT INTO predictions VALUES(16,'v2','2026-09-08','billing','billing',0.9);\nINSERT INTO predictions VALUES(17,'v2','2026-09-09','feature','billing',0.49);\nINSERT INTO predictions VALUES(18,'v2','2026-09-09','account','billing',0.6);\nINSERT INTO predictions VALUES(19,'v2','2026-09-10','bug','bug',0.92);\nINSERT INTO predictions VALUES(20,'v2','2026-09-10','bug','bug',0.88);\nINSERT INTO predictions VALUES(21,'v2','2026-09-11','billing','billing',0.95);\nINSERT INTO predictions VALUES(22,'v2','2026-09-11','feature','bug',0.47);\nINSERT INTO predictions VALUES(23,'v2','2026-09-12','account','feature',0.52);\nINSERT INTO predictions VALUES(24,'v2','2026-09-12','account','bug',0.45);"
+  }
+ }
+}

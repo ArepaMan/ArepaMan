@@ -1,0 +1,1569 @@
+{
+ "concepts": [
+  {
+   "id": "yaml.syntax",
+   "level": 1,
+   "title": "YAML syntax",
+   "lede": "YAML is how most tools are configured: GitHub Actions, Kubernetes, Docker Compose, MLflow. It is just maps, lists and values, held together by indentation.",
+   "minutes": 4,
+   "phases": [
+    "cloud"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "yaml",
+      "x": "# a comment\nmodel:                      # a map (key: value pairs), nested by indenting 2 spaces\n  name: distilbert          # text, no quotes needed\n  labels: [bug, billing]    # a list, inline style\ntrain:\n  epochs: 3                 # a number\n  use_gpu: true             # a boolean\n  steps:                    # a list, block style: one dash per item\n    - load\n    - fit\nnotes: |                    # | keeps line breaks\n  first line\n  second line"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "**Indentation is structure.** Use spaces, never tabs. Two spaces per level is the convention.",
+       "A map is `key: value` (a space after the colon is required). A list item starts with `- `.",
+       "`|` keeps newlines in a text block; `>` folds them into one line."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "Everything under the same parent must line up exactly. One extra or missing space either changes the meaning or makes the file invalid."
+     },
+     {
+      "t": "quick",
+      "q": "How do you write a list of two items in block style?",
+      "choices": [
+       "`items: a, b`",
+       "`items:` then `- a` and `- b` on their own lines",
+       "`items = [a, b]`",
+       "`items: {a, b}`"
+      ],
+      "a": 1,
+      "why": "Each list item gets its own `- ` line, indented under the key."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "predict",
+     "prompt": "A config file is loaded in Python as `cfg = yaml.safe_load(text)`. What does `cfg[\"train\"][\"epochs\"] + len(cfg[\"model\"][\"labels\"])` evaluate to?",
+     "hints": [
+      "Read the number under `train`.",
+      "Count the items in the `labels` list.",
+      "3 + 3."
+     ],
+     "diff": 1,
+     "code": "model:\n  name: distilbert\n  labels: [bug, billing, feature]\ntrain:\n  epochs: 3\n  lr: 0.00002\n  use_gpu: true",
+     "answer": "6",
+     "lang": "yaml",
+     "id": "yaml.syntax.1"
+    },
+    {
+     "type": "spot",
+     "prompt": "This GitHub Actions snippet is invalid YAML. Which line is the problem?",
+     "hints": [
+      "Look at how far each `- name:` is indented.",
+      "The two list items must start in the same column.",
+      "Line 4 is one space off."
+     ],
+     "diff": 2,
+     "lines": [
+      "steps:",
+      "  - name: Install",
+      "    run: pip install -r requirements.txt",
+      "   - name: Test",
+      "    run: pytest"
+     ],
+     "bad": [
+      4
+     ],
+     "lang": "yaml",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "Indent line 4 by 2 spaces, like line 1's list items",
+       "Remove the dash on line 4",
+       "Add a colon after `Test`",
+       "Use a tab instead of spaces"
+      ],
+      "answer": 0
+     },
+     "id": "yaml.syntax.2"
+    },
+    {
+     "type": "fill",
+     "prompt": "Keep the line breaks in this multi-line command.",
+     "hints": [
+      "A single character introduces a literal block.",
+      "It looks like a vertical bar.",
+      "`|`"
+     ],
+     "diff": 1,
+     "template": "run: ____\n  pip install -r requirements.txt\n  pytest -q",
+     "blanks": [
+      [
+       "|"
+      ]
+     ],
+     "lang": "yaml",
+     "ci": false,
+     "id": "yaml.syntax.3"
+    }
+   ]
+  },
+  {
+   "id": "yaml.pitfalls",
+   "level": 1,
+   "title": "YAML traps that bite in real projects",
+   "lede": "YAML guesses types from how a value looks. Those guesses cause some of the most confusing bugs in CI and config files.",
+   "minutes": 4,
+   "phases": [
+    "cloud"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "yaml",
+      "x": "python-version: 3.10        # loads as the NUMBER 3.1, not the text \"3.10\"!\npython-version: \"3.10\"      # quote it and it stays text\n\ncountry: NO                 # PyYAML reads this as the boolean false (the \"Norway problem\")\ncountry: \"NO\"               # safe\n\ndefaults: &d                # an anchor: name a block\n  retries: 3\nprod:\n  <<: *d                    # merge the anchored block here\n  timeout: 30"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "**Quote** anything that could be mistaken for a number, boolean, null or date: versions, `yes`/`no`/`on`/`off`, country codes, zip codes.",
+       "Keys must be unique. Duplicates are silently overwritten by many parsers.",
+       "Anchors `&name` and aliases `*name` avoid repetition. `<<:` merges a map."
+      ]
+     },
+     {
+      "t": "tip",
+      "x": "When a pipeline behaves strangely, load the file in Python (`yaml.safe_load`) and print the result. You will see exactly what the tool sees."
+     },
+     {
+      "t": "quick",
+      "q": "You write `python-version: 3.10` in a workflow. Which Python do you get?",
+      "choices": [
+       "3.10",
+       "3.1",
+       "3.100",
+       "An error"
+      ],
+      "a": 1,
+      "why": "YAML reads 3.10 as the number 3.1 and drops the trailing zero. Write `\"3.10\"`."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "predict",
+     "prompt": "A workflow contains the line `python-version: 3.10`. What value does `yaml.safe_load` produce for it?",
+     "hints": [
+      "Does the value look like a number?",
+      "As a number the trailing zero disappears.",
+      "It becomes `3.1`."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "explain": {
+      "ask": "In your own words: why does `3.10` turn into `3.1`, and what is the fix?",
+      "points": [
+       "YAML sees an unquoted number and stores it as a float",
+       "Quote the value so it stays a string: \"3.10\""
+      ],
+      "model": "Unquoted, `3.10` is a float, and floats do not keep trailing zeros. Quoting it makes it a string, so the tool receives exactly `3.10`."
+     },
+     "code": "python-version: 3.10",
+     "answer": "3.1",
+     "lang": "yaml",
+     "id": "yaml.pitfalls.1"
+    },
+    {
+     "type": "predict",
+     "prompt": "What does `yaml.safe_load` produce for `country: NO`?",
+     "hints": [
+      "YAML 1.1 treats some words as booleans.",
+      "`yes`, `no`, `on` and `off` are among them.",
+      "`NO` becomes `False`."
+     ],
+     "diff": 2,
+     "code": "country: NO",
+     "answer": "{'country': False}",
+     "lang": "yaml",
+     "accept": [
+      "False"
+     ],
+     "id": "yaml.pitfalls.2"
+    },
+    {
+     "type": "spot",
+     "prompt": "The file is meant to describe two settings, but loading it fails. Which line is the problem?",
+     "hints": [
+      "Look at the colon in each line.",
+      "A map entry needs a space after the colon.",
+      "`version:2` is one text blob, not a key and value."
+     ],
+     "diff": 1,
+     "lines": [
+      "name: ReviewRadar",
+      "version:2"
+     ],
+     "bad": [
+      2
+     ],
+     "lang": "yaml",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "Write `version: 2`",
+       "Write `version = 2`",
+       "Write `\"version\":2`",
+       "Add a dash before `version`"
+      ],
+      "answer": 0
+     },
+     "id": "yaml.pitfalls.3"
+    }
+   ]
+  },
+  {
+   "id": "gha.basic",
+   "level": 2,
+   "title": "GitHub Actions: your first workflow",
+   "lede": "A workflow is a YAML file in `.github/workflows/`. GitHub runs its jobs on a fresh machine whenever the trigger happens.",
+   "minutes": 5,
+   "phases": [
+    "cloud",
+    "serving"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "yaml",
+      "x": "name: CI\non:\n  push:\n    branches: [main]\n  pull_request:\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4          # a ready-made step from the marketplace\n      - uses: actions/setup-python@v5\n        with:\n          python-version: \"3.12\"\n      - run: pip install -r requirements.txt   # a shell command\n      - run: pytest -q"
+     },
+     {
+      "t": "table",
+      "cols": [
+       "Key",
+       "Meaning"
+      ],
+      "rows": [
+       [
+        "`on`",
+        "what triggers the workflow"
+       ],
+       [
+        "`jobs`",
+        "named groups of steps; each runs on its own machine"
+       ],
+       [
+        "`runs-on`",
+        "the machine type"
+       ],
+       [
+        "`steps`",
+        "ordered list of steps"
+       ],
+       [
+        "`uses`",
+        "run a reusable action; `with:` passes its inputs"
+       ],
+       [
+        "`run`",
+        "run shell commands"
+       ]
+      ]
+     },
+     {
+      "t": "ul",
+      "x": [
+       "A job's steps run in order and share one machine. Separate jobs run in parallel unless one `needs` another.",
+       "If any step fails (non-zero exit code), the job stops and the check goes red."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "Actions need to download your code first. Almost every job starts with `actions/checkout`."
+     },
+     {
+      "t": "quick",
+      "q": "Which key lists the commands and actions a job runs?",
+      "choices": [
+       "`jobs`",
+       "`steps`",
+       "`on`",
+       "`needs`"
+      ],
+      "a": 1,
+      "why": "A job contains a `steps` list."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "order",
+     "prompt": "Put the lines in order to build a minimal workflow.",
+     "hints": [
+      "`jobs` must come before the job name.",
+      "A job's `runs-on` and `steps` are indented under the job name.",
+      "`checkout` runs before the tests."
+     ],
+     "diff": 1,
+     "lines": [
+      "name: CI",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v4",
+      "      - run: pytest"
+     ],
+     "lang": "yaml",
+     "alts": [
+      [
+       "on: [push]",
+       "name: CI",
+       "jobs:",
+       "  test:",
+       "    runs-on: ubuntu-latest",
+       "    steps:",
+       "      - uses: actions/checkout@v4",
+       "      - run: pytest"
+      ]
+     ],
+     "id": "gha.basic.1"
+    },
+    {
+     "type": "fill",
+     "prompt": "Run the workflow on pushes to `main`, on an Ubuntu machine.",
+     "hints": [
+      "The event that fires when commits are pushed.",
+      "GitHub's hosted Linux runner has a `-latest` label.",
+      "`push` and `ubuntu-latest`."
+     ],
+     "diff": 2,
+     "template": "on:\n  ____:\n    branches: [main]\njobs:\n  test:\n    runs-on: ____\n    steps:\n      - uses: actions/checkout@v4\n      - run: pytest",
+     "blanks": [
+      [
+       "push"
+      ],
+      [
+       "ubuntu-latest"
+      ]
+     ],
+     "lang": "yaml",
+     "ci": false,
+     "id": "gha.basic.2"
+    },
+    {
+     "type": "spot",
+     "prompt": "This workflow never starts any job. Which line is the problem?",
+     "hints": [
+      "Check the spelling of each key.",
+      "GitHub's key uses a hyphen, not an underscore.",
+      "`runs_on` is not recognised."
+     ],
+     "diff": 2,
+     "lines": [
+      "name: CI",
+      "on: [push]",
+      "jobs:",
+      "  test:",
+      "    runs_on: ubuntu-latest",
+      "    steps:",
+      "      - run: pytest"
+     ],
+     "bad": [
+      5
+     ],
+     "lang": "yaml",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "Rename it to `runs-on`",
+       "Rename `steps` to `step`",
+       "Move it under `steps`",
+       "Quote the value"
+      ],
+      "answer": 0
+     },
+     "id": "gha.basic.3"
+    }
+   ]
+  },
+  {
+   "id": "gha.advanced",
+   "level": 2,
+   "title": "GitHub Actions: matrix, needs, secrets and caching",
+   "lede": "Real pipelines test on several versions, deploy only after tests pass, and keep credentials out of the repo.",
+   "minutes": 6,
+   "phases": [
+    "cloud"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "yaml",
+      "x": "jobs:\n  test:\n    runs-on: ${{ matrix.os }}\n    strategy:\n      matrix:\n        os: [ubuntu-latest, windows-latest]\n        python: [\"3.10\", \"3.11\"]        # 2 x 2 = 4 jobs\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v5\n        with:\n          python-version: ${{ matrix.python }}\n          cache: pip                    # reuse downloaded packages\n      - run: pytest -q\n\n  deploy:\n    needs: test                          # wait for every test job to pass\n    if: github.ref == 'refs/heads/main'  # only on main\n    runs-on: ubuntu-latest\n    steps:\n      - run: ./deploy.sh\n        env:\n          AWS_SECRET: ${{ secrets.AWS_SECRET }}   # from Settings > Secrets, never in the file"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`matrix` multiplies jobs: every combination of its lists runs.",
+       "`needs: test` makes a job wait for another and skip if it failed.",
+       "`${{ ... }}` is an expression. Secrets are read as `${{ secrets.NAME }}` and are masked in logs.",
+       "Add `cache:` or `actions/cache` to avoid re-downloading dependencies on every run."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "Never paste credentials into the YAML or print them with `echo`. Store them as repository or environment secrets."
+     },
+     {
+      "t": "quick",
+      "q": "A matrix has `os: [linux, windows]` and `python: [\"3.10\", \"3.11\", \"3.12\"]`. How many jobs run?",
+      "choices": [
+       "2",
+       "3",
+       "5",
+       "6"
+      ],
+      "a": 3,
+      "why": "Every combination: 2 x 3 = 6."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "mcq",
+     "prompt": "A matrix defines `os: [ubuntu-latest, windows-latest]` and `python: [\"3.10\", \"3.11\"]`, plus a `deploy` job with `needs: test`. How many `test` jobs run, and when does `deploy` start?",
+     "hints": [
+      "Multiply the list lengths.",
+      "`needs` waits for the whole job, which includes every matrix combination.",
+      "A single failure stops `deploy`."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "2 jobs; immediately",
+      "4 jobs; after all 4 pass",
+      "4 jobs; after the first one passes",
+      "2 jobs; after both fail"
+     ],
+     "answer": 1,
+     "id": "gha.advanced.1"
+    },
+    {
+     "type": "spot",
+     "prompt": "The deploy step cannot authenticate: the token arrives as the literal text `secrets.AWS_TOKEN`. Which line is the problem?",
+     "hints": [
+      "Compare with how expressions are written elsewhere in workflows.",
+      "GitHub only evaluates expressions inside `${{ }}`.",
+      "Without the braces it is just text."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "lines": [
+      "- run: ./deploy.sh",
+      "  env:",
+      "    AWS_TOKEN: secrets.AWS_TOKEN"
+     ],
+     "bad": [
+      3
+     ],
+     "lang": "yaml",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "`AWS_TOKEN: ${{ secrets.AWS_TOKEN }}`",
+       "`AWS_TOKEN: \"secrets.AWS_TOKEN\"`",
+       "`AWS_TOKEN: $secrets.AWS_TOKEN`",
+       "Hard-code the token"
+      ],
+      "answer": 0
+     },
+     "id": "gha.advanced.2"
+    },
+    {
+     "type": "fill",
+     "prompt": "Make `deploy` wait for `test` and run only on the `main` branch.",
+     "hints": [
+      "`needs` takes the name of another job.",
+      "The branch name goes at the end of the ref.",
+      "`test` and `main`."
+     ],
+     "diff": 2,
+     "template": "deploy:\n  needs: ____\n  if: github.ref == 'refs/heads/____'",
+     "blanks": [
+      [
+       "test"
+      ],
+      [
+       "main"
+      ]
+     ],
+     "lang": "yaml",
+     "ci": false,
+     "id": "gha.advanced.3"
+    }
+   ]
+  },
+  {
+   "id": "docker.basic",
+   "level": 3,
+   "title": "Dockerfile basics",
+   "lede": "A Dockerfile is a recipe for an image: start from a base, copy in your code, install dependencies, say what to run. A container is a running instance of that image.",
+   "minutes": 5,
+   "phases": [
+    "serving",
+    "cloud"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "dockerfile",
+      "x": "FROM python:3.12-slim              # base image: a small Linux with Python\nWORKDIR /app                       # cd into /app (created if missing)\nCOPY requirements.txt .            # copy a file from your machine into the image\nRUN pip install --no-cache-dir -r requirements.txt   # run a command at BUILD time\nCOPY . .                           # now copy the rest of the code\nEXPOSE 8000                        # documentation: the app listens on 8000\nCMD [\"uvicorn\", \"main:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8000\"]   # run at START time"
+     },
+     {
+      "t": "table",
+      "cols": [
+       "Instruction",
+       "When it runs",
+       "Purpose"
+      ],
+      "rows": [
+       [
+        "`FROM`",
+        "build",
+        "choose the base image (always first)"
+       ],
+       [
+        "`RUN`",
+        "build",
+        "execute a command and keep the result in the image"
+       ],
+       [
+        "`COPY`",
+        "build",
+        "add files from your project"
+       ],
+       [
+        "`CMD`",
+        "container start",
+        "default command; can be overridden"
+       ],
+       [
+        "`ENTRYPOINT`",
+        "container start",
+        "fixed executable; arguments are appended"
+       ]
+      ]
+     },
+     {
+      "t": "ul",
+      "x": [
+       "Build: `docker build -t reviewradar:1 .`  Run: `docker run -p 8000:8000 reviewradar:1`.",
+       "Use the **exec form** `CMD [\"a\", \"b\"]` so signals reach your process and it stops cleanly.",
+       "Bind servers to `0.0.0.0` inside a container. `127.0.0.1` is reachable only from inside."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "Which instruction runs a command while the image is being built?",
+      "choices": [
+       "`CMD`",
+       "`RUN`",
+       "`EXPOSE`",
+       "`ENTRYPOINT`"
+      ],
+      "a": 1,
+      "why": "`RUN` executes at build time. `CMD` runs when a container starts."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "order",
+     "prompt": "Put the Dockerfile lines in order for a FastAPI service.",
+     "hints": [
+      "`FROM` is always the first instruction.",
+      "Copy the requirements file and install before copying all the code.",
+      "`CMD` is last."
+     ],
+     "diff": 2,
+     "lines": [
+      "FROM python:3.12-slim",
+      "WORKDIR /app",
+      "COPY requirements.txt .",
+      "RUN pip install --no-cache-dir -r requirements.txt",
+      "COPY . .",
+      "CMD [\"uvicorn\", \"main:app\", \"--host\", \"0.0.0.0\"]"
+     ],
+     "lang": "dockerfile",
+     "id": "docker.basic.1"
+    },
+    {
+     "type": "fill",
+     "prompt": "Complete the Dockerfile.",
+     "hints": [
+      "Two lines bring files into the image.",
+      "The last line says what to run when the container starts.",
+      "`COPY`, `COPY`, `CMD`."
+     ],
+     "diff": 1,
+     "template": "FROM python:3.12-slim\nWORKDIR /app\n____ requirements.txt .\nRUN pip install -r requirements.txt\n____ . .\n____ [\"uvicorn\", \"main:app\", \"--host\", \"0.0.0.0\"]",
+     "blanks": [
+      [
+       "COPY"
+      ],
+      [
+       "COPY"
+      ],
+      [
+       "CMD"
+      ]
+     ],
+     "lang": "dockerfile",
+     "ci": true,
+     "id": "docker.basic.2"
+    },
+    {
+     "type": "mcq",
+     "prompt": "What is the difference between an image and a container?",
+     "hints": [
+      "Think class and object.",
+      "You can start many containers from one image.",
+      "The image is read-only; the container runs."
+     ],
+     "diff": 1,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "They are the same thing",
+      "An image is the packaged recipe result; a container is a running instance of it",
+      "A container is the file you build; an image is the running process",
+      "Images exist only in the cloud"
+     ],
+     "answer": 1,
+     "id": "docker.basic.3"
+    },
+    {
+     "type": "mcq",
+     "prompt": "A server inside your container binds to `127.0.0.1:8000`. From your laptop, `curl localhost:8000` (with `-p 8000:8000`) fails. Why?",
+     "hints": [
+      "Where does `127.0.0.1` point inside a container?",
+      "Published ports reach the container from outside its own loopback.",
+      "Bind to `0.0.0.0`."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "Port 8000 is reserved",
+      "The app only accepts connections from inside the container; it should bind to `0.0.0.0`",
+      "Docker blocks all ports by default",
+      "The image is too large"
+     ],
+     "answer": 1,
+     "id": "docker.basic.4"
+    }
+   ]
+  },
+  {
+   "id": "docker.layers",
+   "level": 3,
+   "title": "Layers, caching and multi-stage builds",
+   "lede": "Each instruction makes a cached layer. Order matters: put things that change rarely first, so rebuilds are fast and images stay small.",
+   "minutes": 6,
+   "phases": [
+    "serving",
+    "cloud"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "p",
+      "x": "Tap a line to pretend you edited it. Everything from that line downwards is rebuilt. Compare the two Dockerfiles."
+     },
+     {
+      "t": "viz",
+      "kind": "layers",
+      "data": {
+       "title": "Which layers rebuild?",
+       "variants": [
+        {
+         "name": "Code first (slow)",
+         "lines": [
+          {
+           "ins": "FROM python:3.12-slim",
+           "cost": 1
+          },
+          {
+           "ins": "WORKDIR /app",
+           "cost": 1
+          },
+          {
+           "ins": "COPY . .",
+           "cost": 1
+          },
+          {
+           "ins": "RUN pip install -r requirements.txt",
+           "cost": 90
+          },
+          {
+           "ins": "CMD [\"python\", \"main.py\"]",
+           "cost": 1
+          }
+         ]
+        },
+        {
+         "name": "Requirements first (fast)",
+         "lines": [
+          {
+           "ins": "FROM python:3.12-slim",
+           "cost": 1
+          },
+          {
+           "ins": "WORKDIR /app",
+           "cost": 1
+          },
+          {
+           "ins": "COPY requirements.txt .",
+           "cost": 1
+          },
+          {
+           "ins": "RUN pip install -r requirements.txt",
+           "cost": 90
+          },
+          {
+           "ins": "COPY . .",
+           "cost": 2
+          },
+          {
+           "ins": "CMD [\"python\", \"main.py\"]",
+           "cost": 1
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "t": "code",
+      "lang": "dockerfile",
+      "x": "# Multi-stage: build with the heavy tools, ship only the result\nFROM python:3.12 AS builder\nCOPY requirements.txt .\nRUN pip wheel -r requirements.txt -w /wheels\n\nFROM python:3.12-slim\nCOPY --from=builder /wheels /wheels\nRUN pip install --no-index --find-links=/wheels /wheels/*.whl\nCOPY . /app\nUSER nobody                          # do not run as root\nCMD [\"python\", \"/app/main.py\"]"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "A `.dockerignore` file (like `.gitignore`) keeps `.git`, virtual environments, caches and large data out of the build.",
+       "Pin versions: `python:3.12-slim`, not `python:latest`, so builds are repeatable.",
+       "Smaller images pull faster and have fewer vulnerabilities. Multi-stage builds and `-slim` bases help."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "You edit one Python file. In the *requirements-first* Dockerfile, which layers rebuild?",
+      "choices": [
+       "All of them",
+       "Only `COPY . .` and `CMD`",
+       "Only `FROM`",
+       "None"
+      ],
+      "a": 1,
+      "why": "Everything above the changed line stays cached, including the slow `pip install`."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "spot",
+     "prompt": "Every code change makes this build wait for `pip install` again. Which line is the problem?",
+     "hints": [
+      "Which layer changes on every edit?",
+      "Everything below a changed layer is rebuilt.",
+      "Copying all the code before installing invalidates the install layer."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "explain": {
+      "ask": "In your own words: why does copying only requirements.txt first make rebuilds faster?",
+      "points": [
+       "Docker caches each layer and reuses it if its inputs did not change",
+       "requirements.txt rarely changes, so the pip install layer stays cached when only code changes"
+      ],
+      "model": "A layer is reused when its instruction and inputs are unchanged. The requirements file changes rarely, so the slow install stays cached. Code changes only invalidate the later `COPY . .` layer."
+     },
+     "lines": [
+      "FROM python:3.12-slim",
+      "WORKDIR /app",
+      "COPY . .",
+      "RUN pip install -r requirements.txt",
+      "CMD [\"python\", \"main.py\"]"
+     ],
+     "bad": [
+      3
+     ],
+     "lang": "dockerfile",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "Copy only `requirements.txt`, run `pip install`, then `COPY . .`",
+       "Remove the `RUN` line",
+       "Use `CMD` instead of `RUN`",
+       "Add `--no-cache-dir`"
+      ],
+      "answer": 0,
+      "why": [
+       null,
+       "Then dependencies are never installed.",
+       "`CMD` would try to install at container start.",
+       "That only saves space; it does not fix the caching."
+      ]
+     },
+     "id": "docker.layers.1"
+    },
+    {
+     "type": "fill",
+     "prompt": "Complete the second stage so it uses files from the first stage.",
+     "hints": [
+      "The first stage has a name after `AS`.",
+      "`--from=` refers to that name.",
+      "`builder`"
+     ],
+     "diff": 2,
+     "template": "FROM python:3.12 AS builder\nRUN pip wheel -r requirements.txt -w /wheels\n\nFROM python:3.12-slim\nCOPY --from=____ /wheels /wheels",
+     "blanks": [
+      [
+       "builder"
+      ]
+     ],
+     "lang": "dockerfile",
+     "ci": false,
+     "id": "docker.layers.2"
+    },
+    {
+     "type": "mcq",
+     "prompt": "Which entries belong in `.dockerignore` for a ReviewRadar service? (Select all that apply.)",
+     "hints": [
+      "Ignore what the image does not need.",
+      "The build still needs `requirements.txt`.",
+      "History, caches and large raw data only slow the build."
+     ],
+     "diff": 2,
+     "choices": [
+      "`.git`",
+      "`__pycache__/`",
+      "`requirements.txt`",
+      "`data/raw/`"
+     ],
+     "answer": [
+      0,
+      1,
+      3
+     ],
+     "id": "docker.layers.3"
+    },
+    {
+     "type": "spot",
+     "prompt": "A security scan flags this Dockerfile for an unpinned base image. Which line is the problem?",
+     "hints": [
+      "What does `latest` mean next month?",
+      "Builds should be repeatable.",
+      "Pin the version."
+     ],
+     "diff": 2,
+     "lines": [
+      "FROM python:latest",
+      "WORKDIR /app",
+      "COPY . .",
+      "CMD [\"python\", \"main.py\"]"
+     ],
+     "bad": [
+      1
+     ],
+     "lang": "dockerfile",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "`FROM python:3.12-slim`",
+       "`FROM python`",
+       "`FROM python:newest`",
+       "Delete the line"
+      ],
+      "answer": 0
+     },
+     "id": "docker.layers.4"
+    }
+   ]
+  },
+  {
+   "id": "k8s.pods",
+   "level": 4,
+   "title": "Kubernetes: Deployments and Pods",
+   "lede": "You tell Kubernetes the state you want (three copies of this image) and it keeps reality matching. A Deployment manages identical Pods.",
+   "minutes": 5,
+   "phases": [
+    "cloud",
+    "serving"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "yaml",
+      "x": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: reviewradar-api\nspec:\n  replicas: 3                       # how many Pods\n  selector:\n    matchLabels:\n      app: reviewradar-api          # which Pods this Deployment owns\n  template:                         # the Pod blueprint\n    metadata:\n      labels:\n        app: reviewradar-api        # MUST match the selector above\n    spec:\n      containers:\n        - name: api\n          image: ghcr.io/arepaman/reviewradar:1.0\n          ports:\n            - containerPort: 8000"
+     },
+     {
+      "t": "p",
+      "x": "Labels are how Kubernetes connects things. A Service picks Pods by label. Toggle labels below to see which Pods match."
+     },
+     {
+      "t": "viz",
+      "kind": "selector",
+      "data": {
+       "title": "Which pods does the Service select?",
+       "selector": {
+        "app": "web"
+       },
+       "pods": [
+        {
+         "name": "pod-a",
+         "labels": {
+          "app": "web",
+          "tier": "api"
+         }
+        },
+        {
+         "name": "pod-b",
+         "labels": {
+          "app": "web",
+          "tier": "worker"
+         }
+        },
+        {
+         "name": "pod-c",
+         "labels": {
+          "app": "db",
+          "tier": "api"
+         }
+        },
+        {
+         "name": "pod-d",
+         "labels": {
+          "app": "web",
+          "tier": "api",
+          "env": "prod"
+         }
+        }
+       ]
+      }
+     },
+     {
+      "t": "ul",
+      "x": [
+       "**Pod**: one or more containers that run together. **Deployment**: keeps N identical Pods running and handles rolling updates. **ReplicaSet** does the counting underneath.",
+       "`kubectl apply -f deploy.yaml` sends the desired state. `kubectl get pods`, `kubectl logs <pod>`, `kubectl describe pod <pod>` show what is happening.",
+       "If a Pod dies, the Deployment makes a new one."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "Which part of a Deployment must match the Pod template's labels?",
+      "choices": [
+       "`metadata.name`",
+       "`spec.selector.matchLabels`",
+       "`containerPort`",
+       "`apiVersion`"
+      ],
+      "a": 1,
+      "why": "The selector decides which Pods the Deployment manages."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "fill",
+     "prompt": "Complete the start of a Deployment.",
+     "hints": [
+      "Deployments belong to the `apps` API group.",
+      "The kind has a capital D.",
+      "`apps` and `Deployment`."
+     ],
+     "diff": 2,
+     "template": "apiVersion: ____/v1\nkind: ____\nmetadata:\n  name: reviewradar-api\nspec:\n  replicas: 3",
+     "blanks": [
+      [
+       "apps"
+      ],
+      [
+       "Deployment"
+      ]
+     ],
+     "lang": "yaml",
+     "ci": false,
+     "id": "k8s.pods.1"
+    },
+    {
+     "type": "spot",
+     "prompt": "The Deployment applies but creates no managed Pods (the API server rejects it). Which line is the problem?",
+     "hints": [
+      "Compare the selector with the Pod template's labels.",
+      "They must agree.",
+      "`api` versus `web`."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "lines": [
+      "spec:",
+      "  replicas: 2",
+      "  selector:",
+      "    matchLabels:",
+      "      app: api",
+      "  template:",
+      "    metadata:",
+      "      labels:",
+      "        app: web"
+     ],
+     "bad": [
+      9
+     ],
+     "lang": "yaml",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "Make the template label `app: api` (matching the selector)",
+       "Change `replicas` to 1",
+       "Remove `matchLabels`",
+       "Add `kind: Pod`"
+      ],
+      "answer": 0
+     },
+     "id": "k8s.pods.2"
+    },
+    {
+     "type": "mcq",
+     "prompt": "A Pod crashes. What does a Deployment with `replicas: 3` do?",
+     "hints": [
+      "The Deployment holds the desired state.",
+      "It reconciles actual state toward desired state.",
+      "A new Pod is created."
+     ],
+     "diff": 1,
+     "choices": [
+      "Nothing; you must restart it",
+      "Creates a replacement Pod to get back to 3",
+      "Scales down to 2",
+      "Deletes the Deployment"
+     ],
+     "answer": 1,
+     "id": "k8s.pods.3"
+    }
+   ]
+  },
+  {
+   "id": "k8s.svc",
+   "level": 4,
+   "title": "Kubernetes: Services, config, probes and resources",
+   "lede": "A Service gives Pods a stable address. ConfigMaps and Secrets inject settings. Probes and resource limits keep the cluster healthy.",
+   "minutes": 6,
+   "phases": [
+    "cloud",
+    "serving",
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "yaml",
+      "x": "apiVersion: v1\nkind: Service\nmetadata:\n  name: reviewradar-api\nspec:\n  type: ClusterIP                  # reachable inside the cluster\n  selector:\n    app: reviewradar-api           # Pods with this label receive traffic\n  ports:\n    - port: 80                     # the Service's port\n      targetPort: 8000             # the container's port\n---\n# inside the container spec of the Deployment:\nresources:\n  requests: {cpu: \"250m\", memory: \"256Mi\"}   # what the scheduler reserves\n  limits:   {cpu: \"500m\", memory: \"512Mi\"}   # the hard ceiling\nreadinessProbe:                    # only send traffic when this succeeds\n  httpGet: {path: /health, port: 8000}\nlivenessProbe:                     # restart the container if this keeps failing\n  httpGet: {path: /health, port: 8000}\nenvFrom:\n  - configMapRef: {name: api-config}\n  - secretRef: {name: api-secrets}"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "**Readiness** controls whether a Pod gets traffic. **Liveness** controls whether it is restarted.",
+       "Memory units matter: `512Mi` is mebibytes, but `512` is **512 bytes**. CPU `250m` is a quarter of a core.",
+       "A **Secret** is only base64-encoded, not encrypted. Restrict access to it and prefer an external secret store."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "Which probe decides whether a Pod receives traffic?",
+      "choices": [
+       "liveness",
+       "readiness",
+       "startup",
+       "resources"
+      ],
+      "a": 1,
+      "why": "A failing readiness probe removes the Pod from the Service without restarting it."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "fill",
+     "prompt": "Complete the Service so traffic on port 80 reaches the container's port 8000.",
+     "hints": [
+      "`port` is what the Service listens on.",
+      "Another field names the container's port.",
+      "`targetPort`"
+     ],
+     "diff": 2,
+     "template": "kind: Service\nspec:\n  type: ClusterIP\n  selector:\n    app: reviewradar-api\n  ports:\n    - port: 80\n      ____: 8000",
+     "blanks": [
+      [
+       "targetPort"
+      ]
+     ],
+     "lang": "yaml",
+     "ci": false,
+     "id": "k8s.svc.1"
+    },
+    {
+     "type": "spot",
+     "prompt": "A Pod keeps being killed immediately after it starts, with `OOMKilled`. Which line is the problem?",
+     "hints": [
+      "Look at the memory unit.",
+      "A bare number means bytes.",
+      "512 bytes is not enough for a Python process."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "lines": [
+      "resources:",
+      "  limits:",
+      "    memory: 512",
+      "    cpu: \"500m\""
+     ],
+     "bad": [
+      3
+     ],
+     "lang": "yaml",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "`memory: 512Mi`",
+       "`memory: \"512\"`",
+       "`memory: 512m`",
+       "Remove `cpu`"
+      ],
+      "answer": 0,
+      "why": [
+       null,
+       "Quotes do not change the unit; it is still bytes.",
+       "`m` means milli, so this is half a byte.",
+       "CPU is unrelated."
+      ]
+     },
+     "id": "k8s.svc.2"
+    },
+    {
+     "type": "mcq",
+     "prompt": "The app takes 40 seconds to load its model. Without a readiness probe, what goes wrong?",
+     "hints": [
+      "When does Kubernetes start sending traffic by default?",
+      "As soon as the container is running.",
+      "A readiness probe delays traffic until the app answers."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "Nothing",
+      "Traffic reaches the Pod before it is ready, so requests fail",
+      "The Pod is restarted every 5 seconds",
+      "The Service is deleted"
+     ],
+     "answer": 1,
+     "id": "k8s.svc.3"
+    },
+    {
+     "type": "mcq",
+     "prompt": "A Kubernetes Secret holds a database password. Which statement is true?",
+     "hints": [
+      "Base64 is an encoding, not encryption.",
+      "Anyone who can read the Secret object can decode it.",
+      "Use RBAC and, ideally, an external secret store."
+     ],
+     "diff": 2,
+     "choices": [
+      "It is encrypted by default everywhere",
+      "It is only base64-encoded, so access must be restricted",
+      "It cannot be read by Pods",
+      "It is public"
+     ],
+     "answer": 1,
+     "id": "k8s.svc.4"
+    }
+   ]
+  },
+  {
+   "id": "tf.basic",
+   "level": 5,
+   "title": "Terraform: HCL basics",
+   "lede": "Terraform describes infrastructure as code. You declare what should exist; Terraform works out how to get there and records what it built.",
+   "minutes": 6,
+   "phases": [
+    "cloud"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "hcl",
+      "x": "terraform {\n  required_providers {\n    aws = { source = \"hashicorp/aws\", version = \"~> 5.0\" }\n  }\n}\n\nprovider \"aws\" {\n  region = var.region\n}\n\nvariable \"region\" {            # an input\n  type    = string\n  default = \"eu-west-1\"\n}\n\nresource \"aws_s3_bucket\" \"models\" {   # <type> <local name>\n  bucket = \"reviewradar-models-prod\"\n}\n\noutput \"bucket_arn\" {           # a value to show or share\n  value = aws_s3_bucket.models.arn\n}"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "Read inputs as `var.name`, resources as `<type>.<name>.<attribute>`, locals as `local.name`.",
+       "Workflow: `terraform init` (download providers), `terraform plan` (preview changes), `terraform apply` (make them), `terraform destroy` (remove).",
+       "**State** (`terraform.tfstate`) maps your code to real resources. Treat it as sensitive."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "Always read the `plan` before `apply`. A line starting with `-/+` means the resource will be destroyed and recreated."
+     },
+     {
+      "t": "quick",
+      "q": "What does `terraform plan` do?",
+      "choices": [
+       "Creates the resources",
+       "Shows what would change, without changing anything",
+       "Deletes unused resources",
+       "Formats the files"
+      ],
+      "a": 1,
+      "why": "It compares your code with the real infrastructure and previews the difference."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "fill",
+     "prompt": "Complete the input variable and use it.",
+     "hints": [
+      "Inputs are declared with a block keyword.",
+      "They are read with a short prefix.",
+      "`variable` and `var`."
+     ],
+     "diff": 2,
+     "template": "____ \"region\" {\n  type    = string\n  default = \"eu-west-1\"\n}\n\nprovider \"aws\" {\n  region = ____.region\n}",
+     "blanks": [
+      [
+       "variable"
+      ],
+      [
+       "var"
+      ]
+     ],
+     "lang": "hcl",
+     "ci": false,
+     "id": "tf.basic.1"
+    },
+    {
+     "type": "spot",
+     "prompt": "`terraform validate` fails on this resource. Which line is the problem?",
+     "hints": [
+      "How are input variables referenced?",
+      "The block is `variable`, but the reference uses a shorter name.",
+      "It is `var.bucket_name`."
+     ],
+     "diff": 2,
+     "lines": [
+      "variable \"bucket_name\" {",
+      "  type = string",
+      "}",
+      "resource \"aws_s3_bucket\" \"models\" {",
+      "  bucket = variable.bucket_name",
+      "}"
+     ],
+     "bad": [
+      5
+     ],
+     "lang": "hcl",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "`bucket = var.bucket_name`",
+       "`bucket = \"var.bucket_name\"`",
+       "`bucket = $bucket_name`",
+       "`bucket = input.bucket_name`"
+      ],
+      "answer": 0
+     },
+     "id": "tf.basic.2"
+    },
+    {
+     "type": "mcq",
+     "prompt": "`terraform plan` shows `-/+ aws_db_instance.main (must be replaced)`. What should you do before applying?",
+     "hints": [
+      "`-/+` means destroy then create.",
+      "Is that acceptable for this resource?",
+      "Investigate first, back up data if needed."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "Apply immediately",
+      "Check what forces the replacement; destroying a database could lose data",
+      "Delete the state file",
+      "Run `terraform fmt`"
+     ],
+     "answer": 1,
+     "id": "tf.basic.3"
+    }
+   ]
+  },
+  {
+   "id": "tf.aws",
+   "level": 5,
+   "title": "Terraform on AWS: buckets, security and state",
+   "lede": "A few AWS building blocks cover ReviewRadar: S3 for model files, IAM for permissions, security groups for network rules. Security mistakes here are costly.",
+   "minutes": 6,
+   "phases": [
+    "cloud",
+    "monitor"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "hcl",
+      "x": "resource \"aws_s3_bucket\" \"models\" {\n  bucket = \"reviewradar-models-prod\"\n}\n\nresource \"aws_s3_bucket_versioning\" \"models\" {\n  bucket = aws_s3_bucket.models.id          # reference another resource\n  versioning_configuration {\n    status = \"Enabled\"\n  }\n}\n\nresource \"aws_security_group\" \"api\" {\n  name = \"api\"\n  ingress {\n    from_port   = 443\n    to_port     = 443\n    protocol    = \"tcp\"\n    cidr_blocks = [\"0.0.0.0/0\"]             # HTTPS from anywhere is fine\n  }\n}\n\nterraform {                                  # remote, locked state\n  backend \"s3\" {\n    bucket         = \"reviewradar-tfstate\"\n    key            = \"prod/terraform.tfstate\"\n    dynamodb_table = \"tf-locks\"\n  }\n}"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "**Least privilege**: give an IAM role only the actions and resources it needs (for example read-only access to one bucket).",
+       "Never open SSH (22) or databases to `0.0.0.0/0`. Restrict to your office or a VPN range.",
+       "Keep state **remote** (S3) with **locking** (DynamoDB) so two people cannot apply at once. Never commit `.tfstate` or `.tfvars` with secrets."
+      ]
+     },
+     {
+      "t": "warn",
+      "x": "Mark secret outputs and variables `sensitive = true`, but remember state still contains them. Protect the state bucket."
+     },
+     {
+      "t": "quick",
+      "q": "Which IAM policy follows least privilege for a service that only reads models?",
+      "choices": [
+       "`s3:*` on `*`",
+       "`s3:GetObject` on the models bucket only",
+       "`AdministratorAccess`",
+       "`s3:PutObject` on all buckets"
+      ],
+      "a": 1,
+      "why": "Only the needed action, on the needed resource."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "fill",
+     "prompt": "Turn on versioning for the models bucket.",
+     "hints": [
+      "Reference the bucket created above through one of its attributes.",
+      "The status is a capitalised word.",
+      "`id` and `Enabled`."
+     ],
+     "diff": 2,
+     "template": "resource \"aws_s3_bucket_versioning\" \"models\" {\n  bucket = aws_s3_bucket.models.____\n  versioning_configuration {\n    status = \"____\"\n  }\n}",
+     "blanks": [
+      [
+       "id"
+      ],
+      [
+       "Enabled"
+      ]
+     ],
+     "lang": "hcl",
+     "ci": false,
+     "id": "tf.aws.1"
+    },
+    {
+     "type": "spot",
+     "prompt": "A security review rejects this security group. Which line is the problem?",
+     "hints": [
+      "Who should be able to reach a database?",
+      "`0.0.0.0/0` means the entire internet.",
+      "Restrict it to the app's security group or a private CIDR."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "lines": [
+      "resource \"aws_security_group\" \"db\" {",
+      "  ingress {",
+      "    from_port   = 5432",
+      "    to_port     = 5432",
+      "    protocol    = \"tcp\"",
+      "    cidr_blocks = [\"0.0.0.0/0\"]",
+      "  }",
+      "}"
+     ],
+     "bad": [
+      6
+     ],
+     "lang": "hcl",
+     "fix": {
+      "q": "What is the fix?",
+      "choices": [
+       "Limit the source to the app's private network (for example `10.0.0.0/16`) or its security group",
+       "Change the port to 5433",
+       "Change `tcp` to `udp`",
+       "Remove `ingress`"
+      ],
+      "answer": 0
+     },
+     "id": "tf.aws.2"
+    },
+    {
+     "type": "mcq",
+     "prompt": "Your team of three runs `terraform apply` from laptops. What setup avoids corrupted state?",
+     "hints": [
+      "State must be shared and only one apply can run at a time.",
+      "Local files diverge.",
+      "A locking backend prevents simultaneous applies."
+     ],
+     "diff": 2,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "Everyone keeps their own local `terraform.tfstate`",
+      "Remote state in S3 with DynamoDB locking",
+      "Commit `terraform.tfstate` to git",
+      "Email the state file around"
+     ],
+     "answer": 1,
+     "id": "tf.aws.3"
+    }
+   ]
+  },
+  {
+   "id": "tf.modules",
+   "level": 5,
+   "title": "Terraform: modules, loops and data sources",
+   "lede": "Modules package reusable infrastructure. `for_each` creates many similar resources, and data sources read things that already exist.",
+   "minutes": 6,
+   "phases": [
+    "cloud"
+   ],
+   "lesson": {
+    "blocks": [
+     {
+      "t": "code",
+      "lang": "hcl",
+      "x": "module \"vpc\" {                              # reuse a folder of Terraform code\n  source = \"./modules/vpc\"\n  cidr   = \"10.0.0.0/16\"\n}\n\nresource \"aws_instance\" \"api\" {\n  subnet_id = module.vpc.public_subnet_id   # use a module's output\n  # ...\n}\n\nvariable \"buckets\" {\n  default = [\"models\", \"data\", \"logs\"]\n}\nresource \"aws_s3_bucket\" \"b\" {\n  for_each = toset(var.buckets)             # one bucket per name\n  bucket   = \"reviewradar-${each.key}\"\n}\n\ndata \"aws_caller_identity\" \"me\" {}          # read-only lookup of existing information"
+     },
+     {
+      "t": "ul",
+      "x": [
+       "`count` numbers resources 0, 1, 2. **Removing one from the middle shifts the rest and can destroy resources.**",
+       "`for_each` keys resources by name, so removing one affects only that one. Prefer it for collections.",
+       "`terraform plan -out=tfplan` then `terraform apply tfplan` applies exactly what you reviewed.",
+       "`lifecycle { prevent_destroy = true }` protects critical resources."
+      ]
+     },
+     {
+      "t": "quick",
+      "q": "You manage 3 buckets with `count` and remove the middle name from the list. What happens?",
+      "choices": [
+       "Only the middle bucket is destroyed",
+       "Later buckets shift index and Terraform may destroy and recreate them",
+       "Nothing changes",
+       "Terraform asks which one to keep"
+      ],
+      "a": 1,
+      "why": "With `count`, resources are tracked by position."
+     }
+    ]
+   },
+   "exercises": [
+    {
+     "type": "mcq",
+     "prompt": "Why is `for_each = toset(var.names)` usually safer than `count = length(var.names)` for a list of resources?",
+     "hints": [
+      "What identifies each resource in state?",
+      "With `count` it is the index.",
+      "With `for_each` it is the key."
+     ],
+     "diff": 3,
+     "tags": [
+      "interview"
+     ],
+     "choices": [
+      "It is faster to run",
+      "Resources are tracked by name, so removing one does not shift the others",
+      "It uses fewer API calls",
+      "It avoids needing a provider"
+     ],
+     "answer": 1,
+     "id": "tf.modules.1"
+    },
+    {
+     "type": "fill",
+     "prompt": "Use the module's output in another resource.",
+     "hints": [
+      "The reference starts with `module.` and then the module's label.",
+      "The label is in quotes on the first line.",
+      "`vpc`"
+     ],
+     "diff": 2,
+     "template": "module \"vpc\" {\n  source = \"./modules/vpc\"\n}\n\nresource \"aws_instance\" \"api\" {\n  subnet_id = module.____.public_subnet_id\n}",
+     "blanks": [
+      [
+       "vpc"
+      ]
+     ],
+     "lang": "hcl",
+     "ci": false,
+     "id": "tf.modules.2"
+    },
+    {
+     "type": "mcq",
+     "prompt": "You want to apply exactly the changes you reviewed, even if someone edits the code afterwards. What do you run?",
+     "hints": [
+      "A saved plan is a fixed set of actions.",
+      "Apply it by file name.",
+      "That is the reviewed-plan workflow used in CI/CD."
+     ],
+     "diff": 2,
+     "choices": [
+      "`terraform apply` straight away",
+      "`terraform plan -out=tfplan`, review, then `terraform apply tfplan`",
+      "`terraform refresh`",
+      "`terraform destroy`"
+     ],
+     "answer": 1,
+     "id": "tf.modules.3"
+    }
+   ]
+  }
+ ]
+}
